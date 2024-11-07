@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface hAPPyTests : XCTestCase
+@interface h_APP_yTests : XCTestCase
 
 @end
 
-@implementation hAPPyTests
+@implementation h_APP_yTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {

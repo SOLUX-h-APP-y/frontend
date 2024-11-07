@@ -1,4 +1,4 @@
-package com.happy
+package com.h_app_y
 
 import android.app.Application
 import com.facebook.react.PackageList
