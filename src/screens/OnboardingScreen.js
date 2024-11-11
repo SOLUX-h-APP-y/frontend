@@ -1,4 +1,4 @@
-import {StyleSheet, View, Text, Button} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import Logo from '../components/Logo';
 import DefaultButton from '../components/DefaultButton';
 import colors from '../styles/Colors';
@@ -14,7 +14,7 @@ function OnboardingScreen() {
         <DefaultButton title={'카카오로 시작하기'} color={colors.buttonBlue} />
         <DefaultButton title={'로그인'} color={'white'} />
         <Text style={{color: colors.textGray, borderBottomWidth: 1}}>
-          회원가입s
+          회원가입
         </Text>
       </View>
     </View>

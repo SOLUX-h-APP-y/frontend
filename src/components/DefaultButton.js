@@ -1,11 +1,12 @@
-import {Text, StyleSheet} from 'react-native';
+import {Text, TouchableOpacity} from 'react-native';
 import colors from '../styles/Colors';
 import styles from '../styles/ButtonStyle';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 
 function DefaultButton({title, color}) {
   return (
-    <TouchableOpacity style={[styles.container, {backgroundColor: color}]}>
+    <TouchableOpacity
+      style={[styles.container, {backgroundColor: color}]}
+      onPress={() => console.log(title, 'click')}>
       <Text
         style={[
           styles.text,
