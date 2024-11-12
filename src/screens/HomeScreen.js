@@ -1,4 +1,4 @@
-import {SafeAreaView, Text} from 'react-native';
+import { SafeAreaView, Text } from 'react-native';
 import RankingInfoBanner from '../components/RankingInfoBanner';
 
 function HomeScreen() {
