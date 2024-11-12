@@ -1,29 +1,30 @@
-import {StyleSheet, View, Text} from 'react-native';
+import {SafeAreaView, StatusBar, StyleSheet, View, Text} from 'react-native';
 import Logo from '../components/Logo';
-import DefaultButton from '../components/DefaultButton';
+import {BlueButton, WhiteButton} from '../components/Buttons';
 import colors from '../styles/Colors';
+import {fontGray} from '../styles/FontStyles';
 
 function OnboardingScreen() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      {/* <StatusBar /> */}
       <View style={styles.section1}>
         <Logo />
       </View>
       <View style={styles.section2}>
         {/* {<Button title="go test" onPress={() => navigation.navigate('Test')} />} */}
-        <DefaultButton title={'카카오로 시작하기'} color={colors.buttonBlue} />
-        <DefaultButton title={'로그인'} color={'white'} />
-        <Text style={{color: colors.textGray, borderBottomWidth: 1}}>
-          회원가입
-        </Text>
+        <BlueButton title={'카카오로 시작하기'} />
+        <WhiteButton title={'로그인'} />
+        <Text style={[fontGray.text, {borderBottomWidth: 1}]}>회원가입</Text>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 30,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.backgroundGray,
@@ -42,7 +43,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',
-    //borderWidth: 2,
+    // borderWidth: 2,
   },
 });
 
