@@ -3,8 +3,15 @@ import Logo from '../components/Logo';
 import {BlueButton, WhiteButton} from '../components/Buttons';
 import colors from '../styles/Colors';
 import {fontGray} from '../styles/FontStyles';
+import {useNavigation} from '@react-navigation/native';
 
 function OnboardingScreen() {
+  const navigation = useNavigation();
+
+  const moveSignUpScreen = () => {
+    navigation.navigate('SignUpScreen');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* <StatusBar /> */}
@@ -14,7 +21,9 @@ function OnboardingScreen() {
       <View style={styles.section2}>
         {/* {<Button title="go test" onPress={() => navigation.navigate('Test')} />} */}
         <BlueButton title={'카카오로 시작하기'} />
-        <WhiteButton title={'로그인'} />
+        <WhiteButton title={'로그인'} onPress={moveSignUpScreen} />
+
+        {/* Button 등 상호작용 가능하게 만들어야 함 */}
         <Text style={[fontGray.text, {borderBottomWidth: 1}]}>회원가입</Text>
       </View>
     </SafeAreaView>
