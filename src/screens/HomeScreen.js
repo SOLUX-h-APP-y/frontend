@@ -4,7 +4,6 @@ import RankingInfoBanner from '../components/RankingInfoBanner';
 function HomeScreen() {
   return (
     <SafeAreaView>
-      <Text>Home</Text>
       <RankingInfoBanner />
     </SafeAreaView>
   );

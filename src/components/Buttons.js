@@ -1,7 +1,7 @@
 import {Text, TouchableOpacity} from 'react-native';
 import {blueBtn, whiteBtn} from '../styles/ButtonStyles';
 
-function WhiteButton({title, width, height}) {
+function WhiteButton({title, width, height, onPress}) {
   return (
     <TouchableOpacity
       style={[
@@ -9,13 +9,13 @@ function WhiteButton({title, width, height}) {
         width ? {width: width} : null,
         height ? {height: height} : null,
       ]}
-      onPress={() => console.log(title, 'click')}>
+      onPress={onPress ? onPress : () => console.log(title, 'click')}>
       <Text style={whiteBtn.text}>{title}</Text>
     </TouchableOpacity>
   );
 }
 
-function BlueButton({title, width, height}) {
+function BlueButton({title, width, height, onPress}) {
   return (
     <TouchableOpacity
       style={[
@@ -23,7 +23,7 @@ function BlueButton({title, width, height}) {
         width ? {width: width} : null,
         height ? {height: height} : null,
       ]}
-      onPress={() => console.log(title, 'click')}>
+      onPress={onPress ? onPress : () => console.log(title, 'click')}>
       <Text style={blueBtn.text}>{title}</Text>
     </TouchableOpacity>
   );
