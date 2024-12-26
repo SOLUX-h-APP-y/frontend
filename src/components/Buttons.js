@@ -1,32 +1,44 @@
-import {Text, TouchableOpacity} from 'react-native';
-import {blueBtn, whiteBtn} from '../styles/ButtonStyles';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import colors from '../styles/Colors';
 
-function WhiteButton({title, width, height, onPress}) {
+function BottomButton({title, active, onPress}) {
   return (
     <TouchableOpacity
-      style={[
-        whiteBtn.container,
-        width ? {width: width} : null,
-        height ? {height: height} : null,
-      ]}
-      onPress={onPress ? onPress : () => console.log(title, 'click')}>
-      <Text style={whiteBtn.text}>{title}</Text>
+      style={active ? styles.activeBottomButton : styles.inactiveBottomButton}
+      onPress={onPress}
+      disabled={!active}>
+      <Text style={active ? styles.whiteText : styles.grayText}>{title}</Text>
     </TouchableOpacity>
   );
 }
 
-function BlueButton({title, width, height, onPress}) {
-  return (
-    <TouchableOpacity
-      style={[
-        blueBtn.container,
-        width ? {width: width} : null,
-        height ? {height: height} : null,
-      ]}
-      onPress={onPress ? onPress : () => console.log(title, 'click')}>
-      <Text style={blueBtn.text}>{title}</Text>
-    </TouchableOpacity>
-  );
-}
+const styles = StyleSheet.create({
+  activeBottomButton: {
+    width: '100%',
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    backgroundColor: colors.themeColor,
+  },
+  inactiveBottomButton: {
+    width: '100%',
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    backgroundColor: colors.gray1,
+  },
+  whiteText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: 700,
+  },
+  grayText: {
+    color: colors.gray2,
+    fontSize: 16,
+    fontWeight: 700,
+  },
+});
 
-export {BlueButton, WhiteButton};
+export {BottomButton};
