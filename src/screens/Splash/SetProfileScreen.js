@@ -55,6 +55,7 @@ function SetProfileScreen() {
       <InputField
         placeholder={step == 1 ? 'ex) 빌링이' : 'ex) 용산구 청파동'}
         value={step == 1 ? profile.name : profile.location}
+        setLocation={handleLocation}
         onChangeText={step == 1 ? handleName : handleLocation}
         icon={step == 1 ? null : searchIcon}
         isDropDownVisible={isDropDownVisible}
