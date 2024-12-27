@@ -50,6 +50,39 @@ const ChatListScreen = ({ navigation }) => {
             last_message_time: '2024-12-25T09:20:00',
             unread_chat_count: 3,
         },
+        {
+            id: 5,
+            post_id: '게시물5',
+            user: {
+                profile_image: 'https://via.placeholder.com/50',
+                nickname: '사용자5',
+            },
+            last_message_content: '안녕하세요. 채팅 내용',
+            last_message_time: '2024-12-25T09:20:00',
+            unread_chat_count: 3,
+        },
+        {
+            id: 6,
+            post_id: '게시물6',
+            user: {
+                profile_image: 'https://via.placeholder.com/50',
+                nickname: '사용자6',
+            },
+            last_message_content: '안녕하세요. 채팅 내용',
+            last_message_time: '2024-12-25T09:20:00',
+            unread_chat_count: 10,
+        },
+        {
+            id: 7,
+            post_id: '게시물7',
+            user: {
+                profile_image: 'https://via.placeholder.com/50',
+                nickname: '사용자7',
+            },
+            last_message_content: '안녕하세요. 채팅 내용',
+            last_message_time: '2024-12-25T09:20:00',
+            unread_chat_count: 7,
+        },
     ]);
 
     const formatDate = (dateString) => {
@@ -166,7 +199,7 @@ const styles = StyleSheet.create({
         paddingRight: 10,
     },
     badge: {
-        backgroundColor: colors.v,
+        backgroundColor: colors.themeColor,
         borderRadius: 12,
         width: 20,
         height: 20,

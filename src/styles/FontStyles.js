@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import colors from './Colors';
 
 export const fontBlack = StyleSheet.create({
   text: {
@@ -64,7 +65,7 @@ export const fontStyles = StyleSheet.create({
     fontWeight: '500',
     lineHeight: 18.2,
     letterSpacing: -0.5,
-    color: colors.white,
+    color: 'white',
   },
   whiteSemiBold14: {
     fontFamily: 'Pretendard-SemiBold',
@@ -72,7 +73,7 @@ export const fontStyles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 18.2,
     letterSpacing: -0.5,
-    color: colors.white,
+    color: 'white',
   },
   gray3Medium14: {
     fontFamily: 'Pretendard-Medium',
