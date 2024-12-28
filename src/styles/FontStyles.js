@@ -57,7 +57,7 @@ export const fontStyles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 20.8,
     letterSpacing: -0.5,
-    color: colors.black,
+    color: 'black',
   },
   blackSemiBold20: {
     fontFamily: 'Pretendard-SemiBold',
@@ -65,7 +65,7 @@ export const fontStyles = StyleSheet.create({
     fontWeight: '700',
     lineHeight: 26,
     letterSpacing: -0.5,
-    color: colors.black,
+    color: 'black',
   },
   blackMedium14: {
     fontFamily: 'Pretendard-Medium',
