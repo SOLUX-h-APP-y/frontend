@@ -8,9 +8,9 @@ const colors = {
 
   //아래로 변경
   themeColor: '#7600FF',
-  white: '#ffffff',
   gray1: '#F0F2F5',
   gray2: '#C2C9D6',
+  gray4: '#677898',
 };
 
 export default colors;

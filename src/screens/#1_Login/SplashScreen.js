@@ -1,7 +1,7 @@
 import {StyleSheet, Image, View} from 'react-native';
 import colors from '../../styles/Colors';
-import whiteLogoKo from '../../assets/images/whiteLogoKo.png';
-import whiteLogoEn from '../../assets/images/whiteLogoEn.png';
+import whiteLogoKo from '../../assets/logos/whiteLogoKo.png';
+import whiteLogoEn from '../../assets/logos/whiteLogoEn.png';
 import {useNavigation} from '@react-navigation/native';
 import {useEffect} from 'react';
 

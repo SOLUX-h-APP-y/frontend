@@ -4,9 +4,7 @@ import ProgressBar from '../../components/ProgressBar.js';
 import InputField from '../../components/InputField.js.js';
 import soe from '../../assets/images/soe.png';
 import {useNavigation} from '@react-navigation/native';
-import colors from '../../styles/Colors.js';
 import {BottomButton} from '../../components/Buttons.js';
-import searchIcon from '../../assets/images/searchIcon.png';
 import location from '../../assets/images/location.png';
 
 function SetProfileScreen() {
@@ -18,7 +16,7 @@ function SetProfileScreen() {
 
   const nextStep = () => {
     console.log(profile);
-    step == 1 ? setStep(2) : navigation.navigate('HomeScreen');
+    step == 1 ? setStep(2) : navigation.navigate('SharerPostListScreen');
     //navigate 하기 전에 DB에 user 정보 보내기
   };
 
@@ -57,7 +55,7 @@ function SetProfileScreen() {
         value={step == 1 ? profile.name : profile.location}
         setLocation={handleLocation}
         onChangeText={step == 1 ? handleName : handleLocation}
-        icon={step == 1 ? null : searchIcon}
+        icon={step == 1 ? false : true}
         isDropDownVisible={isDropDownVisible}
         setIsDropDownVisible={setIsDropDownVisible}
       />
@@ -84,7 +82,7 @@ function SetProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: 'white',
     padding: 20,
     paddingTop: 60,
     justifyContent: 'space-between',
