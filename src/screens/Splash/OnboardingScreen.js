@@ -1,10 +1,10 @@
-import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import colorLogoKo from '../../assets/images/colorLogoKo.png';
 import colorLogoEn from '../../assets/images/colorLogoEn.png';
 import kakaoStart from '../../assets/images/kakaoStart.png';
 import colors from '../../styles/Colors';
 
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 function OnboardingScreen() {
   const navigation = useNavigation();
