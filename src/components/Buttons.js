@@ -51,6 +51,14 @@ function NavigateButton({ title, name }) {
   );
 }
 
+function AddPhotoButton() {
+  return (
+    <TouchableOpacity style={styles.addPhoto}>
+      <Image source={plusIcon} />
+    </TouchableOpacity>
+  );
+}
+
 //active, inactive backgroundColor만 달라서 하나로 통일할지 고민
 const styles = StyleSheet.create({
   activeBottomButton: {
@@ -120,6 +128,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.gray2,
   },
+  addPhoto: {
+    width: 90,
+    height: 90,
+    backgroundColor: colors.vPale,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
-export { BottomButton, CreatePostButton, CategoryButton, NavigateButton };
+export {
+  BottomButton,
+  CreatePostButton,
+  CategoryButton,
+  NavigateButton,
+  AddPhotoButton,
+};
