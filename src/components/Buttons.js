@@ -1,7 +1,7 @@
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import colors from '../styles/Colors';
 
-function BottomButton({title, active, onPress}) {
+function BottomButton({ title, active, onPress }) {
   return (
     <TouchableOpacity
       style={active ? styles.activeBottomButton : styles.inactiveBottomButton}
@@ -41,4 +41,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {BottomButton};
+export { BottomButton };

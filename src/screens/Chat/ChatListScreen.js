@@ -114,7 +114,7 @@ const ChatListScreen = ({ navigation }) => {
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.chatItem}
-            onPress={() => navigation.navigate('ChatScreen', { chatRoomId: item.id })}
+            onPress={() => navigation.navigate('ChatScreen', { chatRoomId: item.id, post_id: item.post_id, isCompleted: false })}
         >
             <Image source={{ uri: item.user.profile_image }} style={styles.profileImage} />
             <View style={styles.chatDetails}>

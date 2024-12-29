@@ -9,8 +9,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import colors from '../styles/Colors';
-import {useEffect, useState} from 'react';
-import {Dropdown} from 'react-native-element-dropdown';
+import { useEffect, useState } from 'react';
+import { Dropdown } from 'react-native-element-dropdown';
 
 function InputField({
   placeholder,
@@ -28,10 +28,10 @@ function InputField({
   const [selectedItem, setSelectedItem] = useState(null);
 
   const data = [
-    {id: '1', title: '용산구 남영동'},
-    {id: '2', title: '용산구 용산2가동'},
-    {id: '3', title: '용산구 원효로1동'},
-    {id: '4', title: '용산구 청파동'},
+    { id: '1', title: '용산구 남영동' },
+    { id: '2', title: '용산구 용산2가동' },
+    { id: '3', title: '용산구 원효로1동' },
+    { id: '4', title: '용산구 청파동' },
   ];
 
   const handleItemPress = item => {
@@ -56,7 +56,7 @@ function InputField({
           style={styles.dropdown}
           data={data}
           keyExtractor={item => item.id}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <TouchableOpacity onPress={() => handleItemPress(item)}>
               <View
                 style={

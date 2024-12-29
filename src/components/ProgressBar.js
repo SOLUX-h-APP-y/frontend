@@ -1,7 +1,7 @@
-import {StyleSheet, View} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import colors from '../styles/Colors';
 
-function ProgressBar({step}) {
+function ProgressBar({ step }) {
   return (
     <View style={styles.container}>
       {step == 1 ? (
