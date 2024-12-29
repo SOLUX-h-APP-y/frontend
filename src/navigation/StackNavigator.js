@@ -6,6 +6,7 @@ import SetProfileScreen from '../screens/#1_Login/SetProfileScreen';
 import SplashScreen from '../screens/#1_Login/SplashScreen';
 import ChatListScreen from '../screens/Chat/ChatListScreen';
 import ChatScreen from '../screens/Chat/ChatScreen';
+import CreatePostScreen from '../screens/#2_Post/CreatePostScreen';
 
 const Stack = createStackNavigator();
 
@@ -51,7 +52,13 @@ function StackNavigator() {
             headerShown: false,
           }}
         />
-
+        <Stack.Screen
+          name="CreatePostScreen"
+          component={CreatePostScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="ChatListScreen"
           component={ChatListScreen}

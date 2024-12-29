@@ -14,13 +14,13 @@ function BottomButton({ title, active, onPress }) {
   );
 }
 
-function NavigateButton({ name }) {
+function NavigateButton({ name, actionType }) {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={styles.createPostButton}
-      onPress={() => navigation.navigate(name)}>
+      onPress={() => navigation.navigate(name, { actionType })}>
       <Image source={plusIcon} />
     </TouchableOpacity>
   );

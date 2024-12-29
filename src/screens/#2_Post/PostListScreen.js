@@ -118,7 +118,7 @@ function PostListScreen({ route }) {
         visible={optionsActive}
       />
 
-      <NavigateButton name="" />
+      <NavigateButton name="CreatePostScreen" actionType={actionType} />
     </View>
   );
 }
