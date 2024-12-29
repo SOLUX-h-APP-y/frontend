@@ -1,49 +1,94 @@
-import {StyleSheet, FlatList, View, Text} from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, Modal } from 'react-native';
 import colors from '../styles/Colors';
+import { CategoryButton } from './Buttons';
+import { useState } from 'react';
 
-const data = {
-  distance: [0, 3, 5, 10],
-  category: ['전체', '헬스', '패션', '엔터', '학업', '기타'],
-};
+function OptionSelector({ handleOptionActive, options, visible }) {
+  const [selectedDistance, setSelectedDistance] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-function OptionSelector() {
-  console.log(data);
+  const handleDistanceSelect = value => {
+    console.log(value);
+    setSelectedDistance(value);
+  };
+
+  const handleCategorySelect = value => {
+    console.log(value);
+    setSelectedCategory(value);
+  };
+
   return (
-    <View>
-      <Text>hi</Text>
-      <FlatList
-        style={styles.container}
-        data={data}
-        keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <TouchableOpacity
-            onPress={item => console.log(item)}
-            style={styles.item}>
-            <View>{}</View>
-          </TouchableOpacity>
-        )}
+    <Modal animationType="slide" transparent={true} visible={visible}>
+      <TouchableOpacity
+        style={styles.overlay}
+        activeOpacity={1}
+        onPress={handleOptionActive} // 배경을 터치하면 닫힘
       />
-    </View>
+      <View style={styles.container}>
+        <Text style={styles.text}>필터 선택</Text>
+        <View style={styles.section}>
+          <Text style={{ paddingLeft: 10 }}>거리 선택</Text>
+          <View style={styles.buttons}>
+            {options.distance.map((v, i) => (
+              <CategoryButton
+                key={i}
+                title={v}
+                active={selectedDistance === v}
+                onPress={() => handleDistanceSelect(v)}
+              />
+            ))}
+          </View>
+        </View>
+        <View style={styles.section}>
+          <Text style={{ paddingLeft: 10 }}>분야 선택</Text>
+          <View style={styles.buttons}>
+            {options.category.map((v, i) => (
+              <CategoryButton
+                key={i}
+                title={v}
+                active={selectedCategory === v}
+                onPress={() => handleCategorySelect(v)}
+              />
+            ))}
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-
-    width: '100%',
-    height: 100,
-    borderWidth: 1,
-    borderTopWidth: 0,
-    borderBottomLeftRadius: 20,
-    borderColor: colors.gray1,
-    backgroundColor: 'red',
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // 반투명 회색 배경
     zIndex: 1,
   },
-  item: {
+  container: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    gap: 30,
+    backgroundColor: 'white',
     borderWidth: 2,
-    borderColor: 'red',
+    borderColor: colors.gray1,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+    zIndex: 2,
+    alignItems: 'center',
+    padding: 20,
+  },
+  text: {
+    fontWeight: 700,
+    fontSize: 16,
+  },
+  section: {
+    width: '100%',
+    gap: 10,
+  },
+  buttons: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
   },
 });
 

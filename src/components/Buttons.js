@@ -26,15 +26,15 @@ function NavigateButton({ name }) {
   );
 }
 
-function CategoryButton({ title, active, onPress }) {
+function CategoryButton({ title, active, onPress, key }) {
   return (
     <TouchableOpacity
       style={
         active ? styles.activeCategoryButton : styles.inactiveCategoryButton
       }
       onPress={onPress}
-      disabled={!active}>
-      <Text style={active ? styles.whiteText : styles.grayText}>{title}</Text>
+      key={key}>
+      <Text style={active ? { color: 'white' } : null}>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -89,13 +89,15 @@ const styles = StyleSheet.create({
   },
   inactiveCategoryButton: {
     height: 40,
-    backgroundColor: colors.gray1,
+    backgroundColor: 'white',
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
     paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: colors.gray2,
   },
 });
 
-export { BottomButton };
+export { BottomButton, NavigateButton, CategoryButton };

@@ -1,10 +1,11 @@
-import {StyleSheet, View, FlatList} from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 import PostPreviewItem from '../../components/PostPrivewItem';
 import CustomHeader from '../../components/CustomHeader';
 import sampleImage from '../../assets/images/sample.png';
-import {useState} from 'react';
-import {NavigateButton} from '../../components/Buttons';
+import { useState } from 'react';
+import { NavigateButton } from '../../components/Buttons';
 import OptionPanel from '../../components/OptionPanel';
+import OptionSelector from '../../components/OptionSelector';
 
 const sharerData = [
   {
@@ -75,26 +76,49 @@ const borrowerData = [
   },
 ];
 
-function PostListScreen({route}) {
-  const {actionType} = route.params;
+const options = {
+  distance: ['거리무관', '3km', '5km', '10km'],
+  category: ['전체', '헬스', '패션', '엔터', '학업', '기타'],
+};
+
+function PostListScreen({ route }) {
+  const { actionType } = route.params;
   console.log(actionType);
+
+  const [optionsActive, setOptionActive] = useState(false);
+  const [searchOptions, setSearchOtions] = useState({
+    distance: '거리무관',
+    category: '전체',
+  });
+
+  const handleOptionActive = () => {
+    setOptionActive(!optionsActive);
+  };
+
+  const handleSearchOptions = () => {};
 
   return (
     <View style={styles.container}>
       <CustomHeader isSharer={actionType == 'sharer' ? true : false} />
-      <View style={styles.paddingContainer}>
-        <OptionPanel />
+      <View style={styles.listContainer}>
+        <OptionPanel handleOptionActive={handleOptionActive} />
         <FlatList
           contentContainerStyle={styles.content}
-          data={sharerData}
+          data={actionType == 'sharer' ? sharerData : borrowerData}
           keyExtractor={sharerData.id}
-          renderItem={({item, index}) => (
+          renderItem={({ item, index }) => (
             <PostPreviewItem id={index} data={item} />
           )}
         />
       </View>
 
-      <NavigateButton name="ChatListScreen" />
+      <OptionSelector
+        handleOptionActive={handleOptionActive}
+        options={options}
+        visible={optionsActive}
+      />
+
+      <NavigateButton name="" />
     </View>
   );
 }
@@ -104,10 +128,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  paddingContainer: {z},
+  listContainer: {
+    flex: 1,
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
   content: {
     gap: 10,
-    padding: 20,
+    paddingBottom: 20,
   },
 });
 export default PostListScreen;

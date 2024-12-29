@@ -6,7 +6,6 @@ import SetProfileScreen from '../screens/#1_Login/SetProfileScreen';
 import SplashScreen from '../screens/#1_Login/SplashScreen';
 import ChatListScreen from '../screens/Chat/ChatListScreen';
 import ChatScreen from '../screens/Chat/ChatScreen';
-import ChatListScreen from '../screens/Chat/ChatListScreen';
 
 const Stack = createStackNavigator();
 
