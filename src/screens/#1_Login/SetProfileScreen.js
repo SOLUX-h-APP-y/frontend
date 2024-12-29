@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, Image} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, Image } from 'react-native';
 import ProgressBar from '../../components/ProgressBar.js';
 import InputField from '../../components/InputField.js.js';
 import soe from '../../assets/images/soe.png';
-import {useNavigation} from '@react-navigation/native';
-import {BottomButton} from '../../components/Buttons.js';
+import { useNavigation } from '@react-navigation/native';
+import { BottomButton } from '../../components/Buttons.js';
 import location from '../../assets/images/location.png';
 
 function SetProfileScreen() {
   const navigation = useNavigation();
 
   const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState({name: '', location: ''});
+  const [profile, setProfile] = useState({ name: '', location: '' });
   const [isDropDownVisible, setIsDropDownVisible] = useState(false);
 
   const nextStep = () => {
@@ -30,7 +30,7 @@ function SetProfileScreen() {
     console.log(profile.name);
   };
   const handleLocation = text => {
-    setProfile(prev => ({...prev, location: text.trim()}));
+    setProfile(prev => ({ ...prev, location: text.trim() }));
     console.log(profile.location);
   };
 

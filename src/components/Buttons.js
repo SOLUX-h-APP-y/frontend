@@ -1,9 +1,9 @@
-import {Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import colors from '../styles/Colors';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import plusIcon from '../assets/icons/plusIcon.png';
 
-function BottomButton({title, active, onPress}) {
+function BottomButton({ title, active, onPress }) {
   return (
     <TouchableOpacity
       style={active ? styles.activeBottomButton : styles.inactiveBottomButton}
@@ -14,7 +14,7 @@ function BottomButton({title, active, onPress}) {
   );
 }
 
-function NavigateButton({name}) {
+function NavigateButton({ name }) {
   const navigation = useNavigation();
 
   return (
@@ -26,7 +26,7 @@ function NavigateButton({name}) {
   );
 }
 
-function CategoryButton({title, active, onPress}) {
+function CategoryButton({ title, active, onPress }) {
   return (
     <TouchableOpacity
       style={
@@ -98,4 +98,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export {BottomButton, NavigateButton, CategoryButton};
+export { BottomButton };

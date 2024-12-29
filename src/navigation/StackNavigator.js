@@ -1,9 +1,11 @@
-import {createStackNavigator} from '@react-navigation/stack';
-import {NavigationContainer} from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
 import OnboardingScreen from '../screens/#1_Login/OnboardingScreen';
 import PostListScreen from '../screens/#2_Post/PostListScreen';
 import SetProfileScreen from '../screens/#1_Login/SetProfileScreen';
 import SplashScreen from '../screens/#1_Login/SplashScreen';
+import ChatListScreen from '../screens/Chat/ChatListScreen';
+import ChatScreen from '../screens/Chat/ChatScreen';
 import ChatListScreen from '../screens/Chat/ChatListScreen';
 
 const Stack = createStackNavigator();
@@ -12,6 +14,7 @@ function StackNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="SplashScreen">
+        {/* <Stack.Navigator initialRouteName="ChatListScreen"> */}
         <Stack.Screen
           name="SplashScreen"
           component={SplashScreen}
@@ -36,7 +39,7 @@ function StackNavigator() {
         <Stack.Screen
           name="SharerPostListScreen"
           component={PostListScreen}
-          initialParams={{actionType: 'sharer'}}
+          initialParams={{ actionType: 'sharer' }}
           options={{
             headerShown: false,
           }}
@@ -44,15 +47,25 @@ function StackNavigator() {
         <Stack.Screen
           name="BorrowerPostListScreen"
           component={PostListScreen}
-          initialParams={{actionType: 'borrower'}}
+          initialParams={{ actionType: 'borrower' }}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="ChatListScreen"
+          component={ChatListScreen}
           options={{
             headerShown: false,
           }}
         />
         <Stack.Screen
-          name="ChatListScreen"
-          component={ChatListScreen}
-          options={{headerShown: false}}
+          name="ChatScreen"
+          component={ChatScreen}
+          options={{
+            headerShown: false,
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
