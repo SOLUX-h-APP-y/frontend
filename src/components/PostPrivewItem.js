@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderWidth: 1,
     borderColor: colors.gray2,
-    borderRadius: 25,
+    borderRadius: 40,
     // overflow: 'hidden',
   },
   imageContainer: {
@@ -37,12 +37,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderWidth: 1,
     borderColor: colors.gray2,
-    borderRadius: 25,
+    borderRadius: 40,
     flexDirection: 'row',
     //alignItems: 'center',
   },
   image: {
     flex: 1,
+    borderRadius: 40,
   },
   textContainer: {
     flex: 1.3,

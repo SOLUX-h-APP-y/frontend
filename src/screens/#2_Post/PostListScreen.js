@@ -1,17 +1,10 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  FlatList,
-} from 'react-native';
+import {StyleSheet, View, FlatList} from 'react-native';
 import PostPreviewItem from '../../components/PostPrivewItem';
 import CustomHeader from '../../components/CustomHeader';
 import sampleImage from '../../assets/images/sample.png';
 import {useState} from 'react';
 import {NavigateButton} from '../../components/Buttons';
-import FilterPanel from '../../components/FilterPanel';
+import OptionPanel from '../../components/OptionPanel';
 
 const sharerData = [
   {
@@ -90,26 +83,18 @@ function PostListScreen({route}) {
     <View style={styles.container}>
       <CustomHeader isSharer={actionType == 'sharer' ? true : false} />
       <View style={styles.paddingContainer}>
-        <FilterPanel />
-        {/* <FlatList
-          style={styles.flat}
+        <OptionPanel />
+        <FlatList
+          contentContainerStyle={styles.content}
           data={sharerData}
+          keyExtractor={sharerData.id}
           renderItem={({item, index}) => (
-            <View>
-              <PostPreviewItem id={index} data={item} />
-              <PostPreviewItem id={index} data={item} />
-            </View>
+            <PostPreviewItem id={index} data={item} />
           )}
-        /> */}
-        <View style={styles.content}>
-          {sharerData.map((v, i) => (
-            <PostPreviewItem key={i} data={v} />
-          ))}
-        </View>
+        />
       </View>
 
-      {/* <NavigateButton name="" /> */}
-      {/* <MoveBotton name="BorrowerPostListScreen" /> */}
+      <NavigateButton name="ChatListScreen" />
     </View>
   );
 }
@@ -119,13 +104,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  paddingContainer: {
-    flex: 1,
-    padding: 20,
-    gap: 20,
-  },
+  paddingContainer: {z},
   content: {
     gap: 10,
+    padding: 20,
   },
 });
 export default PostListScreen;

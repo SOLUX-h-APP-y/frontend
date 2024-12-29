@@ -4,6 +4,7 @@ import OnboardingScreen from '../screens/#1_Login/OnboardingScreen';
 import PostListScreen from '../screens/#2_Post/PostListScreen';
 import SetProfileScreen from '../screens/#1_Login/SetProfileScreen';
 import SplashScreen from '../screens/#1_Login/SplashScreen';
+import ChatListScreen from '../screens/Chat/ChatListScreen';
 
 const Stack = createStackNavigator();
 
@@ -47,6 +48,11 @@ function StackNavigator() {
           options={{
             headerShown: false,
           }}
+        />
+        <Stack.Screen
+          name="ChatListScreen"
+          component={ChatListScreen}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>

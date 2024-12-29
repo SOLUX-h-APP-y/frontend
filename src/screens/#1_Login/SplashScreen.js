@@ -1,9 +1,9 @@
-import {StyleSheet, Image, View} from 'react-native';
+import { StyleSheet, Image, View } from 'react-native';
 import colors from '../../styles/Colors';
 import whiteLogoKo from '../../assets/logos/whiteLogoKo.png';
 import whiteLogoEn from '../../assets/logos/whiteLogoEn.png';
-import {useNavigation} from '@react-navigation/native';
-import {useEffect} from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useEffect } from 'react';
 
 function SplashScreen() {
   const navigation = useNavigation();
