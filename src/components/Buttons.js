@@ -14,7 +14,7 @@ function BottomButton({ title, active, onPress }) {
   );
 }
 
-function NavigateButton({ name, actionType }) {
+function CreatePostButton({ name, actionType }) {
   const navigation = useNavigation();
 
   return (
@@ -35,6 +35,18 @@ function CategoryButton({ title, active, onPress, key }) {
       onPress={onPress}
       key={key}>
       <Text style={active ? { color: 'white' } : null}>{title}</Text>
+    </TouchableOpacity>
+  );
+}
+
+function NavigateButton({ title, name }) {
+  const navigation = useNavigation();
+
+  return (
+    <TouchableOpacity
+      style={styles.navigateButton}
+      onPress={() => navigation.navigate(name)}>
+      <Text>{title}</Text>
     </TouchableOpacity>
   );
 }
@@ -98,6 +110,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.gray2,
   },
+  navigateButton: {
+    width: 140,
+    height: 40,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.gray2,
+  },
 });
 
-export { BottomButton, NavigateButton, CategoryButton };
+export { BottomButton, CreatePostButton, CategoryButton, NavigateButton };
