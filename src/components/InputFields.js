@@ -13,12 +13,11 @@ import { useEffect, useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 import searchIcon from '../assets/icons/searchIcon.png';
 
-function InputField({
+function DrondownInputField({
   placeholder,
   value,
   setLocation,
   onChangeText,
-  icon,
   isDropDownVisible,
   setIsDropDownVisible,
 }) {
@@ -44,7 +43,7 @@ function InputField({
   return (
     <View style={styles.container}>
       <View style={isDropDownVisible ? styles.inputWithDropdown : styles.input}>
-        {icon == true ? <Image source={searchIcon} /> : null}
+        <Image source={searchIcon} />
         <TextInput
           placeholder={placeholder}
           placeholderTextColor={colors.inputBorderGray}
@@ -74,12 +73,39 @@ function InputField({
   );
 }
 
+function PlainInputField({
+  placeholder,
+  value,
+  onChangeText,
+  isTextarea,
+  inactive,
+}) {
+  return (
+    <View style={styles.container}>
+      <TextInput
+        placeholder={placeholder}
+        placeholderTextColor={colors.inputBorderGray}
+        value={value}
+        onChangeText={onChangeText}
+        style={
+          isTextarea
+            ? styles.textarea
+            : inactive
+            ? styles.inactiveInput
+            : styles.input
+        }
+        multiline={isTextarea ? true : false}
+        editable={inactive ? false : true}
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     width: '100%',
   },
   input: {
-    flexDirection: 'row', // 아이콘과 TextInput을 가로로 정렬
     alignItems: 'center', // 수직 가운데 정렬
     height: 40,
     borderWidth: 1,
@@ -87,6 +113,24 @@ const styles = StyleSheet.create({
     borderColor: colors.gray2,
     backgroundColor: 'white',
     paddingLeft: 20,
+    gap: 10,
+  },
+  textarea: {
+    height: 150,
+    borderWidth: 1,
+    borderRadius: 30,
+    borderColor: colors.gray2,
+    backgroundColor: 'white',
+    padding: 20,
+    gap: 10,
+  },
+  inactiveInput: {
+    alignItems: 'center', // 수직 가운데 정렬
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.gray1,
+    paddingLeft: 20,
+    color: colors.gray2,
     gap: 10,
   },
   inputWithDropdown: {
@@ -125,4 +169,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InputField;
+export { DrondownInputField, PlainInputField };

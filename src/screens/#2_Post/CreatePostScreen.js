@@ -1,12 +1,35 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import InputField from '../../components/InputField.js';
-import { BottomButton, NavigateButton } from '../../components/Buttons.js';
+import { PlainInputField } from '../../components/InputFields.js';
+import {
+  BottomButton,
+  CategoryButton,
+  NavigateButton,
+} from '../../components/Buttons.js';
 import colors from '../../styles/Colors.js';
 import { AddPhotoButton } from '../../components/Buttons.js';
+import { useState } from 'react';
+
+const options = {
+  distance: ['거리무관', '3km', '5km', '10km'],
+  category: ['전체', '헬스', '패션', '엔터', '학업', '기타'],
+};
 
 function CreatePostScreen({ route }) {
   const { actionType } = route.params;
   console.log(actionType);
+
+  const [selectedDistance, setSelectedDistance] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const handleDistanceSelect = value => {
+    console.log(value);
+    setSelectedDistance(value);
+  };
+
+  const handleCategorySelect = value => {
+    console.log(value);
+    setSelectedCategory(value);
+  };
 
   return (
     <View style={styles.container}>
@@ -19,11 +42,14 @@ function CreatePostScreen({ route }) {
           />
           <View style={styles.section}>
             <Text style={styles.title}>제목</Text>
-            <InputField placeholder="제목을 입력해주세요" />
+            <PlainInputField placeholder="제목을 입력해주세요" />
           </View>
           <View style={styles.section}>
             <Text style={styles.title}>가격</Text>
-            <InputField placeholder="원하는 가격을 입력해주세요" />
+            <PlainInputField
+              placeholder="원하는 가격을 입력해주세요"
+              inactive={true}
+            />
             <Text style={{ color: colors.themeColor, paddingLeft: 5 }}>
               1일 기준 대여료를 입력해주세요
             </Text>
@@ -31,23 +57,37 @@ function CreatePostScreen({ route }) {
           <View style={styles.section}>
             <Text style={styles.title}>사진</Text>
             <AddPhotoButton />
-            <InputField placeholder="제목을 입력해주세요" />
+          </View>
+          <View style={styles.section}>
+            <Text style={styles.title}>내용</Text>
+            <PlainInputField
+              placeholder={'내용을 입력하세요'}
+              isTextarea={true}
+            />
           </View>
           <View style={styles.section}>
             <Text style={styles.title}>거리선택</Text>
-            <InputField placeholder="제목을 입력해주세요" />
+            <View style={styles.buttons}>
+              {options.distance.map((v, i) => (
+                <CategoryButton title={v} key={i} />
+              ))}
+            </View>
           </View>
           <View style={styles.section}>
             <Text style={styles.title}>분야선택</Text>
-            <InputField placeholder="제목을 입력해주세요" />
+            <View style={styles.buttons}>
+              {options.category.map((v, i) => (
+                <CategoryButton title={v} key={i} />
+              ))}
+            </View>
           </View>
           <View style={styles.section}>
             <Text style={styles.title}>공고기간</Text>
-            <InputField placeholder="제목을 입력해주세요" />
+            <PlainInputField placeholder="공고기간을 입력하세요" />
           </View>
           <View style={styles.section}>
             <Text style={styles.title}>거래희망장소</Text>
-            <InputField placeholder="제목을 입력해주세요" />
+            <PlainInputField placeholder="거래희망장소를 입력하세요" />
           </View>
         </View>
         <BottomButton title="업로드하기" active={false} />
@@ -79,6 +119,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 700,
+  },
+  buttons: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
   },
 });
 
