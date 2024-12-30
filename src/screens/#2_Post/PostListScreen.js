@@ -3,7 +3,7 @@ import PostPreviewItem from '../../components/PostPrivewItem';
 import CustomHeader from '../../components/CustomHeader';
 import sampleImage from '../../assets/images/sample.png';
 import { useState } from 'react';
-import { NavigateButton } from '../../components/Buttons';
+import { CreatePostButton } from '../../components/Buttons';
 import OptionPanel from '../../components/OptionPanel';
 import OptionSelector from '../../components/OptionSelector';
 
@@ -118,7 +118,7 @@ function PostListScreen({ route }) {
         visible={optionsActive}
       />
 
-      <NavigateButton name="" />
+      <CreatePostButton name="CreatePostScreen" actionType={actionType} />
     </View>
   );
 }

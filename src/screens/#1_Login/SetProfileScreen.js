@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import ProgressBar from '../../components/ProgressBar.js';
-import InputField from '../../components/InputField.js.js';
+import {
+  DrondownInputField,
+  PlainInputField,
+} from '../../components/InputFields.js';
 import soe from '../../assets/images/soe.png';
 import { useNavigation } from '@react-navigation/native';
 import { BottomButton } from '../../components/Buttons.js';
@@ -50,15 +53,23 @@ function SetProfileScreen() {
           ? '빌링에서 사용할\n닉네임을 입력해주세요'
           : '앱을 사용할 위치를\n입력해주세요'}
       </Text>
-      <InputField
-        placeholder={step == 1 ? 'ex) 빌링이' : 'ex) 용산구 청파동'}
-        value={step == 1 ? profile.name : profile.location}
-        setLocation={handleLocation}
-        onChangeText={step == 1 ? handleName : handleLocation}
-        icon={step == 1 ? false : true}
-        isDropDownVisible={isDropDownVisible}
-        setIsDropDownVisible={setIsDropDownVisible}
-      />
+      {step == 1 ? (
+        <PlainInputField
+          placeholder={'ex) 빌링이'}
+          value={profile.name}
+          onChangeText={handleName}
+        />
+      ) : (
+        <DrondownInputField
+          placeholder={'ex) 용산구 청파동'}
+          value={profile.location}
+          setLocation={handleLocation}
+          onChangeText={handleLocation}
+          isDropDownVisible={isDropDownVisible}
+          setIsDropDownVisible={setIsDropDownVisible}
+        />
+      )}
+
       <View style={styles.center}>
         <Image source={step == 1 ? soe : location} />
       </View>

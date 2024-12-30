@@ -1,10 +1,10 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import whiteLogoEn from '../assets/logos/whiteLogoEn.png';
 import colors from '../styles/Colors';
-import InputField from './InputField.js';
-import {useState} from 'react';
+import { DrondownInputField } from './InputFields.js';
+import { useState } from 'react';
 
-function CustomHeader({isSharer}) {
+function CustomHeader({ isSharer }) {
   const [query, setQuery] = useState('');
 
   return (
@@ -12,11 +12,10 @@ function CustomHeader({isSharer}) {
       <Text style={styles.text}>
         {isSharer ? '빌려드려요 공고' : '빌려주세요 공고'}
       </Text>
-      <InputField
+      <DrondownInputField
         placeholder={'청파동 근처의 공고를 검색해보세요.'}
         value={query}
         onChangeText={text => setQuery(text)}
-        icon={true}
       />
     </View>
   );
@@ -40,4 +39,5 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
 export default CustomHeader;
