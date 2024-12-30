@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import ChatHeader from '../../components/ChatHeader';
+import PostHeader from '../../components/PostHeader';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
 
+
 const ChatScreen = ({ route, navigation }) => {
-    const { chatRoomId, isCompleted } = route.params; // 거래완료여부 props 전달 받음
+    const { chatRoomId, isCompleted } = route.params;
 
     const post = {
         id: 101,
@@ -19,7 +22,7 @@ const ChatScreen = ({ route, navigation }) => {
             chatroom_id: 1,
             sender_id: 2,
             content: '안녕하세요. 카메라 한달동안 빌리고 싶은데 하루 5000원으로 가능할까요? ㅎㅎ',
-            is_read: 1,
+            is_read: 0,
             create_at: '2024-12-25T11:40:00',
         },
         {
@@ -35,29 +38,27 @@ const ChatScreen = ({ route, navigation }) => {
             chatroom_id: 1,
             sender_id: 2,
             content: '네 감사합니다 \n내일 3시에 청파초 앞에서 봬요!',
-            is_read: 1,
+            is_read: 0,
             create_at: '2024-12-26T09:30:00',
         },
     ]);
 
     const [inputText, setInputText] = useState('');
-    const flatListRef = React.useRef(); // FlatList 스크롤을 위한 Ref
+    const flatListRef = React.useRef();
 
-    // 메세지 나올 때마다 자동 스크롤
     useEffect(() => {
         if (flatListRef.current) {
             setTimeout(() => {
                 flatListRef.current.scrollToEnd({ animated: true });
-            }, 100); // 약간의 지연 추가
+            }, 100);
         }
     }, [messages]);
-
 
     const handleSend = () => {
         if (!inputText.trim()) return;
 
         const newMessage = {
-            id: messages.length + 1, // 임시로 id를 생성 (실제로는 서버에서 생성)
+            id: messages.length + 1,
             chatroom_id: chatRoomId,
             sender_id: 1,
             content: inputText,
@@ -117,15 +118,15 @@ const ChatScreen = ({ route, navigation }) => {
                     </View>
                     {item.sender_id === 1 && (
                         <View style={styles.myMessageMeta}>
+                            <Text style={styles.readStatus}>
+                                {item.is_read ? '' : '1'} {/* 안읽은 메시지 1로 표시 */}
+                            </Text>
                             <Text style={styles.messageTime}>
                                 {new Date(item.create_at).toLocaleTimeString([], {
                                     hour: '2-digit',
                                     minute: '2-digit',
                                     hour12: false,
                                 })}
-                            </Text>
-                            <Text style={styles.readStatus}>
-                                {item.is_read ? '' : '1'}  {/* 안읽은 메세지 1로 표시 */}
                             </Text>
                         </View>
                     )}
@@ -149,27 +150,10 @@ const ChatScreen = ({ route, navigation }) => {
             style={styles.container}
         >
             <SafeAreaView style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Image source={require('../../assets/images/backIcon.png')} style={styles.backIcon} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerText}>채팅</Text>
-                </View>
-                <View style={styles.postDetails}>
-                    <Image source={{ uri: post.image }} style={styles.postImage} />
-                    <View>
-                        <Text style={styles.postTitle}>{post.title}</Text>
-                        <View style={styles.locationContainer}>
-                            <Image
-                                source={require('../../assets/images/locationIcon.png')}
-                                style={styles.locationIcon}
-                            />
-                            <Text style={styles.postLocation}>{post.location}</Text>
-                        </View>
-                    </View>
-                </View>
+                <ChatHeader navigation={navigation} />
+                <PostHeader post={post} />
                 <FlatList
-                    ref={flatListRef} // Ref 연결
+                    ref={flatListRef}
                     data={messages}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id.toString()}
@@ -209,58 +193,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-    },
-    header: {
-        height: 56,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: colors.gray2,
-        position: 'relative',
-    },
-    backButton: {
-        position: 'absolute',
-        left: 15,
-        top: 23,
-    },
-    backIcon: {
-        width: 8.64,
-        height: 14,
-    },
-    headerText: {
-        ...fontStyles.blackSemiBold20,
-    },
-    postDetails: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 76,
-        padding: 10,
-        backgroundColor: 'white',
-        borderBottomWidth: 1,
-        borderBottomColor: colors.gray2,
-    },
-    postImage: {
-        width: 53,
-        height: 53,
-        borderRadius: 12,
-        marginRight: 10,
-        marginLeft: 5,
-    },
-    postTitle: {
-        ...fontStyles.lightBlackSemiBold14,
-    },
-    locationContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 3,
-    },
-    locationIcon: {
-        width: 9.33,
-        height: 13.33,
-        marginRight: 5,
-    },
-    postLocation: {
-        ...fontStyles.gray4Medium14,
     },
     dateContainer: {
         alignItems: 'center',
@@ -309,7 +241,6 @@ const styles = StyleSheet.create({
     myMessageBubble: {
         backgroundColor: colors.vPale,
         alignSelf: 'flex-end',
-
     },
     otherMessageBubble: {
         backgroundColor: colors.gray1,
@@ -319,17 +250,25 @@ const styles = StyleSheet.create({
         ...fontStyles.lightBlackMedium14,
         flexWrap: 'wrap',
     },
+    myMessageMeta: {
+        alignItems: 'flex-end',
+        marginTop: 5,
+    },
+    readStatus: {
+        fontSize: 12,
+        color: colors.themeColor,
+        marginHorizontal: 2,
+    },
     messageTime: {
         ...fontStyles.gray3Medium14,
         marginHorizontal: 5,
     },
-    readStatus: {
-        fontSize: 10,
-        color: colors.themeColor,
-        marginLeft: 5,
+    otherMessageMeta: {
+        alignItems: 'flex-start',
+        marginTop: 5,
     },
     reviewContainer: {
-        width: '330',
+        width: 330,
         height: 112,
         alignSelf: 'center',
         borderWidth: 1,
