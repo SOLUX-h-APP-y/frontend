@@ -7,6 +7,7 @@ import SplashScreen from '../screens/#1_Login/SplashScreen';
 import ChatListScreen from '../screens/Chat/ChatListScreen';
 import ChatScreen from '../screens/Chat/ChatScreen';
 import CreatePostScreen from '../screens/#2_Post/CreatePostScreen';
+import PostDetailScreen from '../screens/#2_Post/PostDetailScreen';
 
 const Stack = createStackNavigator();
 
@@ -55,6 +56,13 @@ function StackNavigator() {
         <Stack.Screen
           name="CreatePostScreen"
           component={CreatePostScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="PostDetailScreen"
+          component={PostDetailScreen}
           options={{
             headerShown: false,
           }}

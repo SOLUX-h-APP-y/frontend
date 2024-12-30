@@ -1,9 +1,14 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import colors from '../styles/Colors';
+import { useNavigation } from '@react-navigation/native';
 
-function PostPreviewItem({data}) {
+function PostPreviewItem({ data }) {
+  const navigation = useNavigation();
+
   return data.image ? (
-    <TouchableOpacity style={styles.imageContainer}>
+    <TouchableOpacity
+      style={styles.imageContainer}
+      onPress={() => navigation.navigate('PostDetailScreen')}>
       <Image style={styles.image} source={data.image} />
       <View style={styles.textContainer}>
         <Text style={styles.titleText}>{data.title}</Text>
