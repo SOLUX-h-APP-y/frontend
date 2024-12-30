@@ -33,7 +33,7 @@ function CategoryButton({ title, active, onPress, key }) {
         active ? styles.activeCategoryButton : styles.inactiveCategoryButton
       }
       onPress={onPress}
-      key={key}>
+      id={key}>
       <Text style={active ? { color: 'white' } : null}>{title}</Text>
     </TouchableOpacity>
   );
@@ -53,8 +53,20 @@ function NavigateButton({ title, name }) {
 
 function AddPhotoButton() {
   return (
-    <TouchableOpacity style={styles.addPhoto}>
+    <TouchableOpacity style={styles.addPhotoButton}>
       <Image source={plusIcon} />
+    </TouchableOpacity>
+  );
+}
+
+function FreeButton({ active, onPress }) {
+  return (
+    <TouchableOpacity
+      style={active ? styles.activeFreeButton : styles.inactiveFreeButton}
+      onPress={onPress}>
+      <Text style={{ color: active ? 'white' : colors.themeColor }}>
+        무료나눔
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -128,11 +140,28 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.gray2,
   },
-  addPhoto: {
+  addPhotoButton: {
     width: 90,
     height: 90,
     backgroundColor: colors.vPale,
     borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  inactiveFreeButton: {
+    width: 90,
+    height: 40,
+    borderWidth: 1,
+    borderColor: colors.vPale,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activeFreeButton: {
+    width: 90,
+    height: 40,
+    backgroundColor: colors.themeColor,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -144,4 +173,5 @@ export {
   CategoryButton,
   NavigateButton,
   AddPhotoButton,
+  FreeButton,
 };

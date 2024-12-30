@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   input: {
+    flexDirection: 'row',
     alignItems: 'center', // 수직 가운데 정렬
     height: 40,
     borderWidth: 1,

@@ -3,6 +3,7 @@ import { PlainInputField } from '../../components/InputFields.js';
 import {
   BottomButton,
   CategoryButton,
+  FreeButton,
   NavigateButton,
 } from '../../components/Buttons.js';
 import colors from '../../styles/Colors.js';
@@ -20,6 +21,7 @@ function CreatePostScreen({ route }) {
 
   const [selectedDistance, setSelectedDistance] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedFree, setSelectedFree] = useState(false);
 
   const handleDistanceSelect = value => {
     console.log(value);
@@ -31,11 +33,19 @@ function CreatePostScreen({ route }) {
     setSelectedCategory(value);
   };
 
+  const handleFreeSelect = () => {
+    setSelectedFree(!selectedFree);
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollview}>
         <View style={styles.contentContainer}>
-          <Text style={styles.title}>빌려드려요 글 작성하기</Text>
+          <Text style={styles.title}>
+            {actionType === 'sharer'
+              ? '빌려드려요 글 작성하기'
+              : '빌려주세요 글 작성하기'}
+          </Text>
           <NavigateButton
             title="이전 글 불러오기"
             name="BorrowerPostListScreen"
@@ -45,10 +55,20 @@ function CreatePostScreen({ route }) {
             <PlainInputField placeholder="제목을 입력해주세요" />
           </View>
           <View style={styles.section}>
-            <Text style={styles.title}>가격</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 20,
+                alignItems: 'center',
+              }}>
+              <Text style={styles.title}>가격</Text>
+              {actionType === 'sharer' ? (
+                <FreeButton active={selectedFree} onPress={handleFreeSelect} />
+              ) : null}
+            </View>
             <PlainInputField
               placeholder="원하는 가격을 입력해주세요"
-              inactive={true}
+              inactive={selectedFree ? true : false}
             />
             <Text style={{ color: colors.themeColor, paddingLeft: 5 }}>
               1일 기준 대여료를 입력해주세요
@@ -69,7 +89,12 @@ function CreatePostScreen({ route }) {
             <Text style={styles.title}>거리선택</Text>
             <View style={styles.buttons}>
               {options.distance.map((v, i) => (
-                <CategoryButton title={v} key={i} />
+                <CategoryButton
+                  title={v}
+                  key={i}
+                  active={selectedDistance === v}
+                  onPress={() => handleDistanceSelect(v)}
+                />
               ))}
             </View>
           </View>
@@ -77,7 +102,12 @@ function CreatePostScreen({ route }) {
             <Text style={styles.title}>분야선택</Text>
             <View style={styles.buttons}>
               {options.category.map((v, i) => (
-                <CategoryButton title={v} key={i} />
+                <CategoryButton
+                  title={v}
+                  key={i}
+                  active={selectedCategory === v}
+                  onPress={() => handleCategorySelect(v)}
+                />
               ))}
             </View>
           </View>
