@@ -181,7 +181,7 @@ const ChatScreen = ({ route, navigation }) => {
                         onChangeText={setInputText}
                     />
                     <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
-                        <Image source={require('../../assets/images/sendIcon.png')} style={styles.sendIcon} />
+                        <Image source={require('../../assets/icons/sendIcon.png')} style={styles.sendIcon} />
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>

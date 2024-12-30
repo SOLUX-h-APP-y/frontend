@@ -10,7 +10,7 @@ const PostHeader = ({ post }) => {
                 <Text style={PostHeaderStyles.postTitle}>{post.title}</Text>
                 <View style={PostHeaderStyles.locationContainer}>
                     <Image
-                        source={require('../assets/images/locationIcon.png')}
+                        source={require('../assets/icons/locationIcon.png')}
                         style={PostHeaderStyles.locationIcon}
                     />
                     <Text style={PostHeaderStyles.postLocation}>{post.location}</Text>

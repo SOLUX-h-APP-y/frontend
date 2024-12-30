@@ -91,8 +91,8 @@ function PlainInputField({
           isTextarea
             ? styles.textarea
             : inactive
-            ? styles.inactiveInput
-            : styles.input
+              ? styles.inactiveInput
+              : styles.input
         }
         multiline={isTextarea ? true : false}
         editable={inactive ? false : true}
