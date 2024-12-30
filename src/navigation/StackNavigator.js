@@ -1,11 +1,12 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import OnboardingScreen from '../screens/Splash/OnboardingScreen';
-import HomeScreen from '../screens/HomeScreen';
-import SetProfileScreen from '../screens/Splash/SetProfileScreen';
-import SplashScreen from '../screens/Splash/SplashScreen';
-import ChatScreen from '../screens/Chat/ChatScreen';
+import OnboardingScreen from '../screens/#1_Login/OnboardingScreen';
+import PostListScreen from '../screens/#2_Post/PostListScreen';
+import SetProfileScreen from '../screens/#1_Login/SetProfileScreen';
+import SplashScreen from '../screens/#1_Login/SplashScreen';
 import ChatListScreen from '../screens/Chat/ChatListScreen';
+import ChatScreen from '../screens/Chat/ChatScreen';
+import CreatePostScreen from '../screens/#2_Post/CreatePostScreen';
 
 const Stack = createStackNavigator();
 
@@ -35,7 +36,29 @@ function StackNavigator() {
             headerShown: false,
           }}
         />
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen
+          name="SharerPostListScreen"
+          component={PostListScreen}
+          initialParams={{ actionType: 'sharer' }}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="BorrowerPostListScreen"
+          component={PostListScreen}
+          initialParams={{ actionType: 'borrower' }}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="CreatePostScreen"
+          component={CreatePostScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="ChatListScreen"
           component={ChatListScreen}
