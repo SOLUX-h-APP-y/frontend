@@ -11,7 +11,12 @@ function BottomBar({ price }) {
           {price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
         </Text>
       </Text>
-      <NavigateButtonTheme title="채팅하기" name="" />
+      <NavigateButtonTheme
+        title="채팅하기"
+        name="ChatScreen"
+        chatRoomId={1}
+        isCompleted={false}
+      />
     </View>
   );
 }

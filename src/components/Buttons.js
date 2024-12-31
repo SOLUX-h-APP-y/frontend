@@ -51,13 +51,13 @@ function NavigateButton({ title, name }) {
   );
 }
 
-function NavigateButtonTheme({ title, name }) {
+function NavigateButtonTheme({ title, name, chatRoomId, isCompleted }) {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={styles.activeCategoryButton}
-      onPress={() => navigation.navigate(name)}>
+      onPress={() => navigation.navigate(name, { chatRoomId, isCompleted })}>
       <Text style={{ color: 'white', fontWeight: 700 }}>{title}</Text>
     </TouchableOpacity>
   );
