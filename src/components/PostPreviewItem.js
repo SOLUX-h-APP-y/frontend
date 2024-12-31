@@ -1,6 +1,8 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import colors from '../styles/Colors';
 import { useNavigation } from '@react-navigation/native';
+import locationIcon from '../assets/icons/locationIcon.png';
+import { TypeTag } from './Tags';
 
 function PostPreviewItem({ data }) {
   const navigation = useNavigation();
@@ -12,8 +14,27 @@ function PostPreviewItem({ data }) {
       <Image style={styles.image} source={data.image} />
       <View style={styles.textContainer}>
         <Text style={styles.titleText}>{data.title}</Text>
-        <Text style={styles.priceText}>{data.price}</Text>
-        <Text style={styles.locationText}>{data.location}</Text>
+        <Text style={styles.priceText}>
+          {data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+        </Text>
+
+        <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
+          <Image source={locationIcon} style={styles.locationIcon} />
+          <Text style={styles.locationText}>{data.location}</Text>
+        </View>
+        <View
+          style={{
+            width: '100%',
+            alignItems: 'flex-end',
+          }}>
+          {data.type ? (
+            data.type == 'sharer' ? (
+              <TypeTag type="sharer" />
+            ) : (
+              <TypeTag type="borrower" />
+            )
+          ) : null}
+        </View>
       </View>
     </TouchableOpacity>
   ) : (
@@ -22,7 +43,19 @@ function PostPreviewItem({ data }) {
       <Text style={styles.priceText}>
         {data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
       </Text>
-      <Text style={styles.locationText}>{data.location}</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
+          <Image source={locationIcon} style={styles.locationIcon} />
+          <Text style={styles.locationText}>{data.location}</Text>
+        </View>
+        {data.type ? (
+          data.type == 'sharer' ? (
+            <TypeTag type="sharer" />
+          ) : (
+            <TypeTag type="borrower" />
+          )
+        ) : null}
+      </View>
     </TouchableOpacity>
   );
 }
@@ -47,8 +80,10 @@ const styles = StyleSheet.create({
     //alignItems: 'center',
   },
   image: {
-    flex: 1,
-    borderRadius: 40,
+    width: 150,
+    height: 150,
+    resizeMode: 'contain',
+    borderRadius: 30,
   },
   textContainer: {
     flex: 1.3,
@@ -68,6 +103,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 500,
     color: colors.gray4,
+  },
+  locationIcon: {
+    width: 13,
+    height: 25,
+    resizeMode: 'contain',
   },
 });
 export default PostPreviewItem;

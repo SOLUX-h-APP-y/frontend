@@ -1,5 +1,5 @@
 import { StyleSheet, View, FlatList } from 'react-native';
-import PostPreviewItem from '../../components/PostPrivewItem';
+import PostPreviewItem from '../../components/PostPreviewItem';
 import CustomHeader from '../../components/CustomHeader';
 import sampleImage from '../../assets/images/sample.png';
 import { useState } from 'react';

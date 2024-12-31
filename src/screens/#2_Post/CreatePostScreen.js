@@ -46,10 +46,7 @@ function CreatePostScreen({ route }) {
               ? '빌려드려요 글 작성하기'
               : '빌려주세요 글 작성하기'}
           </Text>
-          <NavigateButton
-            title="이전 글 불러오기"
-            name="BorrowerPostListScreen"
-          />
+          <NavigateButton title="이전 글 불러오기" name="MyPostList" />
           <View style={styles.section}>
             <Text style={styles.title}>제목</Text>
             <PlainInputField placeholder="제목을 입력해주세요" />
