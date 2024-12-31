@@ -9,6 +9,8 @@ import {
 import colors from '../../styles/Colors.js';
 import { AddPhotoButton } from '../../components/Buttons.js';
 import { useState } from 'react';
+import NavigateHeader from '../../components/\bNavigateHeader.js';
+import { useNavigation } from '@react-navigation/native';
 
 const options = {
   distance: ['거리무관', '3km', '5km', '10km'],
@@ -41,11 +43,14 @@ function CreatePostScreen({ route }) {
     <View style={styles.container}>
       <ScrollView style={styles.scrollview}>
         <View style={styles.contentContainer}>
-          <Text style={styles.title}>
-            {actionType === 'sharer'
-              ? '빌려드려요 글 작성하기'
-              : '빌려주세요 글 작성하기'}
-          </Text>
+          <NavigateHeader
+            title={
+              actionType === 'sharer'
+                ? '빌려드려요 글 작성하기'
+                : '빌려주세요 글 작성하기'
+            }
+          />
+
           <NavigateButton title="이전 글 불러오기" name="MyPostList" />
           <View style={styles.section}>
             <Text style={styles.title}>제목</Text>
@@ -127,7 +132,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 50,
     backgroundColor: 'white',
   },
   scrollview: {

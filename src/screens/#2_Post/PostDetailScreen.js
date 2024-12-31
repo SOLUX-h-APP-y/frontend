@@ -5,6 +5,7 @@ import postSample from '../../assets/images/postSample.png';
 import colors from '../../styles/Colors';
 import { CategoryTag, StateTag } from '../../components/Tags';
 import BottomBar from '../../components/BottomBar';
+import NavigateHeader from '../../components/\bNavigateHeader';
 
 const data = {
   name: '보리보리',
@@ -18,40 +19,34 @@ const data = {
     '닌텐도 스위치 하루만 빌릴 수 있을까요?\n가격 협상 가능합니다.\n테스트만 해보고 금방 돌려드릴게요.. 기종상관 없습니다',
   location: '청파초등학교앞',
   price: 3500,
-  postImage: postSample,
+  postImage: null,
 };
 
 function PostDetailScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <ScrollView contentContainerStyle={styles.container}>
-        {data.postImage ? (
-          <Image
-            source={data.postImage}
-            style={{
-              width: '100%',
-              height: 400,
-              borderBottomLeftRadius: 30,
-              borderBottomRightRadius: 30,
-            }}
-          />
-        ) : null}
+        {data.postImage && (
+          <View style={{ position: 'relative' }}>
+            <Image source={data.postImage} style={styles.postImage} />
+            <View style={styles.headerOverlay}>
+              <NavigateHeader type="white" />
+            </View>
+          </View>
+        )}
         <View style={styles.contentContainer}>
+          {!data.postImage && (
+            <View style={{ paddingTop: 20 }}>
+              <NavigateHeader />
+            </View>
+          )}
           <View style={styles.profile}>
             <Image source={data.profileImage} />
             <View style={{ gap: 5, justifyContent: 'center' }}>
               <Text>{data.name}</Text>
               <View
                 style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
-                <Image
-                  source={locationIcon}
-                  style={{
-                    width: 13,
-                    height: 25,
-                    resizeMode: 'contain',
-                    //borderWidth: 1,
-                  }}
-                />
+                <Image source={locationIcon} style={styles.locationIcon} />
                 <Text style={{ color: colors.gray2 }}>{data.distance}</Text>
               </View>
             </View>
@@ -77,13 +72,7 @@ function PostDetailScreen() {
             <Text style={{ fontWeight: 700 }}>거래 희망 장소</Text>
             <Text>{data.location}</Text>
           </View>
-          <View
-            style={{
-              backgroundColor: colors.gray1,
-              borderRadius: 30,
-              width: '100%',
-              height: 100,
-            }}></View>
+          <View style={styles.mapPlaceholder}></View>
         </View>
       </ScrollView>
       <BottomBar price={data.price} />
@@ -95,9 +84,24 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
   },
-  contentContainer: {
+  postImage: {
+    width: '100%',
+    height: 400,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  headerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
     padding: 20,
+  },
+  contentContainer: {
     gap: 10,
+    padding: 20,
+    paddingTop: 0,
   },
   profile: {
     flexDirection: 'row',
@@ -106,6 +110,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 0,
     borderBottomColor: colors.gray1,
+  },
+  locationIcon: {
+    width: 13,
+    height: 25,
+    resizeMode: 'contain',
   },
   tags: {
     flexDirection: 'row',
@@ -118,6 +127,12 @@ const styles = StyleSheet.create({
   content: {
     minHeight: 150,
     justifyContent: 'center',
+  },
+  mapPlaceholder: {
+    backgroundColor: colors.gray1,
+    borderRadius: 30,
+    width: '100%',
+    height: 100,
   },
 });
 

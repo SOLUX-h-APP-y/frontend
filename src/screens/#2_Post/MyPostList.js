@@ -1,6 +1,7 @@
 import { StyleSheet, ScrollView, View } from 'react-native';
 import PostPreviewItem from '../../components/PostPreviewItem';
 import sampleImage from '../../assets/images/sample.png';
+import NavigateHeader from '../../components/\bNavigateHeader';
 
 const data = [
   {
@@ -53,6 +54,7 @@ function MyPostList() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ gap: 20, padding: 20 }}>
+        <NavigateHeader title={'내글보기'} />
         {data.map((v, i) => (
           <PostPreviewItem data={v} />
         ))}
