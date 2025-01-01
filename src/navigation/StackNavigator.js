@@ -8,6 +8,7 @@ import ChatListScreen from '../screens/Chat/ChatListScreen';
 import ChatScreen from '../screens/Chat/ChatScreen';
 import CreatePostScreen from '../screens/#2_Post/CreatePostScreen';
 import PostDetailScreen from '../screens/#2_Post/PostDetailScreen';
+import MyPostList from '../screens/#2_Post/MyPostList';
 
 const Stack = createStackNavigator();
 
@@ -63,6 +64,13 @@ function StackNavigator() {
         <Stack.Screen
           name="PostDetailScreen"
           component={PostDetailScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="MyPostList"
+          component={MyPostList}
           options={{
             headerShown: false,
           }}

@@ -32,8 +32,7 @@ function CategoryButton({ title, active, onPress, key }) {
       style={
         active ? styles.activeCategoryButton : styles.inactiveCategoryButton
       }
-      onPress={onPress}
-      id={key}>
+      onPress={onPress}>
       <Text style={active ? { color: 'white' } : null}>{title}</Text>
     </TouchableOpacity>
   );
