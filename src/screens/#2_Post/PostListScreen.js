@@ -1,6 +1,6 @@
 import { StyleSheet, View, FlatList } from 'react-native';
 import PostPreviewItem from '../../components/PostPreviewItem';
-import CustomHeader from '../../components/CustomHeader';
+import { CustomHeader } from '../../components/CustomHeader';
 import sampleImage from '../../assets/images/sample.png';
 import { useState } from 'react';
 import { CreatePostButton } from '../../components/Buttons';
@@ -95,7 +95,7 @@ function PostListScreen({ route }) {
     setOptionActive(!optionsActive);
   };
 
-  const handleSearchOptions = () => {};
+  const handleSearchOptions = () => { };
 
   return (
     <View style={styles.container}>

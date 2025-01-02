@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
-import ChatHeader from '../../components/ChatHeader';
-import PostHeader from '../../components/PostHeader';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
+import { ChatHeader, PostHeader } from '../../components/CustomHeader';
+import ToastMessage from '../../components/ToastMessage';
 
 
 const ChatScreen = ({ route, navigation }) => {
-    const { chatRoomId, isCompleted } = route.params;
+    const { chatRoomId, isCompleted, toastMessage } = route.params || {};
 
     const post = {
         id: 101,
@@ -53,6 +53,16 @@ const ChatScreen = ({ route, navigation }) => {
             }, 100);
         }
     }, [messages]);
+
+    useEffect(() => {
+        if (toastMessage) {
+            Toast.show({
+                type: 'success',
+                text1: toastMessage,
+                position: 'top',
+            });
+        }
+    }, [toastMessage]);
 
     const handleSend = () => {
         if (!inputText.trim()) return;
@@ -150,7 +160,7 @@ const ChatScreen = ({ route, navigation }) => {
             style={styles.container}
         >
             <SafeAreaView style={styles.container}>
-                <ChatHeader navigation={navigation} />
+                <ChatHeader navigation={navigation} title="채팅" />
                 <PostHeader post={post} />
                 <FlatList
                     ref={flatListRef}
@@ -162,7 +172,7 @@ const ChatScreen = ({ route, navigation }) => {
                 {isCompleted && (
                     <View style={styles.reviewContainer}>
                         <Text style={styles.reviewText}>
-                            거래가 어떠셨나요?{'\n'}
+                            거래는 어떠셨나요?{'\n'}
                             아래 버튼을 눌러 후기를 남겨주세요!
                         </Text>
                         <TouchableOpacity
@@ -184,6 +194,7 @@ const ChatScreen = ({ route, navigation }) => {
                         <Image source={require('../../assets/icons/sendIcon.png')} style={styles.sendIcon} />
                     </TouchableOpacity>
                 </View>
+                <ToastMessage />
             </SafeAreaView>
         </KeyboardAvoidingView>
     );
