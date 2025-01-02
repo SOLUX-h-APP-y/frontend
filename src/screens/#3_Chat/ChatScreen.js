@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, FlatList, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
-import { ChatHeader, PostHeader } from '../../components/CustomHeader';
+import { NavigateHeader, PostHeader } from '../../components/CustomHeaders';
 import ToastMessage from '../../components/ToastMessage';
 
 
@@ -160,7 +160,9 @@ const ChatScreen = ({ route, navigation }) => {
             style={styles.container}
         >
             <SafeAreaView style={styles.container}>
-                <ChatHeader navigation={navigation} title="채팅" />
+                <View style={{ marginLeft: 20 }}>
+                    <NavigateHeader navigation={navigation} title="채팅" />
+                </View>
                 <PostHeader post={post} />
                 <FlatList
                     ref={flatListRef}

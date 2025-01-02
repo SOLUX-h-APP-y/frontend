@@ -16,7 +16,7 @@ import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
 import { SubmitButton } from '../../components/Buttons';
 import Toast from 'react-native-toast-message';
-import { ChatHeader, PostHeader } from '../../components/CustomHeader';
+import { NavigateHeader, PostHeader } from '../../components/CustomHeaders';
 
 const ReviewScreen = ({ route, navigation }) => {
     const { chatRoomId } = route.params;
@@ -46,7 +46,9 @@ const ReviewScreen = ({ route, navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ChatHeader navigation={navigation} title="후기 작성" />
+            <View style={{ marginLeft: 20 }}>
+                <NavigateHeader navigation={navigation} title="후기 작성" />
+            </View>
             <PostHeader post={post} />
             {/* 키보드가 올라왔을 때 키보드 영역 외의 다른 영역을 터치하면 키보드가 내려감 */}
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

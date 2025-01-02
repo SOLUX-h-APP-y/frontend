@@ -1,9 +1,10 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import whiteLogoEn from '../assets/logos/whiteLogoEn.png';
-import colors from '../styles/Colors';
+import colors from '../styles/Colors.js';
 import { DrondownInputField } from './InputFields.js';
 import { useState } from 'react';
 import fontStyles from '../styles/FontStyles.js';
+import { useNavigation } from '@react-navigation/native';
 
 function CustomHeader({ isSharer }) {
   const [query, setQuery] = useState('');
@@ -22,13 +23,22 @@ function CustomHeader({ isSharer }) {
   );
 }
 
-function ChatHeader({ navigation, title }) {
+function NavigateHeader({ title, type }) {
+  const navigation = useNavigation();
   return (
-    <View style={ChatHeaderStyles.header}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={ChatHeaderStyles.backButton}>
-        <Image source={require('../assets/icons/backIcon.png')} style={ChatHeaderStyles.backIcon} />
+    <View style={NavigateHeaderstyles.header}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Image
+          source={
+            type
+              ? require('../assets/icons/whiteBackIcon.png')
+              : require('../assets/icons/backIcon.png')
+          }
+          style={NavigateHeaderstyles.backIcon}
+        />
       </TouchableOpacity>
-      <Text style={ChatHeaderStyles.headerText}>{title}</Text>
+      <Text style={NavigateHeaderstyles.headerText}>{title}</Text>
+      <View style={NavigateHeaderstyles.backIcon}></View>
     </View>
   );
 };
@@ -70,19 +80,13 @@ const styles = StyleSheet.create({
   },
 });
 
-const ChatHeaderStyles = StyleSheet.create({
+const NavigateHeaderstyles = StyleSheet.create({
   header: {
+    width: '100%',
     height: 56,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.gray2,
-    position: 'relative',
-  },
-  backButton: {
-    position: 'absolute',
-    left: 15,
-    top: 23,
+    flexDirection: 'row',
   },
   backIcon: {
     width: 8.64,
@@ -128,4 +132,4 @@ const PostHeaderStyles = StyleSheet.create({
   },
 });
 
-export { CustomHeader, ChatHeader, PostHeader };
+export { CustomHeader, NavigateHeader, PostHeader };
