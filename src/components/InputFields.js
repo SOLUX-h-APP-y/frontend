@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: colors.gray2,
     backgroundColor: 'white',
-    paddingLeft: 20,
+    paddingHorizontal: 20,
     gap: 10,
   },
   textarea: {
