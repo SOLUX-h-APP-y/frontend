@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -10,7 +10,9 @@ import {
 } from 'react-native';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
-import { ScrollView } from 'react-native-gesture-handler';
+import * as Animatable from 'react-native-animatable';
+import { runOnUI, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import PostPreviewItem from '../../components/PostPreviewItem';
 
 const MypageScreen = () => {
     const [activeTab, setActiveTab] = useState('거래중');
@@ -18,62 +20,70 @@ const MypageScreen = () => {
     const userData = {
         name: '민지',
         intro: '안녕하세요 지구를 사랑하는 민지예요',
-        level: '씨앗 단계',
-        levelProgress: 20,
+        level: '지구 단계',
+        levelProgress: 60,
         nextLevel: '새싹까지 2건 남음',
     };
 
-    const transactions = [
-        {
-            id: 1,
-            title: '원피스형 정장 빌려드려요',
-            price: 2500,
-            location: '청파동2가',
-        },
-        {
-            id: 2,
-            title: '카메라 빌려드립니다',
-            price: 8500,
-            location: '청파동2가',
-        },
-        {
-            id: 3,
-            title: '헤드폰 빌려드립니다',
-            price: 4500,
-            location: '청파동2가',
-        },
+    const posts = [
+        { id: 1, title: '원피스형 정장 빌려드려요', price: 2500, location: '청파동2가', type: 'borrower', status: '거래중' },
+        { id: 2, title: '카메라 빌려드립니다', price: 8500, location: '청파동2가', type: 'borrower', status: '사용중' },
+        { id: 3, title: '헤드폰 빌려드립니다', price: 4500, location: '청파동2가', type: 'sharer', status: '거래완료' },
+        { id: 4, title: '가방 빌려드립니다', price: 3500, location: '청파동2가', type: 'sharer', status: '거래완료' },
     ];
 
-    const renderTransaction = ({ item }) => (
-        <View style={styles.transactionCard}>
-            <View>
-                <Text style={styles.transactionTitle}>{item.title}</Text>
-                <Text style={styles.transactionLocation}>{item.location}</Text>
-            </View>
-            <View style={styles.transactionDetails}>
-                <Text style={styles.transactionPrice}>{item.price.toLocaleString()} 원</Text>
-                <TouchableOpacity style={styles.transactionButton}>
-                    <Text style={styles.transactionButtonText}>빌려주세요</Text>
+    const filteredPosts = posts.filter((post) => post.status === activeTab);
+
+    const renderPost = ({ item }) => (
+        <View style={styles.postCardContainer}>
+            {item.status === '거래완료' && (
+                <TouchableOpacity style={styles.reviewButton}>
+                    <Text style={styles.reviewButtonText}>후기 보기</Text>
                 </TouchableOpacity>
-            </View>
+            )}
+            <PostPreviewItem data={item} />
         </View>
     );
+
+    const levelImages = {
+        '씨앗 단계': require('../../assets/images/level_seed.png'),
+        '새싹 단계': require('../../assets/images/level_sprout.png'),
+        '풀 단계': require('../../assets/images/level_grass.png'),
+        '나무 단계': require('../../assets/images/level_tree.png'),
+        '숲 단계': require('../../assets/images/level_forest.png'),
+        '지구 단계': require('../../assets/images/level_earth.png'),
+    };
+
+    const levelScale = useSharedValue(1);
+
+    useEffect(() => {
+        runOnUI(() => {
+            'worklet';
+            levelScale.value = withTiming(1.2, { duration: 500 }, () => {
+                levelScale.value = withTiming(1, { duration: 500 });
+            });
+        })();
+    }, [userData.level]);
+
+    const animatedStyle = useAnimatedStyle(() => {
+        'worklet';
+        return {
+            transform: [{ scale: levelScale.value }],
+        };
+    });
 
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
-                data={transactions}
-                renderItem={renderTransaction}
+                data={filteredPosts}
+                renderItem={renderPost}
                 keyExtractor={(item) => item.id.toString()}
                 style={styles.transactionList}
                 ListHeaderComponent={
                     <>
-                        {/* ProfileHeader */}
                         <View style={styles.header}>
                             <Image
-                                source={{
-                                    uri: 'https://via.placeholder.com/50', // 프로필 이미지 URL
-                                }}
+                                source={{ uri: 'https://via.placeholder.com/50' }}
                                 style={styles.profileImage}
                             />
                             <View style={styles.userInfo}>
@@ -94,27 +104,29 @@ const MypageScreen = () => {
                             </View>
                             <TouchableOpacity>
                                 <Image
-                                    source={require('../../assets/icons/bellIcon.png')} // 알림 아이콘
+                                    source={require('../../assets/icons/bellIcon.png')}
                                     style={styles.notificationIcon}
                                 />
                             </TouchableOpacity>
                         </View>
 
-                        {/* Level Progress */}
                         <View style={styles.levelContainer}>
-                            <Image
-                                source={require('../../assets/images/level_1.png')} // 씨앗 아이콘
-                                style={styles.levelIcon}
+                            <Animatable.Image
+                                source={levelImages[userData.level]}
+                                style={[styles.levelIcon, animatedStyle]}
+                                duration={1000}
+                                animation="zoomIn"
                             />
                             <Text style={styles.levelText}>{userData.nextLevel}</Text>
                             <View style={styles.levelProgressContainer}>
-                                {/* Background Bar */}
                                 <View style={styles.levelProgress}>
-                                    {/* Progress Bar */}
-                                    <View style={[styles.progressBar, { width: `${userData.levelProgress}%` }]} />
+                                    <View
+                                        style={[
+                                            styles.progressBar,
+                                            { width: `${userData.levelProgress}%` },
+                                        ]}
+                                    />
                                 </View>
-
-                                {/* Dots */}
                                 {['1%', '20%', '40%', '60%', '80%', '99%'].map((position, index) => {
                                     const isCovered = parseInt(position) <= userData.levelProgress;
                                     return (
@@ -127,13 +139,17 @@ const MypageScreen = () => {
                                         />
                                     );
                                 })}
-
-                                {/* Progress Indicator */}
-                                <View style={[styles.progressIndicator, { left: `${userData.levelProgress}%` }]}>
-                                    <Text style={styles.progressIndicatorText}>{userData.levelProgress}</Text>
+                                <View
+                                    style={[
+                                        styles.progressIndicator,
+                                        { left: `${userData.levelProgress}%` },
+                                    ]}
+                                >
+                                    <Text style={styles.progressIndicatorText}>
+                                        {userData.levelProgress}%
+                                    </Text>
                                 </View>
                             </View>
-
                             <View style={styles.levelLabels}>
                                 {['씨앗', '새싹', '풀', '나무', '숲', '지구'].map((label, index) => (
                                     <Text key={index} style={styles.levelLabel}>
@@ -143,7 +159,6 @@ const MypageScreen = () => {
                             </View>
                         </View>
 
-                        {/* Tabs */}
                         <View style={styles.tabsContainer}>
                             <Text style={styles.tabsTitle}>내 글 보기</Text>
                         </View>
@@ -175,7 +190,6 @@ const MypageScreen = () => {
             />
         </SafeAreaView>
     );
-
 };
 
 const styles = StyleSheet.create({
@@ -228,8 +242,8 @@ const styles = StyleSheet.create({
     notificationIcon: {
         width: 16,
         height: 19.5,
-        marginRight: 20,
-        marginBottom: 30,
+        marginRight: 10,
+        marginBottom: 50,
     },
     levelContainer: {
         alignItems: 'center',
@@ -237,8 +251,8 @@ const styles = StyleSheet.create({
         height: 400,
     },
     levelIcon: {
-        width: 54,
-        height: 54,
+        width: 100,
+        height: 100,
         marginBottom: 25,
     },
     levelText: {
@@ -342,39 +356,26 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
-    transactionCard: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: 'white',
-        borderRadius: 12,
-        padding: 16,
-        marginBottom: 16,
-        borderWidth: 1,
-        borderColor: colors.gray2,
+    list: {
+        padding: 10,
     },
-    transactionTitle: {
-        ...fontStyles.blackBold16,
+    postCardContainer: {
+        marginBottom: 20,
+        position: 'relative', // "후기 보기" 버튼 위치를 조정하기 위해 사용
     },
-    transactionLocation: {
-        ...fontStyles.gray3Medium12,
-    },
-    transactionDetails: {
-        alignItems: 'flex-end',
-    },
-    transactionPrice: {
-        ...fontStyles.blackBold16,
-    },
-    transactionButton: {
+    reviewButton: {
+        position: 'absolute',
+        top: 25, // "PostPreviewItem" 위에 배치
+        right: 20,
         backgroundColor: colors.themeColor,
+        paddingVertical: 8,
+        paddingHorizontal: 25,
         borderRadius: 20,
-        paddingVertical: 4,
-        paddingHorizontal: 12,
-        marginTop: 8,
+        zIndex: 10, // 항상 위에 표시되도록 설정
     },
-    transactionButtonText: {
-        ...fontStyles.whiteMedium14,
+    reviewButtonText: {
+        ...fontStyles.whiteSemiBold14,
     },
 });
 
-export default MypageScreen;
+export default MypageScreen; 
