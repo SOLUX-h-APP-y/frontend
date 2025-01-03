@@ -9,7 +9,7 @@ import {
 import colors from '../../styles/Colors.js';
 import { AddPhotoButton } from '../../components/Buttons.js';
 import { useState } from 'react';
-import NavigateHeader from '../../components/\bNavigateHeader.js';
+import { NavigateHeader } from '../../components/CustomHeaders.js';
 import { useNavigation } from '@react-navigation/native';
 
 const options = {

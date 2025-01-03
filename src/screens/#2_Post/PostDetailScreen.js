@@ -5,7 +5,7 @@ import postSample from '../../assets/images/postSample.png';
 import colors from '../../styles/Colors';
 import { CategoryTag, StateTag } from '../../components/Tags';
 import BottomBar from '../../components/BottomBar';
-import NavigateHeader from '../../components/\bNavigateHeader';
+import { NavigateHeader } from '../../components/CustomHeaders';
 
 const data = {
   name: '보리보리',

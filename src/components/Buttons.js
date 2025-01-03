@@ -2,6 +2,7 @@ import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import colors from '../styles/Colors';
 import { useNavigation } from '@react-navigation/native';
 import plusIcon from '../assets/icons/plusIcon.png';
+import fontStyles from '../styles/FontStyles';
 
 function BottomButton({ title, active, onPress }) {
   return (
@@ -81,6 +82,14 @@ function FreeButton({ active, onPress }) {
     </TouchableOpacity>
   );
 }
+
+function SubmitButton({ onPress, title }) {
+  return (
+    <TouchableOpacity style={styles.submitButton} onPress={onPress}>
+      <Text style={styles.submitButtonText}>{title}</Text>
+    </TouchableOpacity>
+  );
+};
 
 //active, inactive backgroundColor만 달라서 하나로 통일할지 고민
 const styles = StyleSheet.create({
@@ -176,6 +185,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  submitButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
+    paddingVertical: 12,
+    borderRadius: 25,
+    backgroundColor: colors.themeColor,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    ...fontStyles.whiteSemiBold14,
+  },
 });
 
 export {
@@ -186,4 +208,5 @@ export {
   AddPhotoButton,
   FreeButton,
   NavigateButtonTheme,
+  SubmitButton,
 };

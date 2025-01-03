@@ -1,7 +1,7 @@
 import { StyleSheet, ScrollView, View } from 'react-native';
 import PostPreviewItem from '../../components/PostPreviewItem';
 import sampleImage from '../../assets/images/sample.png';
-import NavigateHeader from '../../components/\bNavigateHeader';
+import { NavigateHeader } from '../../components/CustomHeaders';
 
 const data = [
   {

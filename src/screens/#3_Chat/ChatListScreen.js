@@ -114,7 +114,7 @@ const ChatListScreen = ({ navigation }) => {
         <ChatItem
             item={item}
             formatDate={formatDate}
-            onPress={() => navigation.navigate('ChatScreen', { chatRoomId: item.id, post_id: item.post_id, isCompleted: false })}
+            onPress={() => navigation.navigate('ChatScreen', { chatRoomId: item.id, post_id: item.post_id, isCompleted: true })}
         />
     );
 

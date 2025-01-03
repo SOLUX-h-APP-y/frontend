@@ -4,11 +4,13 @@ import OnboardingScreen from '../screens/#1_Login/OnboardingScreen';
 import PostListScreen from '../screens/#2_Post/PostListScreen';
 import SetProfileScreen from '../screens/#1_Login/SetProfileScreen';
 import SplashScreen from '../screens/#1_Login/SplashScreen';
-import ChatListScreen from '../screens/Chat/ChatListScreen';
-import ChatScreen from '../screens/Chat/ChatScreen';
+import ChatListScreen from '../screens/#3_Chat/ChatListScreen';
+import ChatScreen from '../screens/#3_Chat/ChatScreen';
 import CreatePostScreen from '../screens/#2_Post/CreatePostScreen';
 import PostDetailScreen from '../screens/#2_Post/PostDetailScreen';
 import MyPostList from '../screens/#2_Post/MyPostList';
+import ToastMessage from '../components/ToastMessage';
+import ReviewScreen from '../screens/#3_Chat/ReviewScreen';
 
 const Stack = createStackNavigator();
 
@@ -89,7 +91,15 @@ function StackNavigator() {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="ReviewScreen"
+          component={ReviewScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack.Navigator>
+      <ToastMessage />
     </NavigationContainer>
   );
 }
