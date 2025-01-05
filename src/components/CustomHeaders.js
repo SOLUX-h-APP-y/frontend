@@ -1,5 +1,4 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import whiteLogoEn from '../assets/logos/whiteLogoEn.png';
 import colors from '../styles/Colors.js';
 import { DrondownInputField } from './InputFields.js';
 import { useState } from 'react';
