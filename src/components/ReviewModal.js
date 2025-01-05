@@ -5,8 +5,8 @@ import {
     StyleSheet,
     Modal,
     TouchableOpacity,
+    Image
 } from 'react-native';
-import { Image } from 'react-native-animatable';
 import fontStyles from '../styles/FontStyles';
 import colors from '../styles/Colors';
 
