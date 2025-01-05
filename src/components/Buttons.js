@@ -212,7 +212,7 @@ const ReviewButtonstyles = StyleSheet.create({
   reviewButton: {
     backgroundColor: colors.themeColor,
     paddingVertical: 8,
-    paddingHorizontal: 25,
+    paddingHorizontal: 16,
     borderRadius: 20,
   },
   reviewButtonText: {
