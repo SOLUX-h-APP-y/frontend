@@ -21,7 +21,7 @@ const MypageScreen = () => {
     const [userData, setUserData] = useState({
         name: '민지',
         intro: '안녕하세요 지구를 사랑하는 민지예요',
-        rental_count: 80, // 거래 완료 횟수
+        rental_count: 100, // 거래 완료 횟수
         level: '씨앗', // 초기 레벨
     });
 

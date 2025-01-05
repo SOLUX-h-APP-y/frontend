@@ -83,7 +83,7 @@ const LevelProgress = ({ rentalCount, onLevelChange }) => {
                 source={levelImages[level]}
                 style={[styles.levelIcon, animatedStyle]}
                 duration={2000}
-                animation="tada"
+                animation={[0, 10, 30, 60, 80, 100].includes(rentalCount) ? "tada" : undefined}
             />
             {level !== '지구' ? (
                 <Text style={styles.nextlevelText}>{`${nextLevel}까지 ${remaining}건 남음`}</Text>
@@ -124,7 +124,9 @@ const LevelProgress = ({ rentalCount, onLevelChange }) => {
             </View>
             <View style={styles.levelLabels}>
                 {['씨앗', '새싹', '풀', '나무', '숲', '지구'].map((label, index) => (
-                    <Text key={index} style={styles.levelLabel}>
+                    <Text key={index} style={[styles.levelLabel, label == level ? styles.activeLevelLabel : styles.inactiveLevelLabel,
+                    ]}
+                    >
                         {label}
                     </Text>
                 ))}
@@ -208,6 +210,12 @@ const styles = StyleSheet.create({
     },
     levelLabel: {
         ...fontStyles.lightBlackMedium14,
+    },
+    activeLevelLabel: {
+        ...fontStyles.lightBlackMedium14,
+    },
+    inactiveLevelLabel: {
+        ...fontStyles.gray3Medium14,
     },
 });
 
