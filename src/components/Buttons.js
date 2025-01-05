@@ -210,14 +210,10 @@ const styles = StyleSheet.create({
 
 const ReviewButtonstyles = StyleSheet.create({
   reviewButton: {
-    position: 'absolute',
-    top: 25, // 필요에 따라 위치 조정 가능
-    right: 20,
     backgroundColor: colors.themeColor,
     paddingVertical: 8,
     paddingHorizontal: 25,
     borderRadius: 20,
-    zIndex: 10, // 항상 위에 표시되도록 설정
   },
   reviewButtonText: {
     ...fontStyles.whiteSemiBold14,

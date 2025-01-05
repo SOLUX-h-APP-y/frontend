@@ -3,6 +3,8 @@ import colors from '../styles/Colors';
 import { useNavigation } from '@react-navigation/native';
 import locationIcon from '../assets/icons/locationIcon.png';
 import { TypeTag } from './Tags';
+import { ReviewButton } from './Buttons';
+
 
 function PostPreviewItem({ data }) {
   const navigation = useNavigation();
@@ -13,6 +15,13 @@ function PostPreviewItem({ data }) {
       onPress={() => navigation.navigate('PostDetailScreen')}>
       <Image style={styles.image} source={data.image} />
       <View style={styles.textContainer}>
+        {/* Title and ReviewButton */}
+        <View style={styles.titleContainer}>
+          <Text style={styles.titleText}>{data.title}</Text>
+          {data.status === '거래완료' && (
+            <ReviewButton onPress={() => console.log(`후기 보기 for item ${data.id}`)} />
+          )}
+        </View>
         <Text style={styles.titleText}>{data.title}</Text>
         <Text style={styles.priceText}>
           {data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -22,24 +31,22 @@ function PostPreviewItem({ data }) {
           <Image source={locationIcon} style={styles.locationIcon} />
           <Text style={styles.locationText}>{data.location}</Text>
         </View>
-        <View
-          style={{
-            width: '100%',
-            alignItems: 'flex-end',
-          }}>
-          {data.type ? (
-            data.type == 'sharer' ? (
-              <TypeTag type="sharer" />
-            ) : (
-              <TypeTag type="borrower" />
-            )
-          ) : null}
-        </View>
+        {data.type && (
+          <View style={{ marginTop: 10 }}>
+            <TypeTag type={data.type === 'sharer' ? 'sharer' : 'borrower'} />
+          </View>
+        )}
       </View>
-    </TouchableOpacity>
+    </TouchableOpacity >
   ) : (
     <TouchableOpacity style={styles.container}>
-      <Text style={styles.titleText}>{data.title}</Text>
+      {/* Title and ReviewButton */}
+      <View style={styles.titleContainer}>
+        <Text style={styles.titleText}>{data.title}</Text>
+        {data.status === '거래완료' && (
+          <ReviewButton onPress={() => console.log(`리뷰 보기 for ${data.title}`)} />
+        )}
+      </View>
       <Text style={styles.priceText}>
         {data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
       </Text>
@@ -48,27 +55,26 @@ function PostPreviewItem({ data }) {
           <Image source={locationIcon} style={styles.locationIcon} />
           <Text style={styles.locationText}>{data.location}</Text>
         </View>
-        {data.type ? (
-          data.type == 'sharer' ? (
-            <TypeTag type="sharer" />
-          ) : (
-            <TypeTag type="borrower" />
-          )
-        ) : null}
+
+        {/* TypeTag */}
+        {data.type && (
+          <View style={{ marginTop: 10 }}>
+            <TypeTag type={data.type === 'sharer' ? 'sharer' : 'borrower'} />
+          </View>
+        )}
       </View>
-    </TouchableOpacity>
+    </TouchableOpacity >
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    gap: 5,
     padding: 20,
     borderWidth: 1,
     borderColor: colors.gray2,
     borderRadius: 40,
-    // overflow: 'hidden',
+    overflow: 'hidden',
   },
   imageContainer: {
     width: '100%',
@@ -77,7 +83,7 @@ const styles = StyleSheet.create({
     borderColor: colors.gray2,
     borderRadius: 40,
     flexDirection: 'row',
-    //alignItems: 'center',
+    alignItems: 'center',
   },
   image: {
     width: 150,
@@ -87,8 +93,13 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1.3,
-    gap: 5,
-    padding: 10,
+    marginLeft: 20,
+    justifyContent: 'space-between',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center', // 수직 정렬
   },
   titleText: {
     fontSize: 16,

@@ -46,9 +46,6 @@ const MypageScreen = () => {
 
     const renderPost = ({ item }) => (
         <View style={styles.postCardContainer}>
-            {item.status === '거래완료' && (
-                <ReviewButton onPress={() => console.log(`후기 보기 for item ${item.id}`)} />
-            )}
             <PostPreviewItem data={item} />
         </View>
     );
