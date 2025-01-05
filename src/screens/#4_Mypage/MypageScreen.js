@@ -10,15 +10,34 @@ import fontStyles from '../../styles/FontStyles';
 import PostPreviewItem from '../../components/PostPreviewItem';
 import UserProfile from '../../components/UserProfile';
 import Tabs from '../../components/Tabs';
-import { ReviewButton } from '../../components/Buttons';
 import LevelProgress from '../../components/LevelProgress';
+import ReviewModal from '../../components/ReviewModal';
+
+const reviewData = [
+    {
+        reviewer_id: 1,
+        reviewee_id: 2,
+        rate: 5,
+        content: '좋은 상품 감사합니다',
+    },
+    {
+        reviewer_id: 2,
+        reviewee_id: 1,
+        rate: 3,
+        content: '상품이 조금 더럽네요',
+    },
+];
 
 const MypageScreen = () => {
     const [activeTab, setActiveTab] = useState('거래중');
     const [isNotificationOn, setIsNotificationOn] = useState(true);
     const tabs = ['거래중', '사용중', '거래완료'];
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedReviews, setSelectedReviews] = useState([]); // 선택된 유저의 리뷰 데이터
+
     const [userData, setUserData] = useState({
+        id: 1,
         name: '민지',
         intro: '안녕하세요 지구를 사랑하는 민지예요',
         rental_count: 100, // 거래 완료 횟수
@@ -46,9 +65,18 @@ const MypageScreen = () => {
 
     const renderPost = ({ item }) => (
         <View style={styles.postCardContainer}>
-            <PostPreviewItem data={item} />
+            <PostPreviewItem data={item} handleShowReviews={handleShowReviews} />
         </View>
     );
+
+    const handleShowReviews = (reviewee_id) => {
+        // 선택된 사용자의 리뷰 필터링
+        const filteredReviews = reviewData.filter(
+            (review) => review.reviewee_id === reviewee_id
+        );
+        setSelectedReviews(filteredReviews);
+        setModalVisible(true);
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -78,6 +106,13 @@ const MypageScreen = () => {
                         />
                     </>
                 }
+            />
+
+            {/* 모달 */}
+            <ReviewModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                reviews={selectedReviews}
             />
         </SafeAreaView>
     );

@@ -6,7 +6,7 @@ import { TypeTag } from './Tags';
 import { ReviewButton } from './Buttons';
 import fontStyles from '../styles/FontStyles';
 
-function PostPreviewItem({ data }) {
+function PostPreviewItem({ data, handleShowReviews }) {
   const navigation = useNavigation();
 
   return data.image ? (
@@ -29,7 +29,7 @@ function PostPreviewItem({ data }) {
       <View style={styles.actionContainer}>
         <View style={styles.buttonWrapper}>
           {data.status === '거래완료' && (
-            <ReviewButton onPress={() => console.log(`후기 보기 for item ${data.id}`)} />
+            <ReviewButton onPress={() => handleShowReviews(1)} /> // 리뷰를 볼 사용자의 id
           )}
         </View>
         {data.type && (
@@ -56,7 +56,7 @@ function PostPreviewItem({ data }) {
         <View style={styles.buttonWrapper}>
           {/* 후기 버튼과 TypeTag */}
           {data.status === '거래완료' && (
-            <ReviewButton onPress={() => console.log(`리뷰 보기 for ${data.title}`)} />
+            <ReviewButton onPress={() => handleShowReviews(1)} />
           )}
         </View>
         {data.type && (
