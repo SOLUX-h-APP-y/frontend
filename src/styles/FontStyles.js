@@ -163,13 +163,6 @@ export const fontStyles = StyleSheet.create({
     letterSpacing: -0.5,
     color: colors.themeColor,
   },
-  Medium14: {
-    fontFamily: 'Pretendard-Medium',
-    fontSize: 14,
-    fontWeight: '500',
-    lineHeight: 18.2,
-    letterSpacing: -0.5,
-  }
 });
 
 export default fontStyles;
