@@ -13,7 +13,7 @@ function ToastMessage() {
         ),
     };
 
-    return <Toast config={toastConfig} position="top" topOffset={33} visibilityTime={1000} />;
+    return <Toast config={toastConfig} position="top" topOffset={33} visibilityTime={2000} />;
 };
 
 const styles = StyleSheet.create({

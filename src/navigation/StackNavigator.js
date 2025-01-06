@@ -12,6 +12,7 @@ import MyPostList from '../screens/#2_Post/MyPostList';
 import ToastMessage from '../components/ToastMessage';
 import ReviewScreen from '../screens/#3_Chat/ReviewScreen';
 import MypageScreen from '../screens/#4_Mypage/MypageScreen';
+import EditMypageScreen from '../screens/#4_Mypage/EditMypageScreen';
 
 const Stack = createStackNavigator();
 
@@ -103,6 +104,13 @@ function StackNavigator() {
         <Stack.Screen
           name="MypageScreen"
           component={MypageScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="EditMypageScreen"
+          component={EditMypageScreen}
           options={{
             headerShown: false,
           }}
