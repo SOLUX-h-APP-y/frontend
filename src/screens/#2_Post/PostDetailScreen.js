@@ -34,12 +34,12 @@ function PostDetailScreen() {
             </View>
           </View>
         )}
+        {!data.postImage && (
+          <View style={{ paddingTop: 20, marginLeft: 20 }}>
+            <NavigateHeader />
+          </View>
+        )}
         <View style={styles.contentContainer}>
-          {!data.postImage && (
-            <View style={{ paddingTop: 20 }}>
-              <NavigateHeader />
-            </View>
-          )}
           <View style={styles.profile}>
             <Image source={data.profileImage} />
             <View style={{ gap: 5, justifyContent: 'center' }}>
@@ -81,9 +81,7 @@ function PostDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-  },
+  container: {},
   postImage: {
     width: '100%',
     height: 400,
