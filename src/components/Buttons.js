@@ -91,6 +91,14 @@ function SubmitButton({ onPress, title }) {
   );
 };
 
+function ReviewButton({ onPress }) {
+  return (
+    <TouchableOpacity style={ReviewButtonstyles.reviewButton} onPress={onPress}>
+      <Text style={ReviewButtonstyles.reviewButtonText}>후기 보기</Text>
+    </TouchableOpacity>
+  );
+};
+
 //active, inactive backgroundColor만 달라서 하나로 통일할지 고민
 const styles = StyleSheet.create({
   activeBottomButton: {
@@ -200,6 +208,18 @@ const styles = StyleSheet.create({
   },
 });
 
+const ReviewButtonstyles = StyleSheet.create({
+  reviewButton: {
+    backgroundColor: colors.themeColor,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  },
+  reviewButtonText: {
+    ...fontStyles.whiteSemiBold14,
+  },
+});
+
 export {
   BottomButton,
   CreatePostButton,
@@ -209,4 +229,5 @@ export {
   FreeButton,
   NavigateButtonTheme,
   SubmitButton,
+  ReviewButton,
 };

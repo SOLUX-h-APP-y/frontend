@@ -11,6 +11,7 @@ import PostDetailScreen from '../screens/#2_Post/PostDetailScreen';
 import MyPostList from '../screens/#2_Post/MyPostList';
 import ToastMessage from '../components/ToastMessage';
 import ReviewScreen from '../screens/#3_Chat/ReviewScreen';
+import MypageScreen from '../screens/#4_Mypage/MypageScreen';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,7 @@ function StackNavigator() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="SplashScreen">
         {/* <Stack.Navigator initialRouteName="ChatListScreen"> */}
+        {/* <Stack.Navigator initialRouteName="MypageScreen"> */}
         <Stack.Screen
           name="SplashScreen"
           component={SplashScreen}
@@ -94,6 +96,13 @@ function StackNavigator() {
         <Stack.Screen
           name="ReviewScreen"
           component={ReviewScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="MypageScreen"
+          component={MypageScreen}
           options={{
             headerShown: false,
           }}

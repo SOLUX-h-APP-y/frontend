@@ -35,6 +35,14 @@ export const fontStyles = StyleSheet.create({
     letterSpacing: -0.5,
     color: colors.lightBlack,
   },
+  lightBlackSemiBold16: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 20.8,
+    letterSpacing: -0.5,
+    color: colors.lightBlack,
+  },
   lightBlackSemiBold14: {
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 14,
@@ -64,6 +72,14 @@ export const fontStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     lineHeight: 26,
+    letterSpacing: -0.5,
+    color: 'black',
+  },
+  blackSemiBold24: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 24,
+    fontWeight: '700',
+    lineHeight: 33.6,
     letterSpacing: -0.5,
     color: 'black',
   },
@@ -115,6 +131,14 @@ export const fontStyles = StyleSheet.create({
     letterSpacing: -0.5,
     color: colors.gray4,
   },
+  gray4SemiBold16: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 20.8,
+    letterSpacing: -0.5,
+    color: colors.gray4,
+  },
   gray2Medium14: {
     fontFamily: 'Pretendard-Medium',
     fontSize: 14,
@@ -122,6 +146,22 @@ export const fontStyles = StyleSheet.create({
     lineHeight: 18.2,
     letterSpacing: -0.5,
     color: colors.gray2,
+  },
+  themeMedium14: {
+    fontFamily: 'Pretendard-Medium',
+    fontSize: 14,
+    fontWeight: '500',
+    lineHeight: 18.2,
+    letterSpacing: -0.5,
+    color: colors.themeColor,
+  },
+  themeSemibold20: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 20,
+    fontWeight: '700',
+    lineHeight: 26,
+    letterSpacing: -0.5,
+    color: colors.themeColor,
   },
 });
 
