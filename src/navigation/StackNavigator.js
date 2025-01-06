@@ -19,10 +19,9 @@ const Stack = createStackNavigator();
 function StackNavigator() {
   return (
     <NavigationContainer>
-      {/* <Stack.Navigator initialRouteName="SplashScreen"> */}
-      {/* <Stack.Navigator initialRouteName="ChatListScreen"> */}
-      {/* <Stack.Navigator initialRouteName="MypageScreen"> */}
-      <Stack.Navigator initialRouteName="EditMypageScreen">
+      <Stack.Navigator initialRouteName="SplashScreen">
+        {/* <Stack.Navigator initialRouteName="ChatListScreen"> */}
+        {/* <Stack.Navigator initialRouteName="MypageScreen"> */}
         <Stack.Screen
           name="SplashScreen"
           component={SplashScreen}
