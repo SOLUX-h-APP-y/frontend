@@ -19,7 +19,7 @@ function SetProfileScreen() {
 
   const nextStep = () => {
     console.log(profile);
-    step == 1 ? setStep(2) : navigation.navigate('SharerPostListScreen');
+    step == 1 ? setStep(2) : navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
     //navigate 하기 전에 DB에 user 정보 보내기
   };
 
@@ -81,8 +81,8 @@ function SetProfileScreen() {
               ? true
               : false
             : profile.location.length > 0
-            ? true
-            : false
+              ? true
+              : false
         }
         onPress={nextStep}
       />
