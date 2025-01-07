@@ -30,6 +30,7 @@ const BottomTabNavigator = () => {
                         shadowOffset: { width: 5, height: -5 },
                         shadowOpacity: 0.1,
                         shadowRadius: 5,
+                        borderTopWidth: 0,
                     },
                     tabBarItemStyle: {
                         paddingTop: 8,
