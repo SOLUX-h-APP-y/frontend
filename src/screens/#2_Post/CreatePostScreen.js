@@ -116,7 +116,7 @@ function CreatePostScreen({ route }) {
 
           <View style={styles.leftSection}>
             <Text style={styles.title}>거래희망장소</Text>
-            <NavigateButton title="위치입력하기" name="MyPostList" />
+            <NavigateButton title="위치입력하기" name="SetLocationScreen" />
           </View>
         </View>
         <BottomButton title="업로드하기" active={false} />
