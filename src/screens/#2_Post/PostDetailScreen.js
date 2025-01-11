@@ -33,10 +33,11 @@ const data = {
 };
 
 function PostDetailScreen() {
-  const [stateActive, setStateActive] = useState();
+  const [stateActive, setStateActive] = useState(false);
 
   const handleStateActive = () => {
     setStateActive(!stateActive);
+    console.log(stateActive);
   };
 
   return (
@@ -81,7 +82,9 @@ function PostDetailScreen() {
                   <Text style={{ color: colors.gray2 }}>{data.distance}</Text>
                 </View>
               </View>
-              <TouchableOpacity style={{ justifyContent: 'center' }}>
+              <TouchableOpacity
+                style={{ justifyContent: 'center' }}
+                onPress={handleStateActive}>
                 <Image source={settingIcon} />
               </TouchableOpacity>
             </View>

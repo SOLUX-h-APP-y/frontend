@@ -1,18 +1,44 @@
-import { StyleSheet, TouchableOpacity, View, Text, Modal } from 'react-native';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+  Modal,
+  Image,
+} from 'react-native';
+import closeIcon from '../assets/icons/closeIcon.png';
 import colors from '../styles/Colors';
-import { CategoryButton } from './Buttons';
-import { useState } from 'react';
 
 function StateSelector({ handleStateActive, visible }) {
   return (
-    <Modal animationType="slide" transparent={true} visible={visible}>
+    <Modal transparent={true} visible={visible}>
       <TouchableOpacity
         style={styles.overlay}
         activeOpacity={1}
         onPress={handleStateActive} // 배경을 터치하면 닫힘
       />
       <View style={styles.container}>
-        <Text style={styles.text}>필터 선택</Text>
+        <TouchableOpacity style={styles.closeIcon} onPress={handleStateActive}>
+          <Image source={closeIcon} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.textContainer}
+          onPress={handleStateActive}>
+          <Text>거래중으로 표시</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.textContainer}
+          onPress={handleStateActive}>
+          <Text>사용중으로 표시</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.textContainer}
+          onPress={handleStateActive}>
+          <Text>거래완료로 표시</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ padding: 10 }} onPress={handleStateActive}>
+          <Text style={styles.deleteText}>글 삭제하기</Text>
+        </TouchableOpacity>
       </View>
     </Modal>
   );
@@ -27,28 +53,24 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 150,
-    right: 50,
-    width: 100,
-    gap: 30,
+    right: 30,
+    width: 200,
     backgroundColor: 'white',
-    borderWidth: 2,
-    borderColor: colors.gray1,
+    borderRadius: 20,
     zIndex: 2,
-    alignItems: 'center',
     padding: 20,
   },
-  text: {
-    fontWeight: 700,
-    fontSize: 16,
-  },
-  section: {
+  closeIcon: {
     width: '100%',
-    gap: 10,
+    alignItems: 'flex-end',
   },
-  buttons: {
-    flexDirection: 'row',
-    gap: 8,
-    flexWrap: 'wrap',
+  textContainer: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.gray4,
+  },
+  deleteText: {
+    color: colors.error,
   },
 });
 
