@@ -6,6 +6,7 @@ const colors = {
   gray4: '#677898',
   lightBlack: '#1F242E',
   vPale: '#E4CCFF',
+  error: '#FF4D00',
 };
 
 export default colors;
