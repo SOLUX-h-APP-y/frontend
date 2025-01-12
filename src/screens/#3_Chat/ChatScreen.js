@@ -160,7 +160,7 @@ const ChatScreen = ({ route, navigation }) => {
             style={styles.container}
         >
             <SafeAreaView style={styles.container}>
-                <View style={{ marginLeft: 20 }}>
+                <View style={{ paddingHorizontal: 20 }}>
                     <NavigateHeader navigation={navigation} title="채팅" />
                 </View>
                 <PostHeader post={post} />

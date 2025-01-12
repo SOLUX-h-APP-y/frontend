@@ -1,4 +1,11 @@
-import { Image, StyleSheet, Text, View, ScrollView } from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import profileSample from '../../assets/images/profileSample.png';
 import locationIcon from '../../assets/icons/locationIcon.png';
 import postSample from '../../assets/images/postSample.png';
@@ -6,6 +13,9 @@ import colors from '../../styles/Colors';
 import { CategoryTag, StateTag } from '../../components/Tags';
 import BottomBar from '../../components/BottomBar';
 import { NavigateHeader } from '../../components/CustomHeaders';
+import settingIcon from '../../assets/icons/settingIcon.png';
+import { useState } from 'react';
+import StateSelector from '../../components/StateSelector';
 
 const data = {
   name: '보리보리',
@@ -23,6 +33,13 @@ const data = {
 };
 
 function PostDetailScreen() {
+  const [stateActive, setStateActive] = useState(false);
+
+  const handleStateActive = () => {
+    setStateActive(!stateActive);
+    console.log(stateActive);
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -42,13 +59,34 @@ function PostDetailScreen() {
         <View style={styles.contentContainer}>
           <View style={styles.profile}>
             <Image source={data.profileImage} />
-            <View style={{ gap: 5, justifyContent: 'center' }}>
-              <Text>{data.name}</Text>
+            <View
+              style={{
+                flex: 1,
+
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+              }}>
               <View
-                style={{ flexDirection: 'row', gap: 5, alignItems: 'center' }}>
-                <Image source={locationIcon} style={styles.locationIcon} />
-                <Text style={{ color: colors.gray2 }}>{data.distance}</Text>
+                style={{
+                  gap: 5,
+                  justifyContent: 'center',
+                }}>
+                <Text>{data.name}</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    gap: 5,
+                    alignItems: 'center',
+                  }}>
+                  <Image source={locationIcon} style={styles.locationIcon} />
+                  <Text style={{ color: colors.gray2 }}>{data.distance}</Text>
+                </View>
               </View>
+              <TouchableOpacity
+                style={{ justifyContent: 'center' }}
+                onPress={handleStateActive}>
+                <Image source={settingIcon} />
+              </TouchableOpacity>
             </View>
           </View>
           <View style={styles.tags}>
@@ -76,6 +114,11 @@ function PostDetailScreen() {
         </View>
       </ScrollView>
       <BottomBar price={data.price} />
+
+      <StateSelector
+        handleStateActive={handleStateActive}
+        visible={stateActive}
+      />
     </View>
   );
 }

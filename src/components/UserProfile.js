@@ -3,10 +3,13 @@ import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import colors from '../styles/Colors';
 import fontStyles from '../styles/FontStyles';
 import { Image } from 'react-native-animatable';
+import { useNavigation } from '@react-navigation/native';
 
 function UserProfile({ userData, isNotificationOn, setIsNotificationOn, isEditable = true }) {
     // isEditable이 true(기본값)일 때만 수정 가능한 버튼과 알람 설정 버튼이 보이도록 설정 (사용자가 나일 떄)
     // isEditable이 false일 때는 사용자가 다른 사용자의 프로필을 볼 때
+    const navigation = useNavigation();
+
     return (
         <View style={styles.header}>
             <Image
@@ -15,7 +18,7 @@ function UserProfile({ userData, isNotificationOn, setIsNotificationOn, isEditab
             />
             <View style={[styles.userInfo, !isEditable && styles.userInfoCentered]}>
                 {isEditable && (
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('EditMypageScreen')}>
                         <View style={styles.editContainer}>
                             <Text style={styles.editInfo}>내 정보 수정하기</Text>
                             <Image

@@ -113,13 +113,10 @@ function CreatePostScreen({ route }) {
               ))}
             </View>
           </View>
-          <View style={styles.section}>
-            <Text style={styles.title}>공고기간</Text>
-            <PlainInputField placeholder="공고기간을 입력하세요" />
-          </View>
-          <View style={styles.section}>
+
+          <View style={styles.leftSection}>
             <Text style={styles.title}>거래희망장소</Text>
-            <PlainInputField placeholder="거래희망장소를 입력하세요" />
+            <NavigateButton title="위치입력하기" name="SetLocationScreen" />
           </View>
         </View>
         <BottomButton title="업로드하기" active={false} />
@@ -146,6 +143,11 @@ const styles = StyleSheet.create({
   section: {
     gap: 10,
     width: '100%',
+  },
+  leftSection: {
+    gap: 10,
+    width: '100%',
+    alignItems: 'flex-start',
   },
   title: {
     fontSize: 20,

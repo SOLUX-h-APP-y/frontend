@@ -12,6 +12,7 @@ import colors from '../styles/Colors';
 import { useEffect, useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 import searchIcon from '../assets/icons/searchIcon.png';
+import fontStyles from '../styles/FontStyles';
 
 function DrondownInputField({
   placeholder,
@@ -101,6 +102,28 @@ function PlainInputField({
   );
 }
 
+const InputFieldWithClear = ({ label, value, onChangeText, placeholder, onClear }) => (
+  <View style={InputFieldWithClearStyles.inputContainer}>
+    <Text style={InputFieldWithClearStyles.label}>{label}</Text>
+    <View style={InputFieldWithClearStyles.inputWithClear}>
+      <TextInput
+        style={InputFieldWithClearStyles.input}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+      />
+      {value.length > 0 && (
+        <TouchableOpacity onPress={onClear} style={InputFieldWithClearStyles.clearButton}>
+          <Image
+            source={require('../assets/icons/clearIcon.png')}
+            style={InputFieldWithClearStyles.clearIcon}
+          />
+        </TouchableOpacity>
+      )}
+    </View>
+  </View>
+);
+
 const styles = StyleSheet.create({
   container: {
     width: '100%',
@@ -170,4 +193,36 @@ const styles = StyleSheet.create({
   },
 });
 
-export { DrondownInputField, PlainInputField };
+const InputFieldWithClearStyles = StyleSheet.create({
+  inputContainer: {
+    marginBottom: 20,
+    marginHorizontal: 16,
+  },
+  label: {
+    ...fontStyles.blackSemiBold20,
+    marginBottom: 8,
+  },
+  inputWithClear: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: colors.gray2,
+    borderRadius: 30,
+    paddingHorizontal: 20,
+  },
+  input: {
+    flex: 1,
+    height: 48,
+    ...fontStyles.lightBlackMedium14,
+  },
+  clearButton: {
+    padding: 0,
+  },
+  clearIcon: {
+    width: 20,
+    height: 20,
+  },
+});
+
+export { DrondownInputField, PlainInputField, InputFieldWithClear };

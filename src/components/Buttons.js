@@ -27,7 +27,7 @@ function CreatePostButton({ name, actionType }) {
   );
 }
 
-function CategoryButton({ title, active, onPress, key }) {
+function CategoryButton({ title, active, onPress }) {
   return (
     <TouchableOpacity
       style={
@@ -89,7 +89,7 @@ function SubmitButton({ onPress, title }) {
       <Text style={styles.submitButtonText}>{title}</Text>
     </TouchableOpacity>
   );
-};
+}
 
 function ReviewButton({ onPress }) {
   return (
@@ -97,7 +97,7 @@ function ReviewButton({ onPress }) {
       <Text style={ReviewButtonstyles.reviewButtonText}>후기 보기</Text>
     </TouchableOpacity>
   );
-};
+}
 
 //active, inactive backgroundColor만 달라서 하나로 통일할지 고민
 const styles = StyleSheet.create({
@@ -159,12 +159,12 @@ const styles = StyleSheet.create({
     borderColor: colors.gray2,
   },
   navigateButton: {
-    width: 140,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     height: 40,
     backgroundColor: 'white',
     borderRadius: 20,
     justifyContent: 'center',
-    alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.gray2,
   },

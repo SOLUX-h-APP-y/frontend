@@ -46,7 +46,7 @@ const ReviewScreen = ({ route, navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{ marginLeft: 20 }}>
+            <View style={{ paddingHorizontal: 20 }}>
                 <NavigateHeader navigation={navigation} title="후기 작성" />
             </View>
             <PostHeader post={post} />
