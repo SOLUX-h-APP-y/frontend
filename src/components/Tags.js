@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     borderRadius: 12.5,
   },
   typeTagSharer: {
-    width: 100,
+    width: 90,
     height: 25,
     borderWidth: 1,
     borderColor: colors.themeColor,
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     borderRadius: 12.5,
   },
   typeTagBorrower: {
-    width: 100,
+    width: 90,
     height: 25,
     backgroundColor: colors.vPale,
 
