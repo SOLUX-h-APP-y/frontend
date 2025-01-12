@@ -11,6 +11,7 @@ import ToastMessage from '../components/ToastMessage';
 import ReviewScreen from '../screens/#3_Chat/ReviewScreen';
 import EditMypageScreen from '../screens/#4_Mypage/EditMypageScreen';
 import BottomTabNavigator from './BottomTabNavigator';
+import SetLocationScreen from '../screens/#2_Post/SetLocationScreen';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,13 @@ function StackNavigator() {
         <Stack.Screen
           name="CreatePostScreen"
           component={CreatePostScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="SetLocationScreen"
+          component={SetLocationScreen}
           options={{
             headerShown: false,
           }}
