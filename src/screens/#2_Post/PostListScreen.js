@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { CreatePostButton } from '../../components/Buttons';
 import OptionPanel from '../../components/OptionPanel';
 import OptionSelector from '../../components/OptionSelector';
+import ItemTest from '../../components/itemTest';
 
 const sharerData = [
   {
@@ -14,24 +15,31 @@ const sharerData = [
     price: 5500,
     location: '청파동2가',
     image: sampleImage,
+    state: '거래완료',
+    type: 'sharer',
   },
   {
     id: 1,
     title: '가방 빌asdf sdasdfa sdfasesad sefadsfas sdfasefasd 려드립니다',
     price: 2500,
     location: '청파동2가',
+    state: '거래완료',
+    type: 'borrower',
   },
   {
     id: 2,
     title: '원피스형 정장 필요하신분?',
     price: 3500,
     location: '청파동2가',
+    image: sampleImage,
+    type: 'borrower',
   },
   {
     id: 3,
     title: '원피스형 정장 필요하신분?',
     price: 3500,
     location: '청파동2가',
+    type: 'borrower',
   },
 
   {
@@ -95,7 +103,7 @@ function PostListScreen({ route }) {
     setOptionActive(!optionsActive);
   };
 
-  const handleSearchOptions = () => { };
+  const handleSearchOptions = () => {};
 
   return (
     <View style={styles.container}>

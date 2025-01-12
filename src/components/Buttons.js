@@ -211,9 +211,12 @@ const styles = StyleSheet.create({
 const ReviewButtonstyles = StyleSheet.create({
   reviewButton: {
     backgroundColor: colors.themeColor,
-    paddingVertical: 8,
+    height: 32,
     paddingHorizontal: 16,
     borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 90,
   },
   reviewButtonText: {
     ...fontStyles.whiteSemiBold14,
