@@ -35,6 +35,7 @@ function SetLocationScreen() {
 
   const handleLocation = () => {
     navigation.goBack();
+    console.log('위치 저장하고 CreatePostScreen으로 돌아가기')
   };
 
   return (
