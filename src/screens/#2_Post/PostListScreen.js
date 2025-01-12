@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { CreatePostButton } from '../../components/Buttons';
 import OptionPanel from '../../components/OptionPanel';
 import OptionSelector from '../../components/OptionSelector';
-import ItemTest from '../../components/itemTest';
 
 const sharerData = [
   {

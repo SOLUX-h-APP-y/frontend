@@ -11,7 +11,9 @@ function PostPreviewItem({ data, handleShowReviews }) {
   const navigation = useNavigation();
 
   return data.image ? (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => navigation.navigate('PostDetailScreen')}>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <View style={{ justifyContent: 'center' }}>
           <Image source={data.image} style={styles.image} />
@@ -39,7 +41,9 @@ function PostPreviewItem({ data, handleShowReviews }) {
       </View>
     </TouchableOpacity>
   ) : (
-    <TouchableOpacity style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={() => navigation.navigate('PostDetailScreen')}>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <View style={{ flex: 1 }}>
           <Text style={styles.titleText}>{data.title}</Text>
