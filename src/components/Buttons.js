@@ -3,6 +3,23 @@ import colors from '../styles/Colors';
 import { useNavigation } from '@react-navigation/native';
 import plusIcon from '../assets/icons/plusIcon.png';
 import fontStyles from '../styles/FontStyles';
+import ReviewModal from './ReviewModal';
+import { useState } from 'react';
+
+const reviewData = [
+  {
+    reviewer_id: 1,
+    reviewee_id: 0,
+    rate: 5,
+    content: '좋은 상품 감사합니다',
+  },
+  {
+    reviewer_id: 2,
+    reviewee_id: 1,
+    rate: 3,
+    content: '상품이 조금 더럽네요',
+  },
+];
 
 function BottomButton({ title, active, onPress }) {
   return (
@@ -91,11 +108,33 @@ function SubmitButton({ onPress, title }) {
   );
 }
 
-function ReviewButton({ onPress }) {
+function ReviewButton({ revieweeId }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedReviews, setSelectedReviews] = useState([]);
+
+  const handleShowReviews = () => {
+    const filteredReviews = reviewData.filter(
+      (review) => review.reviewee_id === revieweeId
+    );
+    setSelectedReviews(filteredReviews);
+    setModalVisible(true);
+  };
+
   return (
-    <TouchableOpacity style={ReviewButtonstyles.reviewButton} onPress={onPress}>
-      <Text style={ReviewButtonstyles.reviewButtonText}>후기 보기</Text>
-    </TouchableOpacity>
+    <>
+      <TouchableOpacity
+        style={ReviewButtonstyles.reviewButton}
+        onPress={handleShowReviews}>
+        <Text style={ReviewButtonstyles.reviewButtonText}>후기 보기</Text>
+      </TouchableOpacity>
+
+      {/* 모달 */}
+      <ReviewModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        reviews={selectedReviews}
+      />
+    </>
   );
 }
 

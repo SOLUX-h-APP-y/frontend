@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -11,30 +11,11 @@ import PostPreviewItem from '../../components/PostPreviewItem';
 import UserProfile from '../../components/UserProfile';
 import Tabs from '../../components/Tabs';
 import LevelProgress from '../../components/LevelProgress';
-import ReviewModal from '../../components/ReviewModal';
-
-const reviewData = [
-    {
-        reviewer_id: 1,
-        reviewee_id: 2,
-        rate: 5,
-        content: '좋은 상품 감사합니다',
-    },
-    {
-        reviewer_id: 2,
-        reviewee_id: 1,
-        rate: 3,
-        content: '상품이 조금 더럽네요',
-    },
-];
 
 const MypageScreen = () => {
     const [activeTab, setActiveTab] = useState('거래중');
     const [isNotificationOn, setIsNotificationOn] = useState(true);
     const tabs = ['거래중', '사용중', '거래완료'];
-
-    const [modalVisible, setModalVisible] = useState(false);
-    const [selectedReviews, setSelectedReviews] = useState([]); // 선택된 유저의 리뷰 데이터
 
     const [userData, setUserData] = useState({
         id: 1,
@@ -55,28 +36,19 @@ const MypageScreen = () => {
     };
 
     const posts = [
-        { id: 1, title: '원피스형 정장 빌려드려요', price: 2500, location: '청파동2가', type: 'borrower', status: '거래중' },
-        { id: 2, title: '카메라 빌려드립니다', price: 8500, location: '청파동2가', type: 'borrower', status: '사용중' },
-        { id: 3, title: '헤드폰 빌려드립니다', price: 4500, location: '청파동2가', type: 'sharer', status: '거래완료' },
-        { id: 4, title: '가방 빌려드립니다', price: 3500, location: '청파동2가', type: 'sharer', status: '거래완료' },
+        { id: 1, title: '원피스형 정장 빌려드려요', price: 2500, location: '청파동2가', type: 'borrower', state: '거래중' },
+        { id: 2, title: '카메라 빌려드립니다', price: 8500, location: '청파동2가', type: 'borrower', state: '사용중' },
+        { id: 3, title: '헤드폰 빌려드립니다', price: 4500, location: '청파동2가', type: 'sharer', state: '거래완료' },
+        { id: 4, title: '가방 빌려드립니다', price: 3500, location: '청파동2가', type: 'sharer', state: '거래완료' },
     ];
 
-    const filteredPosts = posts.filter((post) => post.status === activeTab); // 활성화된 탭에 따라 필터링
+    const filteredPosts = posts.filter((post) => post.state === activeTab); // 활성화된 탭에 따라 필터링
 
     const renderPost = ({ item }) => (
         <View style={styles.postCardContainer}>
-            <PostPreviewItem data={item} handleShowReviews={handleShowReviews} />
+            <PostPreviewItem data={item} />
         </View>
     );
-
-    const handleShowReviews = (reviewee_id) => {
-        // 선택된 사용자의 리뷰 필터링
-        const filteredReviews = reviewData.filter(
-            (review) => review.reviewee_id === reviewee_id
-        );
-        setSelectedReviews(filteredReviews);
-        setModalVisible(true);
-    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -106,13 +78,6 @@ const MypageScreen = () => {
                         />
                     </>
                 }
-            />
-
-            {/* 모달 */}
-            <ReviewModal
-                visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-                reviews={selectedReviews}
             />
         </SafeAreaView>
     );
