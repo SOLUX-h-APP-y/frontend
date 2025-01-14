@@ -6,8 +6,7 @@ import { TypeTag } from './Tags';
 import { ReviewButton } from './Buttons';
 import fontStyles from '../styles/FontStyles';
 
-//handleShowReview는 ReviewButton 내부에 작성되도록 수정
-function PostPreviewItem({ data, handleShowReviews }) {
+function PostPreviewItem({ data }) {
   const navigation = useNavigation();
 
   return data.image ? (
@@ -33,9 +32,9 @@ function PostPreviewItem({ data, handleShowReviews }) {
               <TypeTag type={data.type === 'sharer' ? 'sharer' : 'borrower'} />
             )}
             {data.state === '거래완료' ? (
-              <ReviewButton onPress={() => handleShowReviews(1)} />
-            ) : //handleShowReviews => id로 넘기기
-            null}
+              <ReviewButton revieweeId={data.id} /> // revieweeId=postId -> revieweeId=writerId로 변경 예정
+            ) :
+              null}
           </View>
         </View>
       </View>
@@ -52,9 +51,9 @@ function PostPreviewItem({ data, handleShowReviews }) {
           </Text>
         </View>
         {data.state === '거래완료' ? (
-          <ReviewButton onPress={() => handleShowReviews(1)} />
-        ) : //handleShowReviews => id로 넘기기
-        null}
+          <ReviewButton revieweeId={data.id} /> // revieweeId=postId -> revieweeId=writerId로 변경 예정
+        ) :
+          null}
       </View>
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.locationContainer}>
