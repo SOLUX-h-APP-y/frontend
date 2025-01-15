@@ -92,8 +92,8 @@ function PlainInputField({
           isTextarea
             ? styles.textarea
             : inactive
-              ? styles.inactiveInput
-              : styles.input
+            ? styles.inactiveInput
+            : styles.input
         }
         multiline={isTextarea ? true : false}
         editable={inactive ? false : true}
@@ -102,7 +102,13 @@ function PlainInputField({
   );
 }
 
-const InputFieldWithClear = ({ label, value, onChangeText, placeholder, onClear }) => (
+const InputFieldWithClear = ({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  onClear,
+}) => (
   <View style={InputFieldWithClearStyles.inputContainer}>
     <Text style={InputFieldWithClearStyles.label}>{label}</Text>
     <View style={InputFieldWithClearStyles.inputWithClear}>
@@ -113,7 +119,9 @@ const InputFieldWithClear = ({ label, value, onChangeText, placeholder, onClear 
         placeholder={placeholder}
       />
       {value.length > 0 && (
-        <TouchableOpacity onPress={onClear} style={InputFieldWithClearStyles.clearButton}>
+        <TouchableOpacity
+          onPress={onClear}
+          style={InputFieldWithClearStyles.clearButton}>
           <Image
             source={require('../assets/icons/clearIcon.png')}
             style={InputFieldWithClearStyles.clearIcon}
