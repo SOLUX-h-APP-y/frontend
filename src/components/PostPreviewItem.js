@@ -28,13 +28,12 @@ function PostPreviewItem({ data }) {
             <Text style={styles.locationText}>{data.location}</Text>
           </View>
           <View style={{ alignItems: 'flex-end', gap: 5 }}>
+            {data.state === '거래완료' ? (
+              <ReviewButton revieweeId={data.id} /> // revieweeId=postId -> revieweeId=writerId로 변경 예정
+            ) : null}
             {data.type && (
               <TypeTag type={data.type === 'sharer' ? 'sharer' : 'borrower'} />
             )}
-            {data.state === '거래완료' ? (
-              <ReviewButton revieweeId={data.id} /> // revieweeId=postId -> revieweeId=writerId로 변경 예정
-            ) :
-              null}
           </View>
         </View>
       </View>
@@ -52,8 +51,7 @@ function PostPreviewItem({ data }) {
         </View>
         {data.state === '거래완료' ? (
           <ReviewButton revieweeId={data.id} /> // revieweeId=postId -> revieweeId=writerId로 변경 예정
-        ) :
-          null}
+        ) : null}
       </View>
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.locationContainer}>
