@@ -41,7 +41,7 @@ function CreatePostScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollview}>
+      <ScrollView contentContainerStyle={styles.scrollview}>
         <View style={styles.contentContainer}>
           <NavigateHeader
             title={
@@ -138,11 +138,10 @@ function CreatePostScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: 'white',
   },
   scrollview: {
-    flex: 1,
+    padding: 20,
   },
   contentContainer: {
     flex: 1,
