@@ -41,7 +41,7 @@ function CreatePostScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scrollview}>
+      <ScrollView contentContainerStyle={styles.scrollview}>
         <View style={styles.contentContainer}>
           <NavigateHeader
             title={
@@ -54,7 +54,7 @@ function CreatePostScreen({ route }) {
           <NavigateButton title="이전 글 불러오기" name="MyPostList" />
           <View style={styles.section}>
             <Text style={styles.title}>제목</Text>
-            <PlainInputField placeholder="제목을 입력해주세요" />
+            <PlainInputField placeholder="최대 20자 이내의 제목을 입력해주세요" />
           </View>
           <View style={styles.section}>
             <View
@@ -77,13 +77,23 @@ function CreatePostScreen({ route }) {
             </Text>
           </View>
           <View style={styles.section}>
-            <Text style={styles.title}>사진</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 5,
+                alignItems: 'flex-end',
+              }}>
+              <Text style={styles.title}>사진</Text>
+              <Text style={{ color: colors.themeColor }}>0/10</Text>
+            </View>
             <AddPhotoButton />
           </View>
           <View style={styles.section}>
             <Text style={styles.title}>내용</Text>
             <PlainInputField
-              placeholder={'내용을 입력하세요'}
+              placeholder={
+                '최소 10자 이상, 최대 300자 이내의 내용을 입력해\n주세요'
+              }
               isTextarea={true}
             />
           </View>
@@ -128,11 +138,10 @@ function CreatePostScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: 'white',
   },
   scrollview: {
-    flex: 1,
+    padding: 20,
   },
   contentContainer: {
     flex: 1,
