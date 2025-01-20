@@ -6,7 +6,7 @@ import fontStyles from '../styles/FontStyles';
 const Tabs = ({ tabs, activeTab, setActiveTab }) => {
     return (
         <View style={styles.tabs}>
-            {['거래중', '사용중', '거래완료'].map((tab) => (
+            {['거래중', '대여중', '거래완료'].map((tab) => (
                 <TouchableOpacity
                     key={tab}
                     style={[
