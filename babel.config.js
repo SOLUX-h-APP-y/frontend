@@ -5,9 +5,12 @@ module.exports = {
     [
       'module:react-native-dotenv',
       {
-        moduleName: '@env',
+        moduleName: 'react-native-dotenv',
         path: '.env',
-        allowUndefined: false,
+        blacklist: null,
+        whitelist: null,
+        safe: false,
+        allowUndefined: true,
       },
     ],
   ],

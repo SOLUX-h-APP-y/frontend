@@ -12,94 +12,97 @@ import ReviewScreen from '../screens/#3_Chat/ReviewScreen';
 import EditMypageScreen from '../screens/#4_Mypage/EditMypageScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import SetLocationScreen from '../screens/#2_Post/SetLocationScreen';
+import { UserProvider } from '../hooks/UserContext';
 
 const Stack = createStackNavigator();
 
 function StackNavigator() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen">
-        <Stack.Screen
-          name="SplashScreen"
-          component={SplashScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="OnboardingScreen"
-          component={OnboardingScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="SetProfileScreen"
-          component={SetProfileScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        {/* BottomTabNavigator 사용 */}
-        <Stack.Screen
-          name="MainTabs"
-          component={BottomTabNavigator}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="CreatePostScreen"
-          component={CreatePostScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="SetLocationScreen"
-          component={SetLocationScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="PostDetailScreen"
-          component={PostDetailScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="MyPostList"
-          component={MyPostList}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="ChatScreen"
-          component={ChatScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="ReviewScreen"
-          component={ReviewScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="EditMypageScreen"
-          component={EditMypageScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack.Navigator>
-      <ToastMessage />
-    </NavigationContainer>
+    <UserProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="SplashScreen">
+          <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="OnboardingScreen"
+            component={OnboardingScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="SetProfileScreen"
+            component={SetProfileScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          {/* BottomTabNavigator 사용 */}
+          <Stack.Screen
+            name="MainTabs"
+            component={BottomTabNavigator}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="CreatePostScreen"
+            component={CreatePostScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="SetLocationScreen"
+            component={SetLocationScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="PostDetailScreen"
+            component={PostDetailScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="MyPostList"
+            component={MyPostList}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="ChatScreen"
+            component={ChatScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="ReviewScreen"
+            component={ReviewScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="EditMypageScreen"
+            component={EditMypageScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack.Navigator>
+        <ToastMessage />
+      </NavigationContainer>
+    </UserProvider>
   );
 }
 
