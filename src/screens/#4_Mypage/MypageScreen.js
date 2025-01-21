@@ -15,7 +15,7 @@ import LevelProgress from '../../components/LevelProgress';
 const MypageScreen = () => {
     const [activeTab, setActiveTab] = useState('거래중');
     const [isNotificationOn, setIsNotificationOn] = useState(true);
-    const tabs = ['거래중', '사용중', '거래완료'];
+    const tabs = ['거래중', '대여중', '거래완료'];
 
     const [userData, setUserData] = useState({
         id: 1,
@@ -37,7 +37,7 @@ const MypageScreen = () => {
 
     const posts = [
         { id: 1, title: '원피스형 정장 빌려드려요', price: 2500, location: '청파동2가', type: 'borrower', state: '거래중' },
-        { id: 2, title: '카메라 빌려드립니다', price: 8500, location: '청파동2가', type: 'borrower', state: '사용중' },
+        { id: 2, title: '카메라 빌려드립니다', price: 8500, location: '청파동2가', type: 'borrower', state: '대여중' },
         { id: 3, title: '헤드폰 빌려드립니다', price: 4500, location: '청파동2가', type: 'sharer', state: '거래완료' },
         { id: 4, title: '가방 빌려드립니다', price: 3500, location: '청파동2가', type: 'sharer', state: '거래완료' },
     ];
