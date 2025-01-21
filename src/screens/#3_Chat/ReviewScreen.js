@@ -28,7 +28,7 @@ const ReviewScreen = ({ route, navigation }) => {
         location: '청파동2가',
     };
 
-    const [rating, setRating] = useState(5); // 초기 별점 값
+    const [rating, setRating] = useState(0); // 초기 별점 값
     const [reviewText, setReviewText] = useState('');
 
     const handleStarPress = (value) => {
@@ -84,7 +84,7 @@ const ReviewScreen = ({ route, navigation }) => {
                             <Text style={styles.ratingText}>{rating}점</Text>
                         </View>
                         <View style={styles.inputContainer}>
-                            <Text style={styles.inputLabel}>후기 입력</Text>
+                            <Text style={styles.inputLabel}>후기 입력 (선택)</Text>
                             <PlainInputField
                                 placeholder="ex) 감사합니다!"
                                 value={reviewText}
@@ -95,7 +95,7 @@ const ReviewScreen = ({ route, navigation }) => {
                     </ScrollView>
                     {/* 저장하기 버튼을 하단에 고정 */}
                     <View style={styles.fixedButtonContainer}>
-                        <SubmitButton onPress={handleSubmitReview} title="저장하기" />
+                        <SubmitButton onPress={handleSubmitReview} title="저장하기" disabled={rating === 0} />
                     </View>
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>

@@ -100,10 +100,17 @@ function FreeButton({ active, onPress }) {
   );
 }
 
-function SubmitButton({ onPress, title }) {
+function SubmitButton({ onPress, title, disabled }) {
   return (
-    <TouchableOpacity style={styles.submitButton} onPress={onPress}>
-      <Text style={styles.submitButtonText}>{title}</Text>
+    <TouchableOpacity onPress={onPress} disabled={disabled} style={[styles.submitButton, disabled ? styles.disabledSubmitButton : styles.activeSubmitButton,]} >
+      <Text
+        style={[
+          styles.buttonText,
+          disabled ? styles.disabledButtonText : styles.activeButtonText,
+        ]}
+      >
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -237,13 +244,24 @@ const styles = StyleSheet.create({
     bottom: 20,
     left: 16,
     right: 16,
-    paddingVertical: 12,
+    paddingVertical: 13,
+    paddingHorizontal: 28,
     borderRadius: 25,
-    backgroundColor: colors.themeColor,
     alignItems: 'center',
   },
-  submitButtonText: {
+  activeSubmitButton: {
+    backgroundColor: colors.themeColor,
+  },
+  disabledSubmitButton: {
+    backgroundColor: colors.gray1,
+  },
+  buttonText: {
+  },
+  activeButtonText: {
     ...fontStyles.whiteSemiBold14,
+  },
+  disabledButtonText: {
+    ...fontStyles.gray2SemiBold14,
   },
 });
 
