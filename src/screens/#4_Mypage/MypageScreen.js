@@ -11,6 +11,7 @@ import PostPreviewItem from '../../components/PostPreviewItem';
 import UserProfile from '../../components/UserProfile';
 import Tabs from '../../components/Tabs';
 import LevelProgress from '../../components/LevelProgress';
+import { EncourageButton } from '../../components/Buttons';
 
 const MypageScreen = () => {
     const [activeTab, setActiveTab] = useState('거래중');
@@ -24,6 +25,13 @@ const MypageScreen = () => {
         rental_count: 100, // 거래 완료 횟수
         level: '씨앗', // 초기 레벨
     });
+
+    const profileOwnerId = 1; // 현재 보고 있는 프로필 소유자 ID (1번 사용자)
+
+    const handleEncouragePress = () => {
+        console.log('응원하기');
+        // 백엔드 API 요청 추가 예정
+    };
 
     const handleLevelChange = (newLevel) => {
         // 레벨이 변경될 때만 업데이트
@@ -64,10 +72,17 @@ const MypageScreen = () => {
                             isNotificationOn={isNotificationOn}
                             setIsNotificationOn={setIsNotificationOn}
                         />
-                        <LevelProgress
-                            rentalCount={userData.rental_count} // 거래 완료 횟수 전달
-                            onLevelChange={handleLevelChange} // 레벨 변경 시 콜백 함수 전달
-                        />
+                        <View style={styles.relativeContainer}>
+                            <EncourageButton
+                                totalCount={userData.totalEncourage} // 총 응원 횟수 전달
+                                isMyProfile={userData.id === profileOwnerId} // 자신의 프로필 여부 확인
+                                onPress={handleEncouragePress}
+                            />
+                            <LevelProgress
+                                rentalCount={userData.rental_count} // 거래 완료 횟수 전달
+                                onLevelChange={handleLevelChange} // 레벨 변경 시 콜백 함수 전달
+                            />
+                        </View>
                         <View style={styles.tabsContainer}>
                             <Text style={styles.tabsTitle}>내 글 보기</Text>
                         </View>
@@ -87,6 +102,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
+    },
+    relativeContainer: {
+        position: 'relative', // 자식 요소들의 절대 위치를 위한 설정
     },
     tabsContainer: {
         flexDirection: 'row',

@@ -155,6 +155,14 @@ export const fontStyles = StyleSheet.create({
     letterSpacing: -0.5,
     color: colors.themeColor,
   },
+  themeSemibold16: {
+    fontFamily: 'Pretendard-SemiBold',
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 20.8,
+    letterSpacing: -0.5,
+    color: colors.themeColor,
+  },
   themeSemibold20: {
     fontFamily: 'Pretendard-SemiBold',
     fontSize: 20,

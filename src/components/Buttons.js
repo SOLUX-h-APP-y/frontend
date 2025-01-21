@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import colors from '../styles/Colors';
 import { useNavigation } from '@react-navigation/native';
 import plusIcon from '../assets/icons/plusIcon.png';
@@ -138,6 +138,20 @@ function ReviewButton({ revieweeId }) {
   );
 }
 
+const EncourageButton = ({ totalCount = 0, isMyProfile, onPress }) => {
+  return (
+    <TouchableOpacity
+      style={EncourageButtonstyles.button}
+      onPress={!isMyProfile ? onPress : null} // 내 프로필일 경우 클릭 이벤트 제거
+    >
+      <View style={EncourageButtonstyles.textContainer}>
+        <Text style={EncourageButtonstyles.buttonText}>응원하기</Text>
+        <Text style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
+
 //active, inactive backgroundColor만 달라서 하나로 통일할지 고민
 const styles = StyleSheet.create({
   activeBottomButton: {
@@ -262,6 +276,35 @@ const ReviewButtonstyles = StyleSheet.create({
   },
 });
 
+const EncourageButtonstyles = StyleSheet.create({
+  button: {
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: colors.vPale,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: 20,
+    marginVertical: 10,
+    position: 'absolute', // 겹치는 위치 설정
+    top: '11%',
+    left: '50%',
+    transform: [{ translateX: -50 }, { translateY: -50 }], // 버튼을 중앙에 정렬
+    zIndex: 1,
+  },
+  textContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonText: {
+    ...fontStyles.themeMedium14,
+  },
+  totalCountText: {
+    ...fontStyles.themeSemibold16,
+    marginLeft: 10,
+  },
+});
+
 export {
   BottomButton,
   CreatePostButton,
@@ -272,4 +315,5 @@ export {
   NavigateButtonTheme,
   SubmitButton,
   ReviewButton,
+  EncourageButton,
 };
