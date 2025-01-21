@@ -161,9 +161,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         padding: 16,
-        backgroundColor: '#fff',
-        borderTopWidth: 1,
-        borderColor: colors.gray2,
+        backgroundColor: 'transparent',
     },
 });
 
