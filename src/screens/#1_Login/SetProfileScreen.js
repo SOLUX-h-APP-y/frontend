@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import ProgressBar from '../../components/ProgressBar.js';
 import {
@@ -8,26 +8,28 @@ import {
 import soe from '../../assets/images/soe.png';
 import { BasicButton, BottomButton } from '../../components/Buttons.js';
 import location from '../../assets/images/location.png';
-import Geolocation from 'react-native-geolocation-service';
-import { NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from 'react-native-dotenv';
-import { logToLogBoxAndConsole } from 'react-native-reanimated/lib/typescript/logger/logger.js';
-import axios from 'axios';
 import {
   requestLocationPermission,
   getCurrentCoordinates,
   getAddressFromCoordinates,
 } from '../../services/LocationManager.js';
+import { UserContext } from '../../states/UserContext.js';
+import { API_BASE_URL } from 'react-native-dotenv';
+import axios from 'axios';
+import { saveTokens } from '../../services/TokenManager.js';
 
 function SetProfileScreen({ navigation }) {
   const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState({ name: '', location: '' });
+  const [profile, setProfile] = useState({
+    name: '',
+    location: '',
+    latitude: '',
+    longitude: '',
+  });
+  const { userInfo, setUserInfo } = useContext(UserContext);
 
   const nextStep = () => {
-    console.log(profile);
-    step == 1
-      ? setStep(2)
-      : navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
-    //navigate 하기 전에 DB에 user 정보 보내기
+    step == 1 ? setStep(2) : signUp();
   };
 
   const handleName = text => {
@@ -37,7 +39,6 @@ function SetProfileScreen({ navigation }) {
       //trim()으로 공백 입력 방지
       //이후 글자수 제한도 필요
     }));
-    console.log(profile.name);
   };
 
   const handleLocation = async () => {
@@ -57,9 +58,33 @@ function SetProfileScreen({ navigation }) {
 
       const address = await getAddressFromCoordinates(latitude, longitude);
 
-      setProfile({ ...profile, location: address });
+      setProfile(prev => ({ ...prev, location: address, latitude, longitude }));
     } catch (e) {
       console.log('handleLocation Error: ', e);
+    }
+  };
+
+  const signUp = async () => {
+    setUserInfo(prev => ({
+      ...prev,
+      nickName: profile.name,
+      locationLatitude: profile.latitude,
+      locationLongitude: profile.longitude,
+    }));
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/auth/kakao/sign-up`, {
+        kakaoId: userInfo.kakaoId,
+        nickName: userInfo.nickName,
+        locationLatitude: userInfo.locationLatitude,
+        locationLongitude: userInfo.locationLongitude,
+      });
+
+      saveTokens(response.data.accessToken, response.data.refreshToken);
+
+      navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
+    } catch (e) {
+      console.log('signUp error: ', e);
     }
   };
 
@@ -85,14 +110,6 @@ function SetProfileScreen({ navigation }) {
             placeholder={'아래의 버튼을 눌러 위치를 설정해주세요'}
           />
           <BasicButton title="내 위치 불러오기" onPress={handleLocation} />
-          {/* <BasicButton
-            title="내 위치 불러오기"
-            onPress={() =>
-              navigation.navigate('MainTabs', {
-                screen: 'SharerPostListScreen',
-              })
-            }
-          /> */}
         </View>
       )}
 

@@ -5,7 +5,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState({
     kakaoId: '',
-    nickname: '',
+    nickName: '',
     locationLatitude: '',
     locationLongitude: '',
   });

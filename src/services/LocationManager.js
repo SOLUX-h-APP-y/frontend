@@ -27,7 +27,6 @@ export const getCurrentCoordinates = () => {
     Geolocation.getCurrentPosition(
       position => {
         const { latitude, longitude } = position.coords;
-        console.log('Latitude:', latitude, 'Longitude:', longitude);
 
         resolve({ latitude, longitude });
       },
@@ -42,7 +41,6 @@ export const getCurrentCoordinates = () => {
 
 //위도, 경도를 받아 주소로 변환
 export const getAddressFromCoordinates = async (latitude, longitude) => {
-  console.log('getaddress Latitude:', latitude, 'Longitude:', longitude);
   try {
     const response = await axios.get(
       'https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc',
@@ -58,7 +56,6 @@ export const getAddressFromCoordinates = async (latitude, longitude) => {
         },
       },
     );
-    console.log(response);
     const result = response.data.results;
     if (result && result.length > 0) {
       // 주소 데이터 반환
