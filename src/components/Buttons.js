@@ -114,7 +114,7 @@ function ReviewButton({ revieweeId }) {
 
   const handleShowReviews = () => {
     const filteredReviews = reviewData.filter(
-      (review) => review.reviewee_id === revieweeId
+      review => review.reviewee_id === revieweeId,
     );
     setSelectedReviews(filteredReviews);
     setModalVisible(true);
@@ -135,6 +135,23 @@ function ReviewButton({ revieweeId }) {
         reviews={selectedReviews}
       />
     </>
+  );
+}
+
+function BasicButton({ title, onPress }) {
+  return (
+    <TouchableOpacity
+      style={{
+        backgroundColor: colors.themeColor,
+        height: 32,
+        paddingHorizontal: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20,
+      }}
+      onPress={onPress}>
+      <Text style={{ color: 'white' }}>{title}</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -272,4 +289,5 @@ export {
   NavigateButtonTheme,
   SubmitButton,
   ReviewButton,
+  BasicButton,
 };

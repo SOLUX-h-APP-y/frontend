@@ -12,7 +12,7 @@ import ReviewScreen from '../screens/#3_Chat/ReviewScreen';
 import EditMypageScreen from '../screens/#4_Mypage/EditMypageScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import SetLocationScreen from '../screens/#2_Post/SetLocationScreen';
-import { UserProvider } from '../hooks/UserContext';
+import { UserProvider } from '../states/UserContext';
 
 const Stack = createStackNavigator();
 

@@ -74,6 +74,20 @@ function DrondownInputField({
   );
 }
 
+function OutputField({ placeholder, value }) {
+  return (
+    <View style={styles.container}>
+      <TextInput
+        placeholder={placeholder}
+        placeholderTextColor={colors.inputBorderGray}
+        value={value}
+        style={[styles.input, { textAlign: 'center' }]}
+        editable={false}
+      />
+    </View>
+  );
+}
+
 function PlainInputField({
   placeholder,
   value,
@@ -233,4 +247,9 @@ const InputFieldWithClearStyles = StyleSheet.create({
   },
 });
 
-export { DrondownInputField, PlainInputField, InputFieldWithClear };
+export {
+  DrondownInputField,
+  PlainInputField,
+  InputFieldWithClear,
+  OutputField,
+};

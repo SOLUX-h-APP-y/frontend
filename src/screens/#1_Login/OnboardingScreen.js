@@ -2,12 +2,12 @@ import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import colorLogoKo from '../../assets/logos/colorLogoKo.png';
 import colorLogoEn from '../../assets/logos/colorLogoEn.png';
 import kakaoStart from '../../assets/images/kakaoStart.png';
-import { useNavigation } from '@react-navigation/native';
 import { login } from '@react-native-seoul/kakao-login';
 import { useContext, useState } from 'react';
 import { API_BASE_URL } from 'react-native-dotenv';
 import axios from 'axios';
-import { UserContext } from '../../hooks/UserContext';
+import { UserContext } from '../../states/UserContext';
+import SetProfileScreen from './SetProfileScreen';
 
 function OnboardingScreen({ navigation }) {
   const { userInfo, setUserInfo } = useContext(UserContext);
@@ -24,6 +24,7 @@ function OnboardingScreen({ navigation }) {
       //server로 전달 후 response 받기
       const serverResponse = await sendAccessTokenToServer(token.accessToken);
 
+      console.log(serverResponse.status);
       //206 : 회원이 아닌 유저 => signUp, 200 : 회원인 유저 => signIn
       serverResponse.status === 206
         ? signUp(serverResponse)
