@@ -22,6 +22,7 @@ function OnboardingScreen({ navigation }) {
       const serverResponse = await sendAccessTokenToServer(token.accessToken);
 
       //206 : 회원이 아닌 유저 => signUp, 200 : 회원인 유저 => signIn
+      console.log(serverResponse.status === 206 ? '회원가입' : '로그인');
       serverResponse.status === 206
         ? moveSetProfileScreen(serverResponse)
         : signIn(serverResponse);

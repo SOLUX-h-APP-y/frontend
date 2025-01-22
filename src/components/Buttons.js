@@ -355,4 +355,6 @@ export {
   NavigateButtonTheme,
   SubmitButton,
   ReviewButton,
+  BasicButton,
+  EncourageButton,
 };

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import ProgressBar from '../../components/ProgressBar.js';
 import {
@@ -13,7 +13,6 @@ import {
   getCurrentCoordinates,
   getAddressFromCoordinates,
 } from '../../services/LocationManager.js';
-import { UserContext } from '../../states/UserContext.js';
 import { API_BASE_URL } from 'react-native-dotenv';
 import axios from 'axios';
 import { saveTokens } from '../../services/TokenManager.js';
@@ -26,10 +25,14 @@ function SetProfileScreen({ navigation }) {
     latitude: '',
     longitude: '',
   });
-  const { userInfo, setUserInfo } = useContext(UserContext);
 
   const nextStep = () => {
-    step == 1 ? setStep(2) : signUp();
+    if (step === 1) {
+      setStep(2);
+    } else {
+      console.log('Profile before signUp:', profile); // 프로필 상태 확인
+      signUp();
+    }
   };
 
   const handleName = text => {
@@ -50,7 +53,7 @@ function SetProfileScreen({ navigation }) {
         if (result) {
           resolve(result);
         } else {
-          reject(new Error('위도 경도 가져오기 실패'));
+          reject(new Error('좌표 가져오기 실패'));
         }
       });
 
@@ -58,27 +61,37 @@ function SetProfileScreen({ navigation }) {
 
       const address = await getAddressFromCoordinates(latitude, longitude);
 
-      setProfile(prev => ({ ...prev, location: address, latitude, longitude }));
+      setProfile(prev => {
+        const updatedProfile = {
+          ...prev,
+          location: address,
+          latitude,
+          longitude,
+        };
+        console.log('Updated Profile:', updatedProfile); // 업데이트 확인
+        return updatedProfile;
+      });
     } catch (e) {
       console.log('handleLocation Error: ', e);
     }
   };
 
   const signUp = async () => {
-    setUserInfo(prev => ({
-      ...prev,
-      nickName: profile.name,
-      locationLatitude: profile.latitude,
-      locationLongitude: profile.longitude,
-    }));
-
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/kakao/sign-up`, {
+      const requestBody = {
         kakaoId: userInfo.kakaoId,
-        nickName: userInfo.nickName,
-        locationLatitude: userInfo.locationLatitude,
-        locationLongitude: userInfo.locationLongitude,
-      });
+        nickName: profile.name,
+        locationLatitude: profile.latitude,
+        locationLongitude: profile.longitude,
+        locationName: profile.location,
+      };
+
+      console.log('Request Body:', requestBody);
+
+      const response = await axios.post(
+        `${API_BASE_URL}/auth/kakao/sign-up`,
+        requestBody,
+      );
 
       saveTokens(response.data.accessToken, response.data.refreshToken);
 
