@@ -1,28 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import ProgressBar from '../../components/ProgressBar.js';
 import {
-  DrondownInputField,
-  PlainInputField,
+  InputFieldWithClear,
+  OutputField,
 } from '../../components/InputFields.js';
 import soe from '../../assets/images/soe.png';
-import { useNavigation } from '@react-navigation/native';
-import { BottomButton } from '../../components/Buttons.js';
+import { BasicButton, BottomButton } from '../../components/Buttons.js';
 import location from '../../assets/images/location.png';
+import {
+  requestLocationPermission,
+  getCurrentCoordinates,
+  getAddressFromCoordinates,
+} from '../../services/LocationManager.js';
+import { API_BASE_URL } from 'react-native-dotenv';
+import axios from 'axios';
+import { saveTokens } from '../../services/TokenManager.js';
 
-function SetProfileScreen() {
-  const navigation = useNavigation();
-
+function SetProfileScreen({ navigation }) {
   const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState({ name: '', location: '' });
-  const [isDropDownVisible, setIsDropDownVisible] = useState(false);
+  const [profile, setProfile] = useState({
+    name: '',
+    location: '',
+    latitude: '',
+    longitude: '',
+  });
 
   const nextStep = () => {
-    console.log(profile);
-    step == 1
-      ? setStep(2)
-      : navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
-    //navigate 하기 전에 DB에 user 정보 보내기
+    if (step === 1) {
+      setStep(2);
+    } else {
+      console.log('Profile before signUp:', profile); // 프로필 상태 확인
+      signUp();
+    }
   };
 
   const handleName = text => {
@@ -32,20 +42,64 @@ function SetProfileScreen() {
       //trim()으로 공백 입력 방지
       //이후 글자수 제한도 필요
     }));
-    console.log(profile.name);
-  };
-  const handleLocation = text => {
-    setProfile(prev => ({ ...prev, location: text.trim() }));
-    console.log(profile.location);
   };
 
-  useEffect(() => {
-    if (profile.location.length != 0) {
-      setIsDropDownVisible(true);
-    } else {
-      setIsDropDownVisible(false);
+  const handleLocation = async () => {
+    try {
+      await requestLocationPermission();
+
+      const coordinates = await new Promise((resolve, reject) => {
+        const result = getCurrentCoordinates();
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('좌표 가져오기 실패'));
+        }
+      });
+
+      const { latitude, longitude } = coordinates;
+
+      const address = await getAddressFromCoordinates(latitude, longitude);
+
+      setProfile(prev => {
+        const updatedProfile = {
+          ...prev,
+          location: address,
+          latitude,
+          longitude,
+        };
+        console.log('Updated Profile:', updatedProfile); // 업데이트 확인
+        return updatedProfile;
+      });
+    } catch (e) {
+      console.log('handleLocation Error: ', e);
     }
-  }, [profile.location]);
+  };
+
+  const signUp = async () => {
+    try {
+      const requestBody = {
+        kakaoId: userInfo.kakaoId,
+        nickName: profile.name,
+        locationLatitude: profile.latitude,
+        locationLongitude: profile.longitude,
+        locationName: profile.location,
+      };
+
+      console.log('Request Body:', requestBody);
+
+      const response = await axios.post(
+        `${API_BASE_URL}/auth/kakao/sign-up`,
+        requestBody,
+      );
+
+      saveTokens(response.data.accessToken, response.data.refreshToken);
+
+      navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
+    } catch (e) {
+      console.log('signUp error: ', e);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -56,20 +110,20 @@ function SetProfileScreen() {
           : '앱을 사용할 위치를\n입력해주세요'}
       </Text>
       {step == 1 ? (
-        <PlainInputField
+        <InputFieldWithClear
           placeholder={'ex) 빌링이'}
           value={profile.name}
           onChangeText={handleName}
+          onClear={prev => setProfile({ ...prev, name: '' })}
         />
       ) : (
-        <DrondownInputField
-          placeholder={'ex) 용산구 청파동'}
-          value={profile.location}
-          setLocation={handleLocation}
-          onChangeText={handleLocation}
-          isDropDownVisible={isDropDownVisible}
-          setIsDropDownVisible={setIsDropDownVisible}
-        />
+        <View style={{ alignItems: 'center', gap: 20 }}>
+          <OutputField
+            value={profile.location}
+            placeholder={'아래의 버튼을 눌러 위치를 설정해주세요'}
+          />
+          <BasicButton title="내 위치 불러오기" onPress={handleLocation} />
+        </View>
       )}
 
       <View style={styles.center}>
@@ -79,10 +133,10 @@ function SetProfileScreen() {
         title={step == 1 ? '다음으로' : '시작하기'}
         active={
           step == 1
-            ? profile.name.length > 0
+            ? profile.name
               ? true
               : false
-            : profile.location.length > 0
+            : profile.location
             ? true
             : false
         }

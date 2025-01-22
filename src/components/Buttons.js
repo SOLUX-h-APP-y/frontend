@@ -102,13 +102,18 @@ function FreeButton({ active, onPress }) {
 
 function SubmitButton({ onPress, title, disabled }) {
   return (
-    <TouchableOpacity onPress={onPress} disabled={disabled} style={[styles.submitButton, disabled ? styles.disabledSubmitButton : styles.activeSubmitButton,]} >
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={disabled}
+      style={[
+        styles.submitButton,
+        disabled ? styles.disabledSubmitButton : styles.activeSubmitButton,
+      ]}>
       <Text
         style={[
           styles.buttonText,
           disabled ? styles.disabledButtonText : styles.activeButtonText,
-        ]}
-      >
+        ]}>
         {title}
       </Text>
     </TouchableOpacity>
@@ -121,7 +126,7 @@ function ReviewButton({ revieweeId }) {
 
   const handleShowReviews = () => {
     const filteredReviews = reviewData.filter(
-      (review) => review.reviewee_id === revieweeId
+      review => review.reviewee_id === revieweeId,
     );
     setSelectedReviews(filteredReviews);
     setModalVisible(true);
@@ -153,11 +158,29 @@ const EncourageButton = ({ totalCount = 0, isMyProfile, onPress }) => {
     >
       <View style={EncourageButtonstyles.textContainer}>
         <Text style={EncourageButtonstyles.buttonText}>응원하기</Text>
-        <Text style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
+        <Text
+          style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
       </View>
     </TouchableOpacity>
   );
 };
+
+function BasicButton({ title, onPress }) {
+  return (
+    <TouchableOpacity
+      style={{
+        backgroundColor: colors.themeColor,
+        height: 32,
+        paddingHorizontal: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 20,
+      }}
+      onPress={onPress}>
+      <Text style={{ color: 'white' }}>{title}</Text>
+    </TouchableOpacity>
+  );
+}
 
 //active, inactive backgroundColor만 달라서 하나로 통일할지 고민
 const styles = StyleSheet.create({
@@ -269,8 +292,7 @@ const styles = StyleSheet.create({
   disabledSubmitButton: {
     backgroundColor: colors.gray1,
   },
-  buttonText: {
-  },
+  buttonText: {},
   activeButtonText: {
     ...fontStyles.whiteSemiBold14,
   },
@@ -333,5 +355,6 @@ export {
   NavigateButtonTheme,
   SubmitButton,
   ReviewButton,
+  BasicButton,
   EncourageButton,
 };

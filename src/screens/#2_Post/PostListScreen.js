@@ -2,10 +2,11 @@ import { StyleSheet, View, FlatList } from 'react-native';
 import PostPreviewItem from '../../components/PostPreviewItem';
 import { CustomHeader } from '../../components/CustomHeaders';
 import sampleImage from '../../assets/images/sample.png';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CreatePostButton } from '../../components/Buttons';
 import OptionPanel from '../../components/OptionPanel';
 import OptionSelector from '../../components/OptionSelector';
+import { getTokens } from '../../services/TokenManager.js';
 
 const sharerData = [
   {
@@ -90,7 +91,6 @@ const options = {
 
 function PostListScreen({ route }) {
   const { actionType } = route.params;
-  console.log(actionType);
 
   const [optionsActive, setOptionActive] = useState(false);
   const [searchOptions, setSearchOtions] = useState({
