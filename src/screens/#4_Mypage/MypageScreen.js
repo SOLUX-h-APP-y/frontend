@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     FlatList,
     SafeAreaView,
+    ActivityIndicator,
+    Alert,
 } from 'react-native';
+import api, { setAuthToken } from '../../utils/api';
 import fontStyles from '../../styles/FontStyles';
 import PostPreviewItem from '../../components/PostPreviewItem';
 import UserProfile from '../../components/UserProfile';
@@ -16,17 +19,33 @@ import { EncourageButton } from '../../components/Buttons';
 const MypageScreen = () => {
     const [activeTab, setActiveTab] = useState('거래중');
     const [isNotificationOn, setIsNotificationOn] = useState(true);
+    const [userData, setUserData] = useState(null); // 초기 데이터를 null로 설정
+    const [loading, setLoading] = useState(true); // 로딩 상태 추가
     const tabs = ['거래중', '대여중', '거래완료'];
 
-    const [userData, setUserData] = useState({
-        id: 1,
-        name: '민지',
-        intro: '안녕하세요 지구를 사랑하는 민지예요',
-        rental_count: 100, // 거래 완료 횟수
-        level: '씨앗', // 초기 레벨
-    });
+    const profileOwnerId = 1; // 현재 보고 있는 프로필 소유자 ID
 
-    const profileOwnerId = 1; // 현재 보고 있는 프로필 소유자 ID (1번 사용자)
+    // API 호출 함수
+    const fetchUserProfile = async () => {
+        try {
+            setLoading(true); // 로딩 시작
+            const jwtToken = 'your-jwt-token-here'; // JWT 토큰 설정
+            setAuthToken(jwtToken); // Axios에 토큰 설정
+
+            const response = await api.get('/profiles/me');
+            setUserData(response.data); // API 응답 데이터를 상태로 설정
+        } catch (error) {
+            console.error('Failed to fetch user profile:', error);
+            Alert.alert('오류', '사용자 프로필을 불러오는 데 실패했습니다.');
+        } finally {
+            setLoading(false); // 로딩 종료
+        }
+    };
+
+    // 컴포넌트가 렌더링될 때 API 호출
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
 
     const handleEncouragePress = () => {
         console.log('응원하기');
@@ -34,8 +53,7 @@ const MypageScreen = () => {
     };
 
     const handleLevelChange = (newLevel) => {
-        // 레벨이 변경될 때만 업데이트
-        if (userData.level !== newLevel) {
+        if (userData && userData.level !== newLevel) {
             setUserData((prevData) => ({
                 ...prevData,
                 level: newLevel,
@@ -50,13 +68,22 @@ const MypageScreen = () => {
         { id: 4, title: '가방 빌려드립니다', price: 3500, location: '청파동2가', type: 'sharer', state: '거래완료' },
     ];
 
-    const filteredPosts = posts.filter((post) => post.state === activeTab); // 활성화된 탭에 따라 필터링
+    const filteredPosts = posts.filter((post) => post.state === activeTab);
 
     const renderPost = ({ item }) => (
         <View style={styles.postCardContainer}>
             <PostPreviewItem data={item} />
         </View>
     );
+
+    // 로딩 상태 표시
+    if (loading) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -67,20 +94,22 @@ const MypageScreen = () => {
                 style={styles.transactionList}
                 ListHeaderComponent={
                     <>
-                        <UserProfile
-                            userData={userData}
-                            isNotificationOn={isNotificationOn}
-                            setIsNotificationOn={setIsNotificationOn}
-                        />
+                        {userData && (
+                            <UserProfile
+                                userData={userData}
+                                isNotificationOn={isNotificationOn}
+                                setIsNotificationOn={setIsNotificationOn}
+                            />
+                        )}
                         <View style={styles.relativeContainer}>
                             <EncourageButton
-                                totalCount={userData.totalEncourage} // 총 응원 횟수 전달
-                                isMyProfile={userData.id === profileOwnerId} // 자신의 프로필 여부 확인
+                                totalCount={userData?.cheerCount} // 응원 횟수 전달
+                                isMyProfile={userData?.userId === profileOwnerId}
                                 onPress={handleEncouragePress}
                             />
                             <LevelProgress
-                                rentalCount={userData.rental_count} // 거래 완료 횟수 전달
-                                onLevelChange={handleLevelChange} // 레벨 변경 시 콜백 함수 전달
+                                rentalCount={userData?.rentalCount || 0}
+                                onLevelChange={handleLevelChange}
                             />
                         </View>
                         <View style={styles.tabsContainer}>
@@ -104,7 +133,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
     },
     relativeContainer: {
-        position: 'relative', // 자식 요소들의 절대 위치를 위한 설정
+        position: 'relative',
     },
     tabsContainer: {
         flexDirection: 'row',
@@ -127,4 +156,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MypageScreen; 
+export default MypageScreen;
