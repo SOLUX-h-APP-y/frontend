@@ -21,6 +21,7 @@ function StackNavigator() {
     <UserProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="SplashScreen">
+          {/* <Stack.Navigator initialRouteName="MainTabs"> */}
           <Stack.Screen
             name="SplashScreen"
             component={SplashScreen}

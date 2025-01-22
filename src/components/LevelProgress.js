@@ -140,6 +140,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-end',
         height: 400,
+        marginTop: 15,
     },
     levelIcon: {
         width: 320,

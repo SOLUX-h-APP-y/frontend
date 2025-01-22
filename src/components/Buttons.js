@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import colors from '../styles/Colors';
 import { useNavigation } from '@react-navigation/native';
 import plusIcon from '../assets/icons/plusIcon.png';
@@ -100,10 +100,22 @@ function FreeButton({ active, onPress }) {
   );
 }
 
-function SubmitButton({ onPress, title }) {
+function SubmitButton({ onPress, title, disabled }) {
   return (
-    <TouchableOpacity style={styles.submitButton} onPress={onPress}>
-      <Text style={styles.submitButtonText}>{title}</Text>
+    <TouchableOpacity
+      onPress={onPress}
+      disabled={disabled}
+      style={[
+        styles.submitButton,
+        disabled ? styles.disabledSubmitButton : styles.activeSubmitButton,
+      ]}>
+      <Text
+        style={[
+          styles.buttonText,
+          disabled ? styles.disabledButtonText : styles.activeButtonText,
+        ]}>
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -137,6 +149,21 @@ function ReviewButton({ revieweeId }) {
     </>
   );
 }
+
+const EncourageButton = ({ totalCount = 0, isMyProfile, onPress }) => {
+  return (
+    <TouchableOpacity
+      style={EncourageButtonstyles.button}
+      onPress={!isMyProfile ? onPress : null} // 내 프로필일 경우 클릭 이벤트 제거
+    >
+      <View style={EncourageButtonstyles.textContainer}>
+        <Text style={EncourageButtonstyles.buttonText}>응원하기</Text>
+        <Text
+          style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 function BasicButton({ title, onPress }) {
   return (
@@ -254,13 +281,23 @@ const styles = StyleSheet.create({
     bottom: 20,
     left: 16,
     right: 16,
-    paddingVertical: 12,
+    paddingVertical: 13,
+    paddingHorizontal: 28,
     borderRadius: 25,
-    backgroundColor: colors.themeColor,
     alignItems: 'center',
   },
-  submitButtonText: {
+  activeSubmitButton: {
+    backgroundColor: colors.themeColor,
+  },
+  disabledSubmitButton: {
+    backgroundColor: colors.gray1,
+  },
+  buttonText: {},
+  activeButtonText: {
     ...fontStyles.whiteSemiBold14,
+  },
+  disabledButtonText: {
+    ...fontStyles.gray2SemiBold14,
   },
 });
 
@@ -279,6 +316,35 @@ const ReviewButtonstyles = StyleSheet.create({
   },
 });
 
+const EncourageButtonstyles = StyleSheet.create({
+  button: {
+    alignSelf: 'center',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: colors.vPale,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    borderRadius: 20,
+    marginVertical: 10,
+    position: 'absolute', // 겹치는 위치 설정
+    top: '11%',
+    left: '50%',
+    transform: [{ translateX: -50 }, { translateY: -50 }], // 버튼을 중앙에 정렬
+    zIndex: 1,
+  },
+  textContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonText: {
+    ...fontStyles.themeMedium14,
+  },
+  totalCountText: {
+    ...fontStyles.themeSemibold16,
+    marginLeft: 10,
+  },
+});
+
 export {
   BottomButton,
   CreatePostButton,
@@ -289,5 +355,4 @@ export {
   NavigateButtonTheme,
   SubmitButton,
   ReviewButton,
-  BasicButton,
 };
