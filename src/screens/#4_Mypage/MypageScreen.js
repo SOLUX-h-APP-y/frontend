@@ -16,7 +16,7 @@ import Tabs from '../../components/Tabs';
 import LevelProgress from '../../components/LevelProgress';
 import { EncourageButton } from '../../components/Buttons';
 import { getTokens } from '../../services/TokenManager';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 const MypageScreen = () => {
     const navigation = useNavigation();
@@ -67,12 +67,11 @@ const MypageScreen = () => {
         }
     };
 
-
-
-    // 컴포넌트가 렌더링될 때 API 호출
-    useEffect(() => {
-        fetchUserProfile();
-    }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchUserProfile();
+        }, [])
+    );
 
     const handleEncouragePress = () => {
         console.log('응원하기');

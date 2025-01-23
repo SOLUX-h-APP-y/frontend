@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     StyleSheet,
@@ -15,6 +15,10 @@ import Toast from 'react-native-toast-message';
 import { launchImageLibrary } from 'react-native-image-picker';
 import UserProfileImage from '../../components/UserProfileImage';
 import { InputFieldWithClear } from '../../components/InputFields';
+import { getTokens } from '../../services/TokenManager';
+import axios from 'axios';
+import { API_BASE_URL } from 'react-native-dotenv';
+
 
 const EditMypageScreen = () => {
     const navigation = useNavigation();
@@ -22,15 +26,87 @@ const EditMypageScreen = () => {
     const [nickname, setNickname] = useState('');
     const [intro, setIntro] = useState('');
     const [profileImage, setProfileImage] = useState('https://via.placeholder.com/100');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmitProfile = () => {
-        console.log('닉네임:', nickname);
-        console.log('소개글:', intro);
-        console.log('프로필 이미지:', profileImage);
-        Toast.show({
-            type: 'success',
-            text1: '저장되었습니다',
-        });
+    useEffect(() => {
+        const fetchProfile = async () => {
+            setLoading(true);
+            try {
+                const tokens = await getTokens();
+
+                if (!tokens || !tokens.accessToken) {
+                    Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
+                        { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                    ]);
+                    return;
+                }
+
+                const accessToken = tokens.accessToken;
+
+                const response = await axios.get(`${API_BASE_URL}/profiles/me`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                const { nickname, bio, profileImage } = response.data;
+                setNickname(nickname);
+                setIntro(bio);
+                setProfileImage(profileImage);
+            } catch (error) {
+                console.error('프로필 불러오기 실패:', error.message);
+                Alert.alert('오류', '프로필을 불러오는 데 실패했습니다. 다시 시도해주세요.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfile();
+    }, [navigation]);
+
+    const handleSubmitProfile = async () => {
+        setLoading(true);
+        try {
+            const tokens = await getTokens();
+
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
+                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                ]);
+                return;
+            }
+
+            const accessToken = tokens.accessToken;
+
+            const response = await axios.patch(`${API_BASE_URL}/profiles/me`, {
+                nickname,
+                profileImage,
+                bio: intro,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Response:', response.data);
+
+            Toast.show({
+                type: 'success',
+                text1: '저장되었습니다',
+            });
+
+        } catch (error) {
+            if (error.response) {
+                console.error('프로필 업데이트 실패:', error.response.data);
+                Alert.alert('오류', '프로필 업데이트에 실패했습니다. 다시 시도해주세요.');
+            } else {
+                console.error('프로필 업데이트 실패:', error.message);
+                Alert.alert('오류', '프로필 업데이트에 실패했습니다. 다시 시도해주세요.');
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleEditProfileImage = () => {
@@ -84,7 +160,11 @@ const EditMypageScreen = () => {
                     />
                 </ScrollView>
                 <View style={styles.submitButtonContainer}>
-                    <SubmitButton onPress={handleSubmitProfile} title="저장하기" />
+                    <SubmitButton
+                        onPress={handleSubmitProfile}
+                        title={loading ? '저장 중...' : '저장하기'}
+                        disabled={loading}
+                    />
                 </View>
                 <ToastMessage />
             </SafeAreaView>
