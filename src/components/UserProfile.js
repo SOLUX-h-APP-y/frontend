@@ -21,7 +21,12 @@ function UserProfile({ userData, isNotificationOn, setIsNotificationOn, isEditab
     return (
         <View style={styles.header}>
             <Image
-                source={{ uri: userData.profileImage || 'https://via.placeholder.com/50' }}
+                source={
+                    userData.profileImage
+                        ? { uri: userData.profileImage }
+                        : require('../assets/images/defaultProfile.png')
+
+                }
                 style={styles.profileImage}
             />
             <View style={[styles.userInfo, !isEditable && styles.userInfoCentered]}>

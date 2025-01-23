@@ -25,7 +25,7 @@ const EditMypageScreen = () => {
 
     const [nickname, setNickname] = useState('');
     const [intro, setIntro] = useState('');
-    const [profileImage, setProfileImage] = useState('https://via.placeholder.com/100');
+    const [profileImage, setProfileImage] = useState(require('../../assets/images/defaultProfile.png'));
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {

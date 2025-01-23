@@ -17,6 +17,7 @@ import LevelProgress from '../../components/LevelProgress';
 import { EncourageButton } from '../../components/Buttons';
 import { getTokens } from '../../services/TokenManager';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import colors from '../../styles/Colors';
 
 const MypageScreen = () => {
     const navigation = useNavigation();
@@ -106,7 +107,7 @@ const MypageScreen = () => {
     if (loading) {
         return (
             <SafeAreaView style={styles.container}>
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color={colors.theme} />
             </SafeAreaView>
         );
     }
