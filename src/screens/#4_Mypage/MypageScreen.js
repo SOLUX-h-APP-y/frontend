@@ -15,8 +15,11 @@ import UserProfile from '../../components/UserProfile';
 import Tabs from '../../components/Tabs';
 import LevelProgress from '../../components/LevelProgress';
 import { EncourageButton } from '../../components/Buttons';
+import { getTokens } from '../../services/TokenManager';
+import { useNavigation } from '@react-navigation/native';
 
 const MypageScreen = () => {
+    const navigation = useNavigation();
     const [activeTab, setActiveTab] = useState('거래중');
     const [isNotificationOn, setIsNotificationOn] = useState(true);
     const [userData, setUserData] = useState(null); // 초기 데이터를 null로 설정
@@ -28,19 +31,43 @@ const MypageScreen = () => {
     // API 호출 함수
     const fetchUserProfile = async () => {
         try {
-            setLoading(true); // 로딩 시작
-            const jwtToken = 'your-jwt-token-here'; // JWT 토큰 설정
-            setAuthToken(jwtToken); // Axios에 토큰 설정
+            setLoading(true);
+            const tokens = await getTokens();
+
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
+                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                ]);
+                return;
+            }
+
+            // accessToken만 사용
+            const accessToken = tokens.accessToken;
+            setAuthToken(accessToken);
+            console.log('Authorization Header:', api.defaults.headers.common['Authorization']);
 
             const response = await api.get('/profiles/me');
-            setUserData(response.data); // API 응답 데이터를 상태로 설정
+            console.log('Request Headers:', response.config.headers);
+
+            setUserData(response.data);
         } catch (error) {
-            console.error('Failed to fetch user profile:', error);
-            Alert.alert('오류', '사용자 프로필을 불러오는 데 실패했습니다.');
+            if (error.response?.status === 401) {
+                console.error('Unauthorized - Token expired');
+                Alert.alert('로그인이 만료되었습니다', '다시 로그인해주세요.', [
+                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                ]);
+            } else if (error.response?.status === 403) {
+                Alert.alert('권한 오류', '접근 권한이 없습니다.');
+            } else {
+                console.error('Failed to fetch user profile:', error);
+                Alert.alert('오류', '사용자 프로필을 불러오는 데 실패했습니다.');
+            }
         } finally {
-            setLoading(false); // 로딩 종료
+            setLoading(false);
         }
     };
+
+
 
     // 컴포넌트가 렌더링될 때 API 호출
     useEffect(() => {

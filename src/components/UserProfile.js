@@ -10,10 +10,18 @@ function UserProfile({ userData, isNotificationOn, setIsNotificationOn, isEditab
     // isEditable이 false일 때는 사용자가 다른 사용자의 프로필을 볼 때
     const navigation = useNavigation();
 
+    // console.log('UserProfile userData:', userData);
+    // UserProfile userData: 
+    // { "allowNotification": true, "bio": null, "cheerCount": 0, 
+    //     "level": "씨앗", "locationName": "경기도 군포시 산본동", 
+    //     "nextTier": "새싹", "nickname": "Dd", "profileImage": null, 
+    //     "remainingCountToNextTier": 10, "rentalCount": 0, 
+    //     "tier": "씨앗", "userId": 25 }
+
     return (
         <View style={styles.header}>
             <Image
-                source={{ uri: 'https://via.placeholder.com/50' }}
+                source={{ uri: userData.profileImage || 'https://via.placeholder.com/50' }}
                 style={styles.profileImage}
             />
             <View style={[styles.userInfo, !isEditable && styles.userInfoCentered]}>
@@ -29,10 +37,10 @@ function UserProfile({ userData, isNotificationOn, setIsNotificationOn, isEditab
                     </TouchableOpacity>
                 )}
                 <View style={styles.userNameLevelContainer}>
-                    <Text style={styles.userName}>{userData.name}</Text>
-                    <Text style={styles.userLevel}>{userData.level}{' 단계'}</Text>
+                    <Text style={styles.userName}>{userData.nickname}</Text>
+                    <Text style={styles.userLevel}>{userData.tier}{' 단계'}</Text>
                 </View>
-                <Text style={styles.userIntro}>{userData.intro}</Text>
+                <Text style={styles.userIntro}>{userData.bio || '소개 글을 작성해주세요.'}</Text>
             </View>
             {isEditable && (
                 <TouchableOpacity

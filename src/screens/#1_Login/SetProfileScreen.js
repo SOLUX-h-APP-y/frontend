@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import ProgressBar from '../../components/ProgressBar.js';
 import {
@@ -16,8 +16,10 @@ import {
 import { API_BASE_URL } from 'react-native-dotenv';
 import axios from 'axios';
 import { saveTokens } from '../../services/TokenManager.js';
+import { UserContext } from '../../states/UserContext.js';
 
 function SetProfileScreen({ navigation }) {
+  const { userInfo } = useContext(UserContext);
   const [step, setStep] = useState(1);
   const [profile, setProfile] = useState({
     name: '',
@@ -137,8 +139,8 @@ function SetProfileScreen({ navigation }) {
               ? true
               : false
             : profile.location
-            ? true
-            : false
+              ? true
+              : false
         }
         onPress={nextStep}
       />
