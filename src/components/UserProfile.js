@@ -10,9 +10,9 @@ function UserProfile({ userData, isNotificationOn, setIsNotificationOn, profileO
 
     const isEditable = profileOwnerId === userData?.userId;
 
-    console.log("isEditable:", isEditable); // 디버깅용
-    console.log("profileOwnerId:", profileOwnerId); // 디버깅용
-    console.log("userData.userId:", userData?.userId); // 디버깅용
+    // console.log("isEditable:", isEditable); // 디버깅용
+    // console.log("profileOwnerId:", profileOwnerId); // 디버깅용
+    // console.log("userData.userId:", userData?.userId); // 디버깅용
 
     // console.log('UserProfile userData:', userData);
     // UserProfile userData: 

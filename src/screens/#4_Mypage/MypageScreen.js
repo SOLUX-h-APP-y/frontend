@@ -8,7 +8,7 @@ import {
     ActivityIndicator,
     Alert,
 } from 'react-native';
-import api, { setAuthToken } from '../../utils/api';
+import api, { setAuthToken } from '../../services/api';
 import fontStyles from '../../styles/FontStyles';
 import PostPreviewItem from '../../components/PostPreviewItem';
 import UserProfile from '../../components/UserProfile';
@@ -28,7 +28,7 @@ const MypageScreen = () => {
     const [loading, setLoading] = useState(true); // 로딩 상태 추가
     const tabs = ['거래중', '대여중', '거래완료'];
 
-    const profileOwnerId = 30; // 현재 보고 있는 프로필 소유자 ID
+    const profileOwnerId = 25; // 현재 보고 있는 프로필 소유자 ID
 
     // 로그인 사용자 ID를 가져옴
     const fetchLoggedInUserId = async () => {
