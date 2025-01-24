@@ -8,7 +8,7 @@ import OptionPanel from '../../components/OptionPanel';
 import OptionSelector from '../../components/OptionSelector';
 import { getTokens } from '../../services/TokenManager.js';
 
-const sharerData = [
+const shareData = [
   {
     id: 0,
     title: '카메라 빌려드려요 어쩌구 저쩌구',
@@ -16,7 +16,7 @@ const sharerData = [
     location: '청파동2가',
     image: sampleImage,
     state: '거래완료',
-    type: 'sharer',
+    type: 'share',
   },
   {
     id: 1,
@@ -24,7 +24,7 @@ const sharerData = [
     price: 2500,
     location: '청파동2가',
     state: '거래완료',
-    type: 'borrower',
+    type: 'borrow',
   },
   {
     id: 2,
@@ -32,14 +32,14 @@ const sharerData = [
     price: 3500,
     location: '청파동2가',
     image: sampleImage,
-    type: 'borrower',
+    type: 'borrow',
   },
   {
     id: 3,
     title: '원피스형 정장 필요하신분?',
     price: 3500,
     location: '청파동2가',
-    type: 'borrower',
+    type: 'borrow',
   },
 
   {
@@ -62,7 +62,7 @@ const sharerData = [
   },
 ];
 
-const borrowerData = [
+const borrowData = [
   {
     id: 0,
     title: '카메라 빌려주십쇼 어쩌구 저쩌구',
@@ -106,13 +106,13 @@ function PostListScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      <CustomHeader isSharer={actionType == 'sharer' ? true : false} />
+      <CustomHeader isShare={actionType == 'share' ? true : false} />
       <View style={styles.listContainer}>
         <OptionPanel handleOptionActive={handleOptionActive} />
         <FlatList
           contentContainerStyle={styles.content}
-          data={actionType == 'sharer' ? sharerData : borrowerData}
-          keyExtractor={sharerData.id}
+          data={actionType == 'share' ? shareData : borrowData}
+          keyExtractor={shareData.id}
           renderItem={({ item, index }) => (
             <PostPreviewItem id={index} data={item} />
           )}

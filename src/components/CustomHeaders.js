@@ -5,13 +5,13 @@ import { useState } from 'react';
 import fontStyles from '../styles/FontStyles.js';
 import { useNavigation } from '@react-navigation/native';
 
-function CustomHeader({ isSharer }) {
+function CustomHeader({ isShare }) {
   const [query, setQuery] = useState('');
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
-        {isSharer ? '빌려드려요 공고' : '빌려주세요 공고'}
+        {isShare ? '빌려드려요 공고' : '빌려주세요 공고'}
       </Text>
       <DrondownInputField
         placeholder={'청파동 근처의 공고를 검색해보세요.'}
@@ -40,7 +40,7 @@ function NavigateHeader({ title, type }) {
       <View style={NavigateHeaderstyles.backIcon}></View>
     </View>
   );
-};
+}
 
 function PostHeader({ post }) {
   return (
@@ -58,7 +58,7 @@ function PostHeader({ post }) {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

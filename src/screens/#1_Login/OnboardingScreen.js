@@ -60,7 +60,11 @@ function OnboardingScreen({ navigation }) {
       serverResponse.data.accessToken,
       serverResponse.data.refreshToken,
     );
-    navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
+
+    navigation.navigate('MainTabs', {
+      screen: '홈',
+      params: { actionType: 'share' },
+    });
   };
 
   return (

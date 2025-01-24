@@ -97,7 +97,7 @@ function SetProfileScreen({ navigation }) {
 
       saveTokens(response.data.accessToken, response.data.refreshToken);
 
-      navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
+      navigation.navigate('MainTabs', { screen: 'SharePostListScreen' });
     } catch (e) {
       console.log('signUp error: ', e);
     }
@@ -139,8 +139,9 @@ function SetProfileScreen({ navigation }) {
               ? true
               : false
             : profile.location
-              ? true
               : false
+            ? true
+            : false
         }
         onPress={nextStep}
       />

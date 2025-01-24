@@ -45,7 +45,7 @@ function CreatePostScreen({ route }) {
         <View style={styles.contentContainer}>
           <NavigateHeader
             title={
-              actionType === 'sharer'
+              actionType === 'share'
                 ? '빌려드려요 글 작성하기'
                 : '빌려주세요 글 작성하기'
             }
@@ -64,7 +64,7 @@ function CreatePostScreen({ route }) {
                 alignItems: 'center',
               }}>
               <Text style={styles.title}>가격</Text>
-              {actionType === 'sharer' ? (
+              {actionType === 'share' ? (
                 <FreeButton active={selectedFree} onPress={handleFreeSelect} />
               ) : null}
             </View>

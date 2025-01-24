@@ -32,7 +32,7 @@ function PostPreviewItem({ data }) {
               <ReviewButton revieweeId={data.id} /> // revieweeId=postId -> revieweeId=writerId로 변경 예정
             ) : null}
             {data.type && (
-              <TypeTag type={data.type === 'sharer' ? 'sharer' : 'borrower'} />
+              <TypeTag type={data.type === 'share' ? 'share' : 'borrow'} />
             )}
           </View>
         </View>
@@ -59,7 +59,7 @@ function PostPreviewItem({ data }) {
           <Text style={styles.locationText}>{data.location}</Text>
         </View>
         {data.type && (
-          <TypeTag type={data.type === 'sharer' ? 'sharer' : 'borrower'} />
+          <TypeTag type={data.type === 'share' ? 'share' : 'borrow'} />
         )}
       </View>
     </TouchableOpacity>
