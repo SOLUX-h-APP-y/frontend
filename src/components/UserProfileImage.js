@@ -2,7 +2,12 @@ import { Image, TouchableOpacity, View } from 'react-native';
 
 const UserProfileImage = ({ profileImage, onEditProfileImage }) => (
     <View style={styles.profileContainer}>
-        <Image source={{ uri: profileImage }} style={styles.profileImage} />
+        <Image
+            source={
+                profileImage
+                    ? { uri: profileImage }
+                    : require('../assets/images/defaultProfile.png') // null 또는 undefined이면 기본 이미지
+            } style={styles.profileImage} />
         <TouchableOpacity style={styles.editButton} onPress={onEditProfileImage}>
             <Image source={require('../assets/icons/editpencilIcon.png')} style={styles.editpencilIcon} />
         </TouchableOpacity>
