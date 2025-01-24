@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import colors from '../styles/Colors';
 import { useNavigation } from '@react-navigation/native';
 import plusIcon from '../assets/icons/plusIcon.png';
@@ -150,16 +150,28 @@ function ReviewButton({ revieweeId }) {
   );
 }
 
-const EncourageButton = ({ totalCount = 0, isMyProfile, onPress }) => {
+const EncourageButton = ({ totalCount = 0, profileOwnerId, currentUserId, onPress }) => {
+  const isMyProfile = profileOwnerId === currentUserId; // 내 프로필 여부 확인
+
+  const handlePress = () => {
+    if (isMyProfile) {
+      Alert.alert('알림', '자신에게는 응원할 수 없습니다.');
+    } else if (onPress) {
+      onPress();
+    }
+  };
+
   return (
     <TouchableOpacity
-      style={EncourageButtonstyles.button}
-      onPress={!isMyProfile ? onPress : null} // 내 프로필일 경우 클릭 이벤트 제거
+      style={[
+        EncourageButtonstyles.button,
+        isMyProfile && EncourageButtonstyles.disabledButton, // 내 프로필일 경우 버튼 스타일 비활성화
+      ]}
+      onPress={handlePress} // 버튼 클릭 이벤트 처리
     >
       <View style={EncourageButtonstyles.textContainer}>
         <Text style={EncourageButtonstyles.buttonText}>응원하기</Text>
-        <Text
-          style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
+        <Text style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -331,6 +343,9 @@ const EncourageButtonstyles = StyleSheet.create({
     left: '50%',
     transform: [{ translateX: -50 }, { translateY: -50 }], // 버튼을 중앙에 정렬
     zIndex: 1,
+  },
+  disabledButton: {
+    backgroundColor: 'white', // 비활성화 상태 색상
   },
   textContainer: {
     flexDirection: 'row',

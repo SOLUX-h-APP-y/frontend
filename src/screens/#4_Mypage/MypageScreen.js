@@ -24,17 +24,16 @@ const MypageScreen = () => {
     const [activeTab, setActiveTab] = useState('거래중');
     const [isNotificationOn, setIsNotificationOn] = useState(true);
     const [userData, setUserData] = useState(null); // 초기 데이터를 null로 설정
+    const [loggedInUserId, setLoggedInUserId] = useState(null); // 로그인한 사용자 ID
     const [loading, setLoading] = useState(true); // 로딩 상태 추가
     const tabs = ['거래중', '대여중', '거래완료'];
 
-    const profileOwnerId = 1; // 현재 보고 있는 프로필 소유자 ID
+    const profileOwnerId = 30; // 현재 보고 있는 프로필 소유자 ID
 
-    // API 호출 함수
-    const fetchUserProfile = async () => {
+    // 로그인 사용자 ID를 가져옴
+    const fetchLoggedInUserId = async () => {
         try {
-            setLoading(true);
             const tokens = await getTokens();
-
             if (!tokens || !tokens.accessToken) {
                 Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
                     { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
@@ -42,27 +41,39 @@ const MypageScreen = () => {
                 return;
             }
 
-            // accessToken만 사용
             const accessToken = tokens.accessToken;
             setAuthToken(accessToken);
-            console.log('Authorization Header:', api.defaults.headers.common['Authorization']);
 
+            // 자신의 프로필 조회를 통해 로그인한 사용자 ID를 가져옴
             const response = await api.get('/profiles/me');
-            console.log('Request Headers:', response.config.headers);
-
-            setUserData(response.data);
+            setLoggedInUserId(response.data.userId); // 로그인한 사용자 ID 설정
         } catch (error) {
-            if (error.response?.status === 401) {
-                console.error('Unauthorized - Token expired');
-                Alert.alert('로그인이 만료되었습니다', '다시 로그인해주세요.', [
+            Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
+            console.error('Failed to fetch logged-in user ID:', error);
+        }
+    };
+
+    // 특정 프로필 조회
+    const fetchUserProfile = async (userId) => {
+        try {
+            setLoading(true);
+
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
                     { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
                 ]);
-            } else if (error.response?.status === 403) {
-                Alert.alert('권한 오류', '접근 권한이 없습니다.');
-            } else {
-                console.error('Failed to fetch user profile:', error);
-                Alert.alert('오류', '사용자 프로필을 불러오는 데 실패했습니다.');
+                return;
             }
+
+            const accessToken = tokens.accessToken;
+            setAuthToken(accessToken);
+
+            const response = await api.get(`/profiles/${userId}`);
+            setUserData(response.data); // 조회한 프로필 데이터 설정
+        } catch (error) {
+            Alert.alert('오류', '프로필 정보를 불러오는 데 실패했습니다.');
+            console.error('Failed to fetch user profile:', error);
         } finally {
             setLoading(false);
         }
@@ -70,13 +81,51 @@ const MypageScreen = () => {
 
     useFocusEffect(
         React.useCallback(() => {
-            fetchUserProfile();
-        }, [])
+            fetchLoggedInUserId(); // 로그인 사용자 ID 가져오기
+            fetchUserProfile(profileOwnerId); // 특정 프로필 조회
+        }, [profileOwnerId])
     );
 
-    const handleEncouragePress = () => {
-        console.log('응원하기');
-        // 백엔드 API 요청 추가 예정
+    // 응원하기
+    const encourageUser = async (receiverId) => {
+        try {
+            setLoading(true);
+
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
+                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                ]);
+                return;
+            }
+
+            const accessToken = tokens.accessToken;
+            setAuthToken(accessToken);
+
+            const response = await api.post(`/profiles/${receiverId}/cheers`);
+
+            if (response.status === 200) {
+                Alert.alert('응원 성공!', '응원을 보냈습니다.');
+                fetchUserProfile(profileOwnerId); // 프로필 데이터 새로고침
+            } else {
+                Alert.alert('오류', '응원에 실패했습니다.');
+            }
+        } catch (error) {
+            if (error.response?.status === 403) {
+                Alert.alert('오류', '이미 응원한 사용자입니다.');
+            } else if (error.response?.status === 400) {
+                Alert.alert('오류', '자신은 응원할 수 없습니다.');
+            } else if (error.response?.status === 401) {
+                Alert.alert('로그인이 만료되었습니다', '다시 로그인해주세요.');
+                navigation.navigate('LoginScreen');
+            } else if (error.response?.status === 404) {
+                Alert.alert('오류', '사용자를 찾을 수 없습니다.');
+            } else {
+                Alert.alert('오류', '응원 요청 중 문제가 발생했습니다.');
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleLevelChange = (newLevel) => {
@@ -126,13 +175,16 @@ const MypageScreen = () => {
                                 userData={userData}
                                 isNotificationOn={isNotificationOn}
                                 setIsNotificationOn={setIsNotificationOn}
+                                profileOwnerId={loggedInUserId} // 현재 프로필 소유자 ID
                             />
                         )}
                         <View style={styles.relativeContainer}>
                             <EncourageButton
-                                totalCount={userData?.cheerCount} // 응원 횟수 전달
-                                isMyProfile={userData?.userId === profileOwnerId}
-                                onPress={handleEncouragePress}
+                                totalCount={userData?.cheerCount || 0}
+                                profileOwnerId={profileOwnerId}
+                                currentUserId={loggedInUserId}
+                                onPress={() => encourageUser(profileOwnerId)} // 응원 버튼 클릭
+                                disabled={loading || profileOwnerId === loggedInUserId} // 로딩 중 또는 내 프로필일 경우 비활성화
                             />
                             <LevelProgress
                                 rentalCount={userData?.rentalCount || 0}

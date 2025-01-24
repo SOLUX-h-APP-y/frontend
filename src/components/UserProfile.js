@@ -5,10 +5,14 @@ import fontStyles from '../styles/FontStyles';
 import { Image } from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 
-function UserProfile({ userData, isNotificationOn, setIsNotificationOn, isEditable = true }) {
-    // isEditable이 true(기본값)일 때만 수정 가능한 버튼과 알람 설정 버튼이 보이도록 설정 (사용자가 나일 떄)
-    // isEditable이 false일 때는 사용자가 다른 사용자의 프로필을 볼 때
+function UserProfile({ userData, isNotificationOn, setIsNotificationOn, profileOwnerId, onEncouragePress }) {
     const navigation = useNavigation();
+
+    const isEditable = profileOwnerId === userData?.userId;
+
+    console.log("isEditable:", isEditable); // 디버깅용
+    console.log("profileOwnerId:", profileOwnerId); // 디버깅용
+    console.log("userData.userId:", userData?.userId); // 디버깅용
 
     // console.log('UserProfile userData:', userData);
     // UserProfile userData: 
