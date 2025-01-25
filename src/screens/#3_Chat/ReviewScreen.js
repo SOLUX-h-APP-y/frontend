@@ -17,9 +17,14 @@ import fontStyles from '../../styles/FontStyles';
 import { SubmitButton } from '../../components/Buttons';
 import Toast from 'react-native-toast-message';
 import { NavigateHeader, PostHeader } from '../../components/CustomHeaders';
+import { getTokens } from '../../services/TokenManager';
+import axios from 'axios';
+import { API_BASE_URL } from 'react-native-dotenv'
+import { setAuthToken } from '../../services/api';
 
 const ReviewScreen = ({ route, navigation }) => {
-    const { chatRoomId } = route.params;
+    const { chatRoomId, postID, revieweeId } = route.params; // API 요청에 필요한 데이터 전달
+    // chatRoomID는 필요없는지?
 
     const post = {
         id: 101,
@@ -30,18 +35,62 @@ const ReviewScreen = ({ route, navigation }) => {
 
     const [rating, setRating] = useState(0); // 초기 별점 값
     const [reviewText, setReviewText] = useState('');
+    const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
     const handleStarPress = (value) => {
         setRating(value);
     };
 
-    const handleSubmitReview = () => {
-        console.log('후기 작성:', { rating, reviewText });
-        navigation.goBack(); // 작성 완료 후 이전 화면으로 이동
-        Toast.show({
-            type: 'success',
-            text1: '후기 작성 완료',
-        });
+    const handleSubmitReview = async () => {
+        setLoading(true);
+        try {
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
+                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                ]);
+                return;
+            }
+
+            const accessToken = tokens.accessToken;
+            setAuthToken(accessToken);
+
+            console.log('Authorization Header:', `Bearer ${accessToken}`);
+            console.log('Request Body:', { revieweeId, rate: rating, content: reviewText });
+
+            // 리뷰 작성 API 호출
+            const response = await axios.post(
+                `${API_BASE_URL}/reviews/${postID}`,
+                {
+                    revieweeId,
+                    rate: rating,
+                    content: reviewText,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                Toast.show({
+                    type: 'success',
+                    text1: '후기 작성 완료',
+                });
+                navigation.goBack(); // 작성 완료 후 이전 화면으로 이동
+            }
+        } catch (error) {
+            console.error('후기 작성 실패:', error.message);
+            if (error.response?.data?.message) {
+                Alert.alert('오류', error.response.data.message);
+            } else {
+                Alert.alert('오류', '후기 작성 중 문제가 발생했습니다. 다시 시도해주세요.');
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
