@@ -121,7 +121,7 @@ const MypageScreen = () => {
             } else if (error.response?.status === 404) {
                 Alert.alert('오류', '사용자를 찾을 수 없습니다.');
             } else {
-                Alert.alert('오류', '응원 요청 중 문제가 발생했습니다.');
+                Alert.alert('오류', `응원 요청 중 문제가 발생했습니다: ${error.message}`);
             }
         } finally {
             setLoading(false);

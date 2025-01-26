@@ -78,14 +78,23 @@ const EditMypageScreen = () => {
 
             const accessToken = tokens.accessToken;
 
-            const response = await axios.patch(`${API_BASE_URL}/profiles/me`, {
-                nickname,
-                profileImage,
-                bio: intro,
-            }, {
+            // FormData 생성
+            const formData = new FormData();
+            formData.append('nickname', nickname);
+            formData.append('bio', intro || '');
+            if (profileImage && profileImage !== require('../../assets/images/defaultProfile.png')) {
+                formData.append('profileImageFile', {
+                    uri: profileImage,
+                    name: 'profile_image.jpg',
+                    type: 'image/jpeg',
+                });
+            }
+
+            // PATCH 요청
+            const response = await axios.patch(`${API_BASE_URL}/profiles/me`, formData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'multipart/form-data',
                 },
             });
 
@@ -95,7 +104,6 @@ const EditMypageScreen = () => {
                 type: 'success',
                 text1: '저장되었습니다',
             });
-
         } catch (error) {
             if (error.response) {
                 console.error('프로필 업데이트 실패:', error.response.data);
