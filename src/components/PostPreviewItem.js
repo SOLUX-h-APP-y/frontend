@@ -49,8 +49,8 @@ function PostPreviewItem({ data }) {
             {data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           </Text>
         </View>
-        {data.state === '거래완료' ? ( // 백엔드 구현 후 {data.state === '거래완료' && data.hasReview ? 로 변경 예정
-          <ReviewButton revieweeId={data.id} /> // revieweeId=postId -> revieweeId=writerId로 변경 예정
+        {data.state === '거래완료' ? (
+          <ReviewButton revieweeId={data.id} />
         ) : null}
       </View>
       <View style={{ flexDirection: 'row' }}>
