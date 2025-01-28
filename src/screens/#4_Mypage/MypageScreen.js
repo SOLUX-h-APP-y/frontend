@@ -26,9 +26,10 @@ const MypageScreen = () => {
     const [userData, setUserData] = useState(null); // 초기 데이터를 null로 설정
     const [loggedInUserId, setLoggedInUserId] = useState(null); // 로그인한 사용자 ID
     const [loading, setLoading] = useState(true); // 로딩 상태 추가
+    const [posts, setPosts] = useState([]); // 게시글 목록
     const tabs = ['거래중', '대여중', '거래완료'];
 
-    const profileOwnerId = 25; // 현재 보고 있는 프로필 소유자 ID
+    const profileOwnerId = 30; // 현재 보고 있는 프로필 소유자 ID
 
     // 로그인 사용자 ID를 가져옴
     const fetchLoggedInUserId = async () => {
@@ -52,6 +53,33 @@ const MypageScreen = () => {
             console.error('Failed to fetch logged-in user ID:', error);
         }
     };
+
+    // 사용자가 작성한 글 목록 조회
+    const fetchUserPosts = async () => {
+        try {
+            setLoading(true);
+
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
+                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                ]);
+                return;
+            }
+
+            const accessToken = tokens.accessToken;
+            setAuthToken(accessToken);
+
+            const response = await api.get('/users/me/posts');
+            setPosts(response.data); // 조회한 글 데이터 설정
+        } catch (error) {
+            Alert.alert('오류', '글 목록을 불러오는 데 실패했습니다.');
+            console.error('Failed to fetch user posts:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     // 특정 프로필 조회
     const fetchUserProfile = async (userId) => {
@@ -83,6 +111,7 @@ const MypageScreen = () => {
         React.useCallback(() => {
             fetchLoggedInUserId(); // 로그인 사용자 ID 가져오기
             fetchUserProfile(profileOwnerId); // 특정 프로필 조회
+            fetchUserPosts(); // 사용자가 작성한 글 목록 조회
         }, [profileOwnerId])
     );
 
@@ -137,14 +166,7 @@ const MypageScreen = () => {
         }
     };
 
-    const posts = [
-        { id: 1, title: '원피스형 정장 빌려드려요', price: 2500, location: '청파동2가', type: 'borrower', state: '거래중' },
-        { id: 2, title: '카메라 빌려드립니다', price: 8500, location: '청파동2가', type: 'borrower', state: '대여중' },
-        { id: 3, title: '헤드폰 빌려드립니다', price: 4500, location: '청파동2가', type: 'sharer', state: '거래완료' },
-        { id: 4, title: '가방 빌려드립니다', price: 3500, location: '청파동2가', type: 'sharer', state: '거래완료' },
-    ];
-
-    const filteredPosts = posts.filter((post) => post.state === activeTab);
+    const filteredPosts = posts.filter((post) => post.postStatus === activeTab);
 
     const renderPost = ({ item }) => (
         <View style={styles.postCardContainer}>
