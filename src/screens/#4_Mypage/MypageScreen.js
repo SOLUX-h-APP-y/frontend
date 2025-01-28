@@ -29,7 +29,7 @@ const MypageScreen = () => {
     const [posts, setPosts] = useState([]); // 게시글 목록
     const tabs = ['거래중', '대여중', '거래완료'];
 
-    const profileOwnerId = 25; // 현재 보고 있는 프로필 소유자 ID
+    const profileOwnerId = 25; // 현재 보고 있는 프로필 소유자 ID (하드코딩된 임시 데이터로 추후에 동적 프로필 소유자 id로 변경 필요)
 
     // 로그인 사용자 ID를 가져옴
     const fetchLoggedInUserId = async () => {
@@ -82,7 +82,6 @@ const MypageScreen = () => {
             setLoading(false);
         }
     };
-
 
     // 특정 프로필 조회
     const fetchUserProfile = async (userId) => {
