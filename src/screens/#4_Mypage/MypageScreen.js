@@ -183,6 +183,7 @@ const MypageScreen = () => {
         );
     }
 
+    const tabTitle = profileOwnerId === loggedInUserId ? '내 글 보기' : '거래 목록';
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
@@ -214,7 +215,7 @@ const MypageScreen = () => {
                             />
                         </View>
                         <View style={styles.tabsContainer}>
-                            <Text style={styles.tabsTitle}>내 글 보기</Text>
+                            <Text style={styles.tabsTitle}>{tabTitle}</Text>
                         </View>
                         <Tabs
                             tabs={tabs}
