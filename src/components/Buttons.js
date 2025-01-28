@@ -1,4 +1,11 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import colors from '../styles/Colors';
 import { useNavigation } from '@react-navigation/native';
 import plusIcon from '../assets/icons/plusIcon.png';
@@ -80,9 +87,9 @@ function NavigateButtonTheme({ title, name, chatRoomId, isCompleted }) {
   );
 }
 
-function AddPhotoButton() {
+function AddPhotoButton({ onPress }) {
   return (
-    <TouchableOpacity style={styles.addPhotoButton}>
+    <TouchableOpacity style={styles.addPhotoButton} onPress={onPress}>
       <Image source={plusIcon} />
     </TouchableOpacity>
   );
@@ -150,7 +157,12 @@ function ReviewButton({ revieweeId }) {
   );
 }
 
-const EncourageButton = ({ totalCount = 0, profileOwnerId, currentUserId, onPress }) => {
+const EncourageButton = ({
+  totalCount = 0,
+  profileOwnerId,
+  currentUserId,
+  onPress,
+}) => {
   const isMyProfile = profileOwnerId === currentUserId; // 내 프로필 여부 확인
 
   const handlePress = () => {
@@ -171,7 +183,8 @@ const EncourageButton = ({ totalCount = 0, profileOwnerId, currentUserId, onPres
     >
       <View style={EncourageButtonstyles.textContainer}>
         <Text style={EncourageButtonstyles.buttonText}>응원하기</Text>
-        <Text style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
+        <Text
+          style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
       </View>
     </TouchableOpacity>
   );

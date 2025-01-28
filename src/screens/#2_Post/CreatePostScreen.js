@@ -8,9 +8,12 @@ import {
 } from '../../components/Buttons.js';
 import colors from '../../styles/Colors.js';
 import { AddPhotoButton } from '../../components/Buttons.js';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavigateHeader } from '../../components/CustomHeaders.js';
 import { useNavigation } from '@react-navigation/native';
+import { getTokens } from '../../services/TokenManager.js';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { Image } from 'react-native-animatable';
 
 const options = {
   distance: ['거리무관', '3km', '5km', '10km'],
@@ -19,7 +22,17 @@ const options = {
 
 function CreatePostScreen({ route }) {
   const { actionType } = route.params;
-  console.log(actionType);
+  const [post, setPost] = useState({
+    title: '',
+    content: '',
+    price: null,
+    type: actionType,
+    distance: '',
+    locationName: '',
+    locationLatitude: null,
+    locationLongitude: null,
+    image: null,
+  });
 
   const [selectedDistance, setSelectedDistance] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -36,8 +49,50 @@ function CreatePostScreen({ route }) {
   };
 
   const handleFreeSelect = () => {
+    setPost({ ...post, price: 0 });
     setSelectedFree(!selectedFree);
   };
+
+  const onChangeTitle = title => {
+    setPost({ ...post, title });
+  };
+
+  const onChangeContent = content => {
+    setPost({ ...post, content });
+  };
+
+  const onChangePrice = price => {
+    if (isNaN(price)) {
+      console.log('숫자아님');
+    } else {
+      setPost({ ...post, price });
+    }
+  };
+
+  const onChangeImage = () => {
+    launchImageLibrary(
+      {
+        mediaType: 'photo',
+        maxWidth: 100,
+        maxHeight: 100,
+        quality: 0.8,
+      },
+      response => {
+        if (response.didCancel) {
+          console.log('사용자가 이미지 선택을 취소했습니다.');
+        } else if (response.errorCode) {
+          console.error('이미지 선택 에러:', response.errorMessage);
+        } else if (response.assets && response.assets.length > 0) {
+          const selectedImage = response.assets[0].uri;
+          setPost({ ...post, image: selectedImage });
+        }
+      },
+    );
+  };
+
+  useEffect(() => {
+    console.log(post);
+  }, [post]);
 
   return (
     <View style={styles.container}>
@@ -54,7 +109,11 @@ function CreatePostScreen({ route }) {
           <NavigateButton title="이전 글 불러오기" name="MyPostList" />
           <View style={styles.section}>
             <Text style={styles.title}>제목</Text>
-            <PlainInputField placeholder="최대 20자 이내의 제목을 입력해주세요" />
+            <PlainInputField
+              placeholder="최대 20자 이내의 제목을 입력해주세요"
+              value={post.title}
+              onChangeText={onChangeTitle}
+            />
           </View>
           <View style={styles.section}>
             <View
@@ -71,6 +130,9 @@ function CreatePostScreen({ route }) {
             <PlainInputField
               placeholder="원하는 가격을 입력해주세요"
               inactive={selectedFree ? true : false}
+              keyboardType="number-pad"
+              value={post.price}
+              onChangeText={onChangePrice}
             />
             <Text style={{ color: colors.themeColor, paddingLeft: 5 }}>
               1일 기준 대여료를 입력해주세요
@@ -86,7 +148,10 @@ function CreatePostScreen({ route }) {
               <Text style={styles.title}>사진</Text>
               <Text style={{ color: colors.themeColor }}>0/10</Text>
             </View>
-            <AddPhotoButton />
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              {post.image && <Image source={post.image} style={styles.image} />}
+              <AddPhotoButton onPress={onChangeImage} />
+            </View>
           </View>
           <View style={styles.section}>
             <Text style={styles.title}>내용</Text>
@@ -95,6 +160,8 @@ function CreatePostScreen({ route }) {
                 '최소 10자 이상, 최대 300자 이내의 내용을 입력해\n주세요'
               }
               isTextarea={true}
+              value={post.content}
+              onChangeText={onChangeContent}
             />
           </View>
           <View style={styles.section}>
@@ -166,6 +233,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
     flexWrap: 'wrap',
+  },
+  image: {
+    width: 90,
+    height: 90,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
   },
 });
 
