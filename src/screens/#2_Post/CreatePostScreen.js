@@ -27,6 +27,7 @@ function CreatePostScreen({ route }) {
     content: '',
     price: null,
     type: actionType,
+    category: '',
     distance: '',
     locationName: '',
     locationLatitude: null,
@@ -38,14 +39,15 @@ function CreatePostScreen({ route }) {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedFree, setSelectedFree] = useState(false);
 
-  const handleDistanceSelect = value => {
-    console.log(value);
-    setSelectedDistance(value);
+  const handleDistanceSelect = distance => {
+    setSelectedDistance(distance);
+    setPost({ ...post, distance });
   };
 
-  const handleCategorySelect = value => {
-    console.log(value);
-    setSelectedCategory(value);
+  const handleCategorySelect = category => {
+    console.log(category);
+    setSelectedCategory(category);
+    setPost({ ...post, category });
   };
 
   const handleFreeSelect = () => {

@@ -74,3 +74,31 @@ export const getAddressFromCoordinates = async (latitude, longitude) => {
     return null;
   }
 };
+
+export const searchPlace = async (query, latitude, longitude) => {
+  //사라진 API...?
+  try {
+    const response = await axios.get(
+      'https://naveropenapi.apigw.ntruss.com/map-place/v1/search',
+      {
+        params: {
+          query, // 검색할 키워드
+          coordinate: `${longitude},${latitude}`, // 기준 좌표 (경도, 위도 순서)
+          radius: 5000, // 반경 5km
+          display: 5, // 결과 최대 5개
+        },
+        headers: {
+          'X-NCP-APIGW-API-KEY-ID': NAVER_CLIENT_ID,
+          'X-NCP-APIGW-API-KEY': NAVER_CLIENT_SECRET,
+        },
+      },
+    );
+
+    console.log('API Response:', response.data);
+    // 장소 정보 반환
+    return response.data.places;
+  } catch (error) {
+    console.error('Place Search Error:', error);
+    return null;
+  }
+};

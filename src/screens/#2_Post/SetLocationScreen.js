@@ -7,12 +7,17 @@ import {
   requestLocationAccuracy,
 } from 'react-native-permissions';
 import { NaverMapView } from '@mj-studio/react-native-naver-map';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { BottomButton } from '../../components/Buttons';
 import { useNavigation } from '@react-navigation/native';
+import {
+  requestLocationPermission,
+  getCurrentCoordinates,
+  searchPlace,
+} from '../../services/LocationManager';
 
-function SetLocationScreen() {
-  const navigation = useNavigation();
+function SetLocationScreen({ navigation }) {
+  const mapRef = useRef(null);
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -33,18 +38,47 @@ function SetLocationScreen() {
     }
   }, []);
 
-  const handleLocation = () => {
-    navigation.goBack();
-    console.log('위치 저장하고 CreatePostScreen으로 돌아가기')
+  // const handleLocation = () => {
+  //   navigation.goBack();
+  //   console.log('위치 저장하고 CreatePostScreen으로 돌아가기');
+  // };
+
+  const handleLocation = async () => {
+    try {
+      await requestLocationPermission();
+
+      const coordinates = await new Promise((resolve, reject) => {
+        const result = getCurrentCoordinates();
+
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('좌표 가져오기 실패'));
+        }
+      });
+
+      const { latitude, longitude } = coordinates;
+
+      console.log('현재 좌표:', latitude, longitude);
+
+      const places = await searchPlace('카페', 37.5665, 126.978);
+      console.log('검색된 장소:', places);
+    } catch (e) {
+      console.log('handleLocation Error: ', e);
+    }
   };
 
   return (
     <View style={styles.container}>
       <NaverMapView
+        ref={mapRef}
         style={{ flex: 1 }}
-        onInitialized={() => {
-          return console.log('initialized!');
+        camera={{
+          latitude: 37.5326, // 초기 위도
+          longitude: 126.9904, // 초기 경도
+          zoom: 15,
         }}
+        showsMyLocationButton={true}
       />
 
       <View style={styles.overlay}>
