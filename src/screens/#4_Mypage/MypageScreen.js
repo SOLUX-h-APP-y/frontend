@@ -48,6 +48,7 @@ const MypageScreen = () => {
             // 자신의 프로필 조회를 통해 로그인한 사용자 ID를 가져옴
             const response = await api.get('/profiles/me');
             setLoggedInUserId(response.data.userId); // 로그인한 사용자 ID 설정
+
         } catch (error) {
             Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
             console.error('Failed to fetch logged-in user ID:', error);
@@ -57,7 +58,6 @@ const MypageScreen = () => {
     // 사용자가 작성한 글 목록 조회
     const fetchUserPosts = async () => {
         try {
-            setLoading(true);
 
             const tokens = await getTokens();
             if (!tokens || !tokens.accessToken) {
@@ -70,8 +70,11 @@ const MypageScreen = () => {
             const accessToken = tokens.accessToken;
             setAuthToken(accessToken);
 
-            const response = await api.get('/users/me/posts');
-            setPosts(response.data); // 조회한 글 데이터 설정
+            const response = await api.get(
+                `/users/${profileOwnerId}/posts?status=${activeTab}`
+            ); setPosts(response.data); // 조회한 글 데이터 설정
+
+            // console.log('Current Active Tab:', activeTab);
         } catch (error) {
             Alert.alert('오류', '글 목록을 불러오는 데 실패했습니다.');
             console.error('Failed to fetch user posts:', error);
@@ -114,6 +117,11 @@ const MypageScreen = () => {
             fetchUserPosts(); // 사용자가 작성한 글 목록 조회
         }, [profileOwnerId])
     );
+
+    // activeTab 변경 시 게시글 목록 조회
+    useEffect(() => {
+        fetchUserPosts();
+    }, [activeTab]);
 
     // 응원하기
     const encourageUser = async (receiverId) => {
@@ -166,8 +174,6 @@ const MypageScreen = () => {
         }
     };
 
-    const filteredPosts = posts.filter((post) => post.postStatus === activeTab);
-
     const renderPost = ({ item }) => (
         <View style={styles.postCardContainer}>
             <PostPreviewItem data={item} />
@@ -187,9 +193,9 @@ const MypageScreen = () => {
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
-                data={filteredPosts}
+                data={posts}
                 renderItem={renderPost}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.postId.toString()}
                 style={styles.transactionList}
                 ListHeaderComponent={
                     <>
