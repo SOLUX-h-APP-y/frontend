@@ -14,13 +14,11 @@ function OptionSelector({
   const [selectedCategory, setSelectedCategory] = useState(options.category[0]);
 
   const handleDistanceSelect = value => {
-    console.log(value);
     setSelectedDistance(value);
     setSearchOptions({ ...searchOptions, distance: value });
   };
 
   const handleCategorySelect = value => {
-    console.log(value);
     setSelectedCategory(value);
     setSearchOptions({ ...searchOptions, category: value });
   };

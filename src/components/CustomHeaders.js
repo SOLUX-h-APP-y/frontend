@@ -46,8 +46,6 @@ function CustomHeader({
 
       const dong = await api.get('/users/address/dong');
       setAddress(dong.data.address);
-
-      console.log(response);
     } catch (e) {
       console.log('handleLocation Error: ', e);
     }

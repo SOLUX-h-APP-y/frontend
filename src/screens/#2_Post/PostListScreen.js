@@ -30,9 +30,8 @@ function PostListScreen({ route }) {
     setOptionActive(!optionsActive);
   };
 
-  const fetchPosts = async token => {
+  const fetchPosts = async () => {
     try {
-      console.log('Fetching posts...'); // 요청 시작 로그
       const response = await api.get(
         `/posts?type=${actionType === 'sharer' ? 'share' : 'borrow'}&category=${
           searchOptions.category
@@ -52,7 +51,6 @@ function PostListScreen({ route }) {
     const initialize = async () => {
       try {
         const tokens = await getTokens(); // 토큰 가져오기
-        console.log('Tokens:', tokens);
         if (tokens && tokens.accessToken) {
           setAuthToken(tokens.accessToken); // Axios 헤더에 토큰 설정
           await fetchPosts(tokens.accessToken); // Post 목록 요청

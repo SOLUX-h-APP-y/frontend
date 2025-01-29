@@ -32,7 +32,6 @@ function SetProfileScreen({ navigation }) {
     if (step === 1) {
       setStep(2);
     } else {
-      console.log('Profile before signUp:', profile); // 프로필 상태 확인
       signUp();
     }
   };
@@ -70,7 +69,7 @@ function SetProfileScreen({ navigation }) {
           latitude,
           longitude,
         };
-        console.log('Updated Profile:', updatedProfile); // 업데이트 확인
+
         return updatedProfile;
       });
     } catch (e) {
@@ -87,9 +86,6 @@ function SetProfileScreen({ navigation }) {
         locationLongitude: profile.longitude,
         locationName: profile.location,
       };
-
-      console.log('Request Body:', requestBody);
-
       const response = await axios.post(
         `${API_BASE_URL}/auth/kakao/sign-up`,
         requestBody,
@@ -139,8 +135,8 @@ function SetProfileScreen({ navigation }) {
               ? true
               : false
             : profile.location
-              ? true
-              : false
+            ? true
+            : false
         }
         onPress={nextStep}
       />

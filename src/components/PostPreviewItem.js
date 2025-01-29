@@ -12,7 +12,9 @@ function PostPreviewItem({ data }) {
   return data.previewImage ? (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.navigate('PostDetailScreen')}>
+      onPress={() =>
+        navigation.navigate('PostDetailScreen', { postId: data.postId })
+      }>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <View style={{ justifyContent: 'center' }}>
           <Image source={{ uri: data.previewImage }} style={styles.image} />
@@ -43,7 +45,9 @@ function PostPreviewItem({ data }) {
   ) : (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.navigate('PostDetailScreen')}>
+      onPress={() =>
+        navigation.navigate('PostDetailScreen', { postId: data.postId })
+      }>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <View style={{ flex: 1 }}>
           <Text style={styles.titleText}>{data.title}</Text>
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
   },
   locationContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'start',
     gap: 5,
     flex: 1,
   },
