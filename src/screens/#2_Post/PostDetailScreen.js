@@ -142,7 +142,7 @@ function PostDetailScreen({ navigation }) {
           </View>
           <View style={styles.tags}>
             <CategoryTag title={post.category} />
-            <StateTag title={post.state || '거래중'} />
+            <StateTag title={post.postStatus} />
           </View>
           <View style={{ gap: 10 }}>
             <Text style={styles.title}>{post.title}</Text>
