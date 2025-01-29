@@ -29,11 +29,8 @@ function PostDetailScreen({ navigation }) {
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const [images, setImages] = useState([]);
 
-  console.log('Post ID:', postId); // 확인용
-
   const handleStateActive = () => {
     setStateActive(!stateActive);
-    console.log(stateActive);
   };
 
   const fetchPostDetail = async token => {
@@ -175,7 +172,10 @@ function PostDetailScreen({ navigation }) {
           />
         </View>
       </ScrollView>
-      <BottomBar price={post.price} />
+      <BottomBar
+        price={post.price}
+        title={post.isMyPost ? '재업로드' : '채팅하기'}
+      />
 
       <StateSelector
         postId={postId}

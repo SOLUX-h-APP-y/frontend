@@ -19,19 +19,16 @@ const options = {
 
 function CreatePostScreen({ route }) {
   const { actionType } = route.params;
-  console.log(actionType);
 
   const [selectedDistance, setSelectedDistance] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedFree, setSelectedFree] = useState(false);
 
   const handleDistanceSelect = value => {
-    console.log(value);
     setSelectedDistance(value);
   };
 
   const handleCategorySelect = value => {
-    console.log(value);
     setSelectedCategory(value);
   };
 

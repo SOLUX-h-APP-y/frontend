@@ -51,7 +51,6 @@ function PostListScreen({ route }) {
     const initialize = async () => {
       try {
         const tokens = await getTokens(); // 토큰 가져오기
-        console.log('Tokens:', tokens);
         if (tokens && tokens.accessToken) {
           setAuthToken(tokens.accessToken); // Axios 헤더에 토큰 설정
           await fetchPosts(tokens.accessToken); // Post 목록 요청

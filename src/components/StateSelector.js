@@ -15,8 +15,7 @@ function StateSelector({ postId, visible, handleStateActive, navigation }) {
   const changePostState = async status => {
     try {
       //const tokens = await getTokens(); // 토큰 가져오기
-      const response = await api.patch(`/posts/${postId}?status=${status}`);
-      console.log(response);
+      await api.patch(`/posts/${postId}?status=${status}`);
     } catch (e) {
       console.error('Failed to fetch post:', e);
     } finally {
