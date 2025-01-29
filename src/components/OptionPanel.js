@@ -2,14 +2,14 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import filterIcon from '../assets/icons/filterIcon.png';
 import { CategoryButton } from './Buttons';
 
-function OptionPanel({ handleOptionActive }) {
+function OptionPanel({ handleOptionActive, searchOptions }) {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={handleOptionActive}>
         <Image source={filterIcon} />
       </TouchableOpacity>
-      <CategoryButton title={'거리무관'} active={true} />
-      <CategoryButton title={'전체'} active={true} />
+      <CategoryButton title={searchOptions.category} active={true} />
+      <CategoryButton title={searchOptions.distance} active={true} />
     </View>
   );
 }

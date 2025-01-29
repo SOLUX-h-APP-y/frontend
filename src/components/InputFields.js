@@ -14,62 +14,23 @@ import { Dropdown } from 'react-native-element-dropdown';
 import searchIcon from '../assets/icons/searchIcon.png';
 import fontStyles from '../styles/FontStyles';
 
-function DrondownInputField({
-  placeholder,
-  value,
-  setLocation,
-  onChangeText,
-  isDropDownVisible,
-  setIsDropDownVisible,
-}) {
-  //isDropDownVisible
-  //입력한 location에 따라 저장되어 있는 위치들과 일치하는 장소를 나열해줄 것
-  //현재 저장되어 있는 위치들이 없기 때문에 location이 입력되면 샘플을 보여줌
-  //=> location이 아닌 모든 검색어에 적용할 수 있도록 이름 변경
-
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  const data = [
-    { id: '1', title: '용산구 남영동' },
-    { id: '2', title: '용산구 용산2가동' },
-    { id: '3', title: '용산구 원효로1동' },
-    { id: '4', title: '용산구 청파동' },
-  ];
-
-  const handleItemPress = item => {
-    setSelectedItem(item.id);
-    setLocation(item.title);
-  };
+function SearchInputField({ placeholder, searchOptions, setSearchOptions }) {
+  const [text, setText] = useState('');
 
   return (
     <View style={styles.container}>
-      <View style={isDropDownVisible ? styles.inputWithDropdown : styles.input}>
+      <View style={styles.input}>
         <Image source={searchIcon} />
         <TextInput
           placeholder={placeholder}
           placeholderTextColor={colors.inputBorderGray}
-          value={value}
-          onChangeText={onChangeText}
+          value={text}
+          onChangeText={value => setText(value)}
+          onSubmitEditing={() =>
+            setSearchOptions({ ...searchOptions, keyword: text })
+          }
         />
-        {/* <Dropdown /> */}
       </View>
-      {isDropDownVisible ? (
-        <FlatList
-          style={styles.dropdown}
-          data={data}
-          keyExtractor={item => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleItemPress(item)}>
-              <View
-                style={
-                  selectedItem === item.id ? styles.selectedItem : styles.item
-                }>
-                <Text>{item.title}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-      ) : null}
     </View>
   );
 }
@@ -247,9 +208,4 @@ const InputFieldWithClearStyles = StyleSheet.create({
   },
 });
 
-export {
-  DrondownInputField,
-  PlainInputField,
-  InputFieldWithClear,
-  OutputField,
-};
+export { SearchInputField, PlainInputField, InputFieldWithClear, OutputField };
