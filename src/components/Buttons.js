@@ -237,8 +237,8 @@ const styles = StyleSheet.create({
   },
   createPostButton: {
     position: 'absolute',
-    bottom: 50,
-    right: 50,
+    bottom: 30,
+    right: 30,
     width: 50,
     height: 50,
     backgroundColor: colors.themeColor,

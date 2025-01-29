@@ -30,9 +30,8 @@ function PostListScreen({ route }) {
     setOptionActive(!optionsActive);
   };
 
-  const fetchPosts = async token => {
+  const fetchPosts = async () => {
     try {
-      console.log('Fetching posts...'); // 요청 시작 로그
       const response = await api.get(
         `/posts?type=${actionType === 'sharer' ? 'share' : 'borrow'}&category=${
           searchOptions.category

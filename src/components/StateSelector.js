@@ -8,8 +8,32 @@ import {
 } from 'react-native';
 import closeIcon from '../assets/icons/closeIcon.png';
 import colors from '../styles/Colors';
+import api, { setAuthToken } from '../services/api';
+import { getTokens } from '../services/TokenManager';
 
-function StateSelector({ handleStateActive, visible }) {
+function StateSelector({ postId, visible, handleStateActive, navigation }) {
+  const changePostState = async status => {
+    try {
+      //const tokens = await getTokens(); // 토큰 가져오기
+      const response = await api.patch(`/posts/${postId}?status=${status}`);
+      console.log(response);
+    } catch (e) {
+      console.error('Failed to fetch post:', e);
+    } finally {
+      handleStateActive();
+    }
+  };
+
+  const DeletePost = async () => {
+    try {
+      await api.delete(`/posts/${postId}`);
+      handleStateActive();
+      navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
+    } catch (e) {
+      console.error('Failed to delete post:', e);
+    }
+  };
+
   return (
     <Modal transparent={true} visible={visible}>
       <TouchableOpacity
@@ -23,20 +47,20 @@ function StateSelector({ handleStateActive, visible }) {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.textContainer}
-          onPress={handleStateActive}>
+          onPress={() => changePostState('거래중')}>
           <Text>거래중으로 표시</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.textContainer}
-          onPress={handleStateActive}>
-          <Text>사용중으로 표시</Text>
+          onPress={() => changePostState('대여중')}>
+          <Text>대여중으로 표시</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.textContainer}
-          onPress={handleStateActive}>
+          onPress={() => changePostState('거래완료')}>
           <Text>거래완료로 표시</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ padding: 10 }} onPress={handleStateActive}>
+        <TouchableOpacity style={{ padding: 10 }} onPress={DeletePost}>
           <Text style={styles.deleteText}>글 삭제하기</Text>
         </TouchableOpacity>
       </View>

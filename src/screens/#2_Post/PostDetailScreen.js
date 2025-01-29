@@ -5,73 +5,125 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator, // 로딩 표시를 위한 컴포넌트 추가
 } from 'react-native';
-import profileSample from '../../assets/images/profileSample.png';
 import locationIcon from '../../assets/icons/locationIcon.png';
-import postSample from '../../assets/images/postSample.png';
 import colors from '../../styles/Colors';
 import { CategoryTag, StateTag } from '../../components/Tags';
 import BottomBar from '../../components/BottomBar';
 import { NavigateHeader } from '../../components/CustomHeaders';
 import settingIcon from '../../assets/icons/settingIcon.png';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import StateSelector from '../../components/StateSelector';
+import { useRoute } from '@react-navigation/native';
+import { getTokens } from '../../services/TokenManager';
+import api, { setAuthToken } from '../../services/api';
+import MiniMap from '../../components/MiniMap';
+import Swiper from 'react-native-swiper';
 
-const data = {
-  name: '보리보리',
-  distance: '10km',
-  profileImage: profileSample,
-  category: '기타',
-  state: '거래중',
-  title: '닌텐도 스위치 하루만..',
-  date: '2024.09.24',
-  content:
-    '닌텐도 스위치 하루만 빌릴 수 있을까요?\n가격 협상 가능합니다.\n테스트만 해보고 금방 돌려드릴게요.. 기종상관 없습니다',
-  location: '청파초등학교앞',
-  price: 3500,
-  postImage: null,
-};
-
-function PostDetailScreen() {
+function PostDetailScreen({ navigation }) {
   const [stateActive, setStateActive] = useState(false);
+  const route = useRoute();
+  const { postId } = route.params;
+  const [post, setPost] = useState(null); // 초기 상태를 null로 설정
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [images, setImages] = useState([]);
+
+  console.log('Post ID:', postId); // 확인용
 
   const handleStateActive = () => {
     setStateActive(!stateActive);
     console.log(stateActive);
   };
 
+  const fetchPostDetail = async token => {
+    try {
+      const response = await api.get(`/posts/${postId}`);
+      setPost(response.data);
+      setImages(response.data.imageUrls);
+    } catch (e) {
+      console.error('Failed to fetch post:', e);
+    } finally {
+      setLoading(false); // 로딩 완료
+    }
+  };
+
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        const tokens = await getTokens(); // 토큰 가져오기
+        if (tokens?.accessToken) {
+          setAuthToken(tokens.accessToken); // Axios 헤더에 토큰 설정
+          await fetchPostDetail(tokens.accessToken); // Post 데이터 요청
+        }
+      } catch (err) {
+        console.error('Initialization error:', err); // 에러 처리
+      }
+    };
+
+    initialize(); // 비동기 함수 실행
+  }, []);
+
+  // 데이터 로딩 중이면 로딩 UI 표시
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  // 데이터가 없을 경우 예외 처리
+  if (!post) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={{ color: colors.gray3 }}>
+          게시글을 불러올 수 없습니다.
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
       <ScrollView contentContainerStyle={styles.container}>
-        {data.postImage && (
+        {images.length !== 0 ? (
           <View style={{ position: 'relative' }}>
-            <Image source={data.postImage} style={styles.postImage} />
+            <View style={styles.postImage}>
+              <Swiper
+                showsPagination={true}
+                dotStyle={styles.dot} // 비활성화된 점 스타일
+                activeDotStyle={styles.activeDot} // 활성화된 점 스타일
+              >
+                {images.map((image, index) => (
+                  <Image
+                    source={{ uri: image }}
+                    key={index}
+                    style={{ flex: 1 }}
+                  />
+                ))}
+              </Swiper>
+            </View>
             <View style={styles.headerOverlay}>
               <NavigateHeader type="white" />
             </View>
           </View>
-        )}
-        {!data.postImage && (
+        ) : (
           <View style={{ paddingTop: 20, marginLeft: 20 }}>
             <NavigateHeader />
           </View>
         )}
         <View style={styles.contentContainer}>
           <View style={styles.profile}>
-            <Image source={data.profileImage} />
+            <Image source={{ uri: post.writerProfileImage }} />
             <View
               style={{
                 flex: 1,
-
                 justifyContent: 'space-between',
                 flexDirection: 'row',
               }}>
-              <View
-                style={{
-                  gap: 5,
-                  justifyContent: 'center',
-                }}>
-                <Text>{data.name}</Text>
+              <View style={{ gap: 5, justifyContent: 'center' }}>
+                <Text>{post.writerNickname}</Text>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -79,26 +131,33 @@ function PostDetailScreen() {
                     alignItems: 'center',
                   }}>
                   <Image source={locationIcon} style={styles.locationIcon} />
-                  <Text style={{ color: colors.gray2 }}>{data.distance}</Text>
+                  <Text style={{ color: colors.gray2 }}>{post.distance}</Text>
                 </View>
               </View>
-              <TouchableOpacity
-                style={{ justifyContent: 'center' }}
-                onPress={handleStateActive}>
-                <Image source={settingIcon} />
-              </TouchableOpacity>
+              {post.isMyPost ? (
+                <TouchableOpacity
+                  style={{ justifyContent: 'center' }}
+                  onPress={handleStateActive}>
+                  <Image source={settingIcon} />
+                </TouchableOpacity>
+              ) : null}
             </View>
           </View>
           <View style={styles.tags}>
-            <CategoryTag title={data.category} />
-            <StateTag title={data.state} />
+            <CategoryTag title={post.category} />
+            <StateTag title={post.state || '거래중'} />
           </View>
           <View style={{ gap: 10 }}>
-            <Text style={styles.title}>{data.title}</Text>
-            <Text style={{ color: colors.gray3 }}>{data.date}</Text>
+            <Text style={styles.title}>{post.title}</Text>
+            <Text style={{ color: colors.gray3 }}>
+              {new Date(post.createAt)
+                .toISOString()
+                .split('T')[0]
+                .replace(/-/g, '.')}
+            </Text>
           </View>
           <View style={styles.content}>
-            <Text>{data.content}</Text>
+            <Text>{post.content}</Text>
           </View>
 
           <View
@@ -107,17 +166,22 @@ function PostDetailScreen() {
               justifyContent: 'space-between',
               paddingHorizontal: 10,
             }}>
-            <Text style={{ fontWeight: 700 }}>거래 희망 장소</Text>
-            <Text>{data.location}</Text>
+            <Text style={{ fontWeight: 'bold' }}>거래 희망 장소</Text>
+            <Text>{post.locationName}</Text>
           </View>
-          <View style={styles.mapPlaceholder}></View>
+          <MiniMap
+            latitude={post.locationLatitude}
+            longitude={post.locationLongitude}
+          />
         </View>
       </ScrollView>
-      <BottomBar price={data.price} />
+      <BottomBar price={post.price} />
 
       <StateSelector
+        postId={postId}
         handleStateActive={handleStateActive}
         visible={stateActive}
+        navigation={navigation}
       />
     </View>
   );
@@ -130,6 +194,7 @@ const styles = StyleSheet.create({
     height: 400,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
+    backgroundColor: 'red',
   },
   headerOverlay: {
     position: 'absolute',
@@ -163,17 +228,31 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 700,
+    fontWeight: 'bold',
   },
   content: {
     minHeight: 150,
     justifyContent: 'center',
   },
-  mapPlaceholder: {
-    backgroundColor: colors.gray1,
-    borderRadius: 30,
-    width: '100%',
-    height: 100,
+
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dot: {
+    backgroundColor: '#ccc',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 3,
+  },
+  activeDot: {
+    backgroundColor: '#000',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginHorizontal: 3,
   },
 });
 
