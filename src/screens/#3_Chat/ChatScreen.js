@@ -4,47 +4,61 @@ import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
 import { NavigateHeader, PostHeader } from '../../components/CustomHeaders';
 import ToastMessage from '../../components/ToastMessage';
+import { getTokens } from '../../services/TokenManager';
+import api, { setAuthToken } from '../../services/api';
 
 
 const ChatScreen = ({ route, navigation }) => {
     const { chatRoomId, isCompleted, toastMessage } = route.params || {};
-
-    const post = {
-        id: 101,
-        title: '카메라 빌려드려요',
-        image: 'https://via.placeholder.com/50',
-        location: '청파동2가',
-    };
-
-    const [messages, setMessages] = useState([
-        {
-            id: 1,
-            chatroom_id: 1,
-            sender_id: 2,
-            content: '안녕하세요. 카메라 한달동안 빌리고 싶은데 하루 5000원으로 가능할까요? ㅎㅎ',
-            is_read: 0,
-            create_at: '2024-12-25T11:40:00',
-        },
-        {
-            id: 2,
-            chatroom_id: 1,
-            sender_id: 1,
-            content: '넵 가능합니다',
-            is_read: 1,
-            create_at: '2024-12-25T11:41:00',
-        },
-        {
-            id: 3,
-            chatroom_id: 1,
-            sender_id: 2,
-            content: '네 감사합니다 \n내일 3시에 청파초 앞에서 봬요!',
-            is_read: 0,
-            create_at: '2024-12-26T09:30:00',
-        },
-    ]);
-
+    const [post, setPost] = useState(null); // 게시물 정보
+    const [messages, setMessages] = useState([]); // 메시지 목록
     const [inputText, setInputText] = useState('');
     const flatListRef = React.useRef();
+
+    // 채팅방 세부 정보 가져오기
+    const fetchChatDetails = async () => {
+        try {
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
+                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                ]);
+                return;
+            }
+
+            const accessToken = tokens.accessToken;
+            setAuthToken(accessToken);
+
+            // API 호출
+            const response = await api.get(`/chat/rooms/${chatRoomId}/details`);
+            const data = response.data;
+
+            // PostHeader 데이터 설정
+            setPost({
+                // id: chatRoomId,
+                title: data.postTitle,
+                image: data.postImage || 'https://via.placeholder.com/50',
+                location: data.postLocation,
+            });
+
+            // 메시지 목록 설정
+            setMessages(
+                data.messages.map((message, index) => ({
+                    id: index + 1,
+                    sender: message.sender,
+                    content: message.content,
+                    create_at: message.createAt,
+                }))
+            );
+        } catch (error) {
+            console.error('Failed to fetch chat details:', error);
+            Alert.alert('오류', '채팅 정보를 불러오는 데 실패했습니다.');
+        }
+    };
+
+    useEffect(() => {
+        fetchChatDetails();
+    }, [chatRoomId]);
 
     useEffect(() => {
         if (flatListRef.current) {
@@ -69,8 +83,7 @@ const ChatScreen = ({ route, navigation }) => {
 
         const newMessage = {
             id: messages.length + 1,
-            chatroom_id: chatRoomId,
-            sender_id: 1,
+            sender: '나',
             content: inputText,
             is_read: 0,
             create_at: new Date().toISOString(),
@@ -107,10 +120,10 @@ const ChatScreen = ({ route, navigation }) => {
                 <View
                     style={[
                         styles.messageContainer,
-                        item.sender_id === 1 ? styles.myMessage : styles.otherMessage,
+                        item.sender === '나' ? styles.myMessage : styles.otherMessage,
                     ]}
                 >
-                    {item.sender_id !== 1 && (
+                    {item.sender !== '나' && (
                         <Image
                             source={{ uri: 'https://via.placeholder.com/40' }}
                             style={styles.profileImage}
@@ -119,14 +132,14 @@ const ChatScreen = ({ route, navigation }) => {
                     <View
                         style={[
                             styles.messageBubble,
-                            item.sender_id === 1
+                            item.sender === '나'
                                 ? styles.myMessageBubble
                                 : styles.otherMessageBubble,
                         ]}
                     >
                         <Text style={styles.messageText}>{item.content}</Text>
                     </View>
-                    {item.sender_id === 1 && (
+                    {item.sender === '나' && (
                         <View style={styles.myMessageMeta}>
                             <Text style={styles.readStatus}>
                                 {item.is_read ? '' : '1'} {/* 안읽은 메시지 1로 표시 */}
@@ -140,7 +153,7 @@ const ChatScreen = ({ route, navigation }) => {
                             </Text>
                         </View>
                     )}
-                    {item.sender_id !== 1 && (
+                    {item.sender !== '나' && (
                         <Text style={styles.messageTime}>
                             {new Date(item.create_at).toLocaleTimeString([], {
                                 hour: '2-digit',
@@ -163,7 +176,7 @@ const ChatScreen = ({ route, navigation }) => {
                 <View style={{ paddingHorizontal: 20 }}>
                     <NavigateHeader navigation={navigation} title="채팅" />
                 </View>
-                <PostHeader post={post} />
+                {post && <PostHeader post={post} />}
                 <FlatList
                     ref={flatListRef}
                     data={messages}
