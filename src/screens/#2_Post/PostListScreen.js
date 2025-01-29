@@ -7,82 +7,8 @@ import { CreatePostButton } from '../../components/Buttons';
 import OptionPanel from '../../components/OptionPanel';
 import OptionSelector from '../../components/OptionSelector';
 import { getTokens } from '../../services/TokenManager.js';
-
-const sharerData = [
-  {
-    id: 0,
-    title: '카메라 빌려드려요 어쩌구 저쩌구',
-    price: 5500,
-    location: '청파동2가',
-    image: sampleImage,
-    state: '거래완료',
-    type: 'sharer',
-  },
-  {
-    id: 1,
-    title: '가방 빌asdf sdasdfa sdfasesad sefadsfas sdfasefasd 려드립니다',
-    price: 2500,
-    location: '청파동2가',
-    state: '거래완료',
-    type: 'borrower',
-  },
-  {
-    id: 2,
-    title: '원피스형 정장 필요하신분?',
-    price: 3500,
-    location: '청파동2가',
-    image: sampleImage,
-    type: 'borrower',
-  },
-  {
-    id: 3,
-    title: '원피스형 정장 필요하신분?',
-    price: 3500,
-    location: '청파동2가',
-    type: 'borrower',
-  },
-
-  {
-    id: 4,
-    title: '원피스형 정장 필요하신분?',
-    price: 3500,
-    location: '청파동2가',
-  },
-  {
-    id: 5,
-    title: '원피스형 정장 필요하신분?',
-    price: 3500,
-    location: '청파동2가',
-  },
-  {
-    id: 6,
-    title: '원피스형 정장 필요하신분?',
-    price: 3500,
-    location: '청파동2가',
-  },
-];
-
-const borrowerData = [
-  {
-    id: 0,
-    title: '카메라 빌려주십쇼 어쩌구 저쩌구',
-    price: 5500,
-    location: '청파동2가',
-    image: sampleImage,
-  },
-  {
-    id: 1,
-    title: '가방 빌려줘어ㅓ어ㅓ',
-    price: 2500,
-    location: '청파동2가',
-  },
-  {
-    id: 2,
-    title: '원피스형 정장 달라고?',
-    price: 3500,
-    location: '청파동2가',
-  },
-];
+import { API_BASE_URL } from 'react-native-dotenv';
+import api, { setAuthToken } from '../../services/api.js';
 
 const options = {
   distance: ['거리무관', '3km', '5km', '10km'],
@@ -91,28 +17,73 @@ const options = {
 
 function PostListScreen({ route }) {
   const { actionType } = route.params;
-
   const [optionsActive, setOptionActive] = useState(false);
   const [searchOptions, setSearchOtions] = useState({
     distance: '거리무관',
     category: '전체',
+    keyword: '',
   });
+  const [posts, setPosts] = useState([]);
+  const [address, setAddress] = useState();
 
   const handleOptionActive = () => {
     setOptionActive(!optionsActive);
   };
 
-  const handleSearchOptions = () => {};
+  const fetchPosts = async token => {
+    try {
+      console.log('Fetching posts...'); // 요청 시작 로그
+      const response = await api.get(
+        `/posts?type=${actionType === 'sharer' ? 'share' : 'borrow'}&category=${
+          searchOptions.category
+        }&radius=${searchOptions.distance}&keyword=${searchOptions.keyword}`,
+      );
+
+      setPosts(response.data);
+
+      const address = await api.get('/users/address/dong');
+      setAddress(address.data.address);
+    } catch (e) {
+      console.error('Failed to fetch posts:', e);
+    }
+  };
+
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        const tokens = await getTokens(); // 토큰 가져오기
+        console.log('Tokens:', tokens);
+        if (tokens && tokens.accessToken) {
+          setAuthToken(tokens.accessToken); // Axios 헤더에 토큰 설정
+          await fetchPosts(tokens.accessToken); // Post 목록 요청
+        }
+      } catch (err) {
+        console.error('Initialization error:', err); // 에러 처리
+      } finally {
+        console.log('Initialization complete'); // 최종 처리
+      }
+    };
+
+    initialize(); // 비동기 함수 실행
+  }, [searchOptions]);
 
   return (
     <View style={styles.container}>
-      <CustomHeader isSharer={actionType == 'sharer' ? true : false} />
+      <CustomHeader
+        isSharer={actionType == 'sharer' ? true : false}
+        address={address}
+        setAddress={setAddress}
+        searchOptions={searchOptions}
+        setSearchOptions={setSearchOtions}
+      />
       <View style={styles.listContainer}>
-        <OptionPanel handleOptionActive={handleOptionActive} />
+        <OptionPanel
+          handleOptionActive={handleOptionActive}
+          searchOptions={searchOptions}
+        />
         <FlatList
           contentContainerStyle={styles.content}
-          data={actionType == 'sharer' ? sharerData : borrowerData}
-          keyExtractor={sharerData.id}
+          data={posts}
           renderItem={({ item, index }) => (
             <PostPreviewItem id={index} data={item} />
           )}
@@ -123,6 +94,8 @@ function PostListScreen({ route }) {
         handleOptionActive={handleOptionActive}
         options={options}
         visible={optionsActive}
+        searchOptions={searchOptions}
+        setSearchOptions={setSearchOtions}
       />
 
       <CreatePostButton name="CreatePostScreen" actionType={actionType} />
@@ -146,4 +119,5 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 });
+
 export default PostListScreen;
