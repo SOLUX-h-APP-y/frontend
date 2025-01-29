@@ -3,18 +3,24 @@ import colors from '../styles/Colors';
 import { CategoryButton } from './Buttons';
 import { useState } from 'react';
 
-function OptionSelector({ handleOptionActive, options, visible }) {
-  const [selectedDistance, setSelectedDistance] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+function OptionSelector({
+  handleOptionActive,
+  options,
+  visible,
+  searchOptions,
+  setSearchOptions,
+}) {
+  const [selectedDistance, setSelectedDistance] = useState(options.distance[0]);
+  const [selectedCategory, setSelectedCategory] = useState(options.category[0]);
 
   const handleDistanceSelect = value => {
-    console.log(value);
     setSelectedDistance(value);
+    setSearchOptions({ ...searchOptions, distance: value });
   };
 
   const handleCategorySelect = value => {
-    console.log(value);
     setSelectedCategory(value);
+    setSearchOptions({ ...searchOptions, category: value });
   };
 
   return (

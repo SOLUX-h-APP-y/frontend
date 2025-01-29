@@ -1,22 +1,77 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import colors from '../styles/Colors.js';
-import { DrondownInputField } from './InputFields.js';
+import { SearchInputField } from './InputFields.js';
 import { useState } from 'react';
 import fontStyles from '../styles/FontStyles.js';
 import { useNavigation } from '@react-navigation/native';
+import setLocationIcon from '../assets/icons/setLocationIcon.png';
+import {
+  requestLocationPermission,
+  getCurrentCoordinates,
+  getAddressFromCoordinates,
+} from '../services/LocationManager.js';
+import api, { setAuthToken } from '../services/api.js';
 
-function CustomHeader({ isSharer }) {
+function CustomHeader({
+  isSharer,
+  address,
+  setAddress,
+  searchOptions,
+  setSearchOptions,
+}) {
   const [query, setQuery] = useState('');
+
+  const handleLocation = async () => {
+    try {
+      await requestLocationPermission();
+
+      const coordinates = await new Promise((resolve, reject) => {
+        const result = getCurrentCoordinates();
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('좌표 가져오기 실패'));
+        }
+      });
+
+      const { latitude, longitude } = coordinates;
+
+      const locationName = await getAddressFromCoordinates(latitude, longitude);
+
+      const response = await api.patch(`/users/address`, {
+        locationName: locationName,
+        locationLatitude: latitude,
+        locationLongitude: longitude,
+      });
+
+      const dong = await api.get('/users/address/dong');
+      setAddress(dong.data.address);
+    } catch (e) {
+      console.log('handleLocation Error: ', e);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        {isSharer ? '빌려드려요 공고' : '빌려주세요 공고'}
-      </Text>
-      <DrondownInputField
-        placeholder={'청파동 근처의 공고를 검색해보세요.'}
-        value={query}
-        onChangeText={text => setQuery(text)}
+      <View
+        style={{
+          flexDirection: 'row',
+          width: '100%',
+          justifyContent: 'space-between',
+          paddingHorizontal: 10,
+        }}>
+        <View></View>
+        <Text style={styles.text}>
+          {isSharer ? '빌려드려요 공고' : '빌려주세요 공고'}
+        </Text>
+        <TouchableOpacity onPress={handleLocation}>
+          <Image source={setLocationIcon} />
+        </TouchableOpacity>
+      </View>
+      <SearchInputField
+        placeholder={`${address} 근처의 공고를 검색해보세요.`}
+        setSearchOptions={setSearchOptions}
+        searchOptions={searchOptions}
       />
     </View>
   );
@@ -40,7 +95,7 @@ function NavigateHeader({ title, type }) {
       <View style={NavigateHeaderstyles.backIcon}></View>
     </View>
   );
-};
+}
 
 function PostHeader({ post }) {
   return (
@@ -58,7 +113,7 @@ function PostHeader({ post }) {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

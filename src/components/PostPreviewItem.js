@@ -9,13 +9,15 @@ import fontStyles from '../styles/FontStyles';
 function PostPreviewItem({ data }) {
   const navigation = useNavigation();
 
-  return data.image ? (
+  return data.previewImage ? (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.navigate('PostDetailScreen')}>
+      onPress={() =>
+        navigation.navigate('PostDetailScreen', { postId: data.postId })
+      }>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <View style={{ justifyContent: 'center' }}>
-          <Image source={data.image} style={styles.image} />
+          <Image source={{ uri: data.previewImage }} style={styles.image} />
         </View>
         <View style={{ flex: 1 }}>
           <Text style={styles.titleText}>{data.title}</Text>
@@ -25,14 +27,16 @@ function PostPreviewItem({ data }) {
 
           <View style={styles.locationContainer}>
             <Image source={locationIcon} style={styles.locationIcon} />
-            <Text style={styles.locationText}>{data.location}</Text>
+            <Text style={styles.locationText}>{data.locationName}</Text>
           </View>
           <View style={{ alignItems: 'flex-end', gap: 5 }}>
-            {data.state === '거래완료' ? (
+            {data.postStatus === '거래완료' ? (
               <ReviewButton revieweeId={data.id} /> // revieweeId=postId -> revieweeId=writerId로 변경 예정
             ) : null}
-            {data.type && (
-              <TypeTag type={data.type === 'sharer' ? 'sharer' : 'borrower'} />
+            {data.postType && (
+              <TypeTag
+                type={data.postType === 'share' ? 'sharer' : 'borrower'}
+              />
             )}
           </View>
         </View>
@@ -41,7 +45,9 @@ function PostPreviewItem({ data }) {
   ) : (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.navigate('PostDetailScreen')}>
+      onPress={() =>
+        navigation.navigate('PostDetailScreen', { postId: data.postId })
+      }>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <View style={{ flex: 1 }}>
           <Text style={styles.titleText}>{data.title}</Text>
@@ -49,17 +55,17 @@ function PostPreviewItem({ data }) {
             {data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
           </Text>
         </View>
-        {data.state === '거래완료' ? ( // 백엔드 구현 후 {data.state === '거래완료' && data.hasReview ? 로 변경 예정
+        {data.postStatus === '거래완료' ? ( // 백엔드 구현 후 {data.state === '거래완료' && data.hasReview ? 로 변경 예정
           <ReviewButton revieweeId={data.id} /> // revieweeId=postId -> revieweeId=writerId로 변경 예정
         ) : null}
       </View>
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.locationContainer}>
           <Image source={locationIcon} style={styles.locationIcon} />
-          <Text style={styles.locationText}>{data.location}</Text>
+          <Text style={styles.locationText}>{data.locationName}</Text>
         </View>
-        {data.type && (
-          <TypeTag type={data.type === 'sharer' ? 'sharer' : 'borrower'} />
+        {data.postStatus && (
+          <TypeTag type={data.postStatus === 'share' ? 'sharer' : 'borrower'} />
         )}
       </View>
     </TouchableOpacity>
@@ -77,7 +83,7 @@ const styles = StyleSheet.create({
   },
   locationContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'start',
     gap: 5,
     flex: 1,
   },
@@ -95,14 +101,6 @@ const styles = StyleSheet.create({
     height: 25,
     resizeMode: 'contain',
   },
-  image: {
-    width: 130,
-    height: 130,
-    resizeMode: 'contain',
-    borderRadius: 30,
-    flex: 1,
-  },
-
   imageContainer: {
     width: '100%',
     padding: 10,
