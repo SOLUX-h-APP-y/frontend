@@ -8,6 +8,7 @@ import { getTokens } from '../../services/TokenManager';
 const ChatListScreen = ({ navigation }) => {
     const [chatRooms, setChatRooms] = useState([]); // 채팅방 목록
     const [loading, setLoading] = useState(true);
+    const [loggedInUserId, setLoggedInUserId] = useState(null);
 
     // 날짜 포맷 함수
     const formatDate = (dateString) => {
@@ -35,10 +36,31 @@ const ChatListScreen = ({ navigation }) => {
         }
     };
 
-    // 채팅 목록 API 호출
-    const fetchChatRooms = async () => {
+    // 로그인 사용자 ID 가져오기
+    const fetchLoggedInUserId = async () => {
         try {
-            setLoading(true); // 로딩 시작
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
+                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                ]);
+                return;
+            }
+
+            setAuthToken(tokens.accessToken);
+
+            const response = await api.get('/profiles/me');
+            setLoggedInUserId(response.data.userId);
+        } catch (error) {
+            Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
+            console.error('Failed to fetch logged-in user ID:', error);
+        }
+    };
+
+    // 채팅 목록 API 호출
+    const fetchChatRooms = async (userId) => {
+        try {
+            setLoading(true);
 
             const tokens = await getTokens();
             if (!tokens || !tokens.accessToken) {
@@ -48,36 +70,42 @@ const ChatListScreen = ({ navigation }) => {
                 return;
             }
 
-            const accessToken = tokens.accessToken;
-            setAuthToken(accessToken);
+            setAuthToken(tokens.accessToken);
 
-            // API 호출
-            const response = await api.get(`/messages/rooms?userId=${userId}`); // userId를 동적으로 설정
+            const response = await api.get(`/messages/rooms?userId=${userId}`);
             const mappedChatRooms = response.data.map((room) => ({
                 id: room.chatRoomId,
                 post_id: room.postTitle,
                 user: {
                     profile_image: room.profileImage,
-                    nickname: room.postTitle, // 닉네임 대신 게시물 제목 사용
                 },
                 last_message_content: room.lastMessageContent,
                 last_message_time: room.lastMessageTimestamp,
                 unread_chat_count: room.unreadCount,
             }));
 
-            setChatRooms(mappedChatRooms); // 채팅 목록 업데이트
+            setChatRooms(mappedChatRooms);
         } catch (error) {
             Alert.alert('오류', '채팅 목록을 불러오는 데 실패했습니다.');
             console.error('Failed to fetch chat rooms:', error);
         } finally {
-            setLoading(false); // 로딩 종료
+            setLoading(false);
         }
     };
 
-    // 초기 데이터 로드
+    // 로그인 사용자 ID 가져온 후 채팅 목록 호출
     useEffect(() => {
-        fetchChatRooms();
+        const initialize = async () => {
+            await fetchLoggedInUserId();
+        };
+        initialize();
     }, []);
+
+    useEffect(() => {
+        if (loggedInUserId) {
+            fetchChatRooms(loggedInUserId);
+        }
+    }, [loggedInUserId]);
 
     const renderItem = ({ item }) => (
         <ChatItem
