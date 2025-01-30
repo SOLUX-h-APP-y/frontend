@@ -237,8 +237,8 @@ const styles = StyleSheet.create({
   },
   createPostButton: {
     position: 'absolute',
-    bottom: 50,
-    right: 50,
+    bottom: 30,
+    right: 30,
     width: 50,
     height: 50,
     backgroundColor: colors.themeColor,
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 21,
   },
   inactiveCategoryButton: {
     height: 40,
