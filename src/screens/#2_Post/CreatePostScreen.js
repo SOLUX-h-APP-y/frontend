@@ -10,29 +10,32 @@ import colors from '../../styles/Colors.js';
 import { AddPhotoButton } from '../../components/Buttons.js';
 import { useEffect, useState } from 'react';
 import { NavigateHeader } from '../../components/CustomHeaders.js';
-import { useNavigation } from '@react-navigation/native';
 import { getTokens } from '../../services/TokenManager.js';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Image } from 'react-native-animatable';
+import axios from 'axios';
+import { API_BASE_URL } from 'react-native-dotenv';
 
 const options = {
   distance: ['거리무관', '3km', '5km', '10km'],
-  category: ['전체', '헬스', '패션', '엔터', '학업', '기타'],
+  category: ['헬스', '패션', '엔터', '학업', '기타'],
 };
 
-function CreatePostScreen({ route }) {
+function CreatePostScreen({ navigation, route }) {
   const { actionType } = route.params;
+  const [isPostValid, setIsPostValid] = useState(false);
+
   const [post, setPost] = useState({
     title: '',
     content: '',
     price: null,
-    type: actionType,
+    type: null,
     category: '',
     distance: '',
     locationName: '',
     locationLatitude: null,
     locationLongitude: null,
-    image: null,
+    images: [],
   });
 
   const [selectedDistance, setSelectedDistance] = useState(null);
@@ -64,11 +67,8 @@ function CreatePostScreen({ route }) {
   };
 
   const onChangePrice = price => {
-    if (isNaN(price)) {
-      console.log('숫자아님');
-    } else {
-      setPost({ ...post, price });
-    }
+    const onlyNumbers = price.replace(/\D/g, ''); // 숫자 이외의 문자 제거
+    setPost({ ...post, price: onlyNumbers });
   };
 
   const onChangeImage = () => {
@@ -85,16 +85,91 @@ function CreatePostScreen({ route }) {
         } else if (response.errorCode) {
           console.error('이미지 선택 에러:', response.errorMessage);
         } else if (response.assets && response.assets.length > 0) {
-          const selectedImage = response.assets[0].uri;
-          setPost({ ...post, image: selectedImage });
+          const selectedImages = response.assets.map(asset => asset.uri);
+          setPost(prevPost => ({
+            ...prevPost,
+            images: [...(prevPost.images || []), ...selectedImages], // ✅ 기존 배열에 추가
+          }));
         }
       },
     );
   };
 
+  const setLocation = newLocation => {
+    setPost(prevPost => ({
+      ...prevPost,
+      locationName: newLocation.address,
+      locationLatitude: newLocation.latitude,
+      locationLongitude: newLocation.longitude,
+      actionType: newLocation.actionType,
+    }));
+  };
+
   useEffect(() => {
-    console.log(post);
+    const isValid =
+      post.title.trim() !== '' &&
+      post.content.trim() !== '' &&
+      post.price !== null &&
+      post.category.trim() !== '' &&
+      post.distance.trim() !== '' &&
+      post.locationName.trim() !== '' &&
+      post.locationLatitude !== null &&
+      post.locationLongitude !== null;
+
+    setIsPostValid(isValid);
   }, [post]);
+
+  useEffect(() => {
+    console.log(actionType);
+    if (actionType) {
+      setPost(prevPost => ({
+        ...prevPost,
+        type: actionType,
+      }));
+    }
+  }, [actionType]);
+
+  const uploadPost = async () => {
+    try {
+      const formData = new FormData();
+
+      formData.append('title', post.title);
+      formData.append('content', post.content);
+      formData.append('price', post.price);
+      formData.append('type', post.type);
+      formData.append('category', post.category);
+      formData.append('distance', post.distance);
+      formData.append('locationName', post.locationName);
+      formData.append('locationLatitude', post.locationLatitude);
+      formData.append('locationLongitude', post.locationLongitude);
+
+      post.images.forEach((imgUri, index) => {
+        const file = {
+          uri:
+            Platform.OS === 'android' ? imgUri : imgUri.replace('file://', ''), // iOS에서는 "file://" 제거
+          name: `image_${index}.jpg`,
+          type: 'image/jpeg',
+        };
+        formData.append('images', file);
+      });
+
+      const tokens = await getTokens(); // 토큰 가져오기
+
+      await axios.post(`${API_BASE_URL}/posts`, formData, {
+        headers: {
+          Authorization: `Bearer ${tokens.accessToken}`,
+        },
+      });
+
+      navigation.navigate('MainTabs', {
+        screen: '홈',
+        params: { actionType: 'share' },
+      });
+    } catch (error) {
+      console.error('업로드 오류:', error);
+      alert('업로드 실패!');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -151,8 +226,15 @@ function CreatePostScreen({ route }) {
               <Text style={{ color: colors.themeColor }}>0/10</Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 10 }}>
-              {post.image && <Image source={post.image} style={styles.image} />}
               <AddPhotoButton onPress={onChangeImage} />
+              {post.images &&
+                post.images.map((img, index) => (
+                  <Image
+                    key={index}
+                    source={{ uri: img }}
+                    style={styles.image}
+                  />
+                ))}
             </View>
           </View>
           <View style={styles.section}>
@@ -195,10 +277,18 @@ function CreatePostScreen({ route }) {
 
           <View style={styles.leftSection}>
             <Text style={styles.title}>거래희망장소</Text>
-            <NavigateButton title="위치입력하기" name="SetLocationScreen" />
+            <NavigateButton
+              title="위치입력하기"
+              name="SetLocationScreen"
+              params={{ setLocation, actionType: actionType }}
+            />
           </View>
         </View>
-        <BottomButton title="업로드하기" active={false} />
+        <BottomButton
+          title="업로드하기"
+          active={isPostValid}
+          onPress={uploadPost}
+        />
       </ScrollView>
     </View>
   );
@@ -242,7 +332,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
   },
 });
 

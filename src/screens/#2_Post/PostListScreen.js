@@ -33,7 +33,7 @@ function PostListScreen({ route }) {
   const fetchPosts = async () => {
     try {
       const response = await api.get(
-        `/posts?type=${actionType === 'sharer' ? 'share' : 'borrow'}&category=${
+        `/posts?type=${actionType === 'share' ? 'share' : 'borrow'}&category=${
           searchOptions.category
         }&radius=${searchOptions.distance}&keyword=${searchOptions.keyword}`,
       );

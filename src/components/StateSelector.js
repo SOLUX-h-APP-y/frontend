@@ -27,7 +27,10 @@ function StateSelector({ postId, visible, handleStateActive, navigation }) {
     try {
       await api.delete(`/posts/${postId}`);
       handleStateActive();
-      navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
+      navigation.navigate('MainTabs', {
+        screen: '홈',
+        params: { actionType: 'share' },
+      });
     } catch (e) {
       console.error('Failed to delete post:', e);
     }
