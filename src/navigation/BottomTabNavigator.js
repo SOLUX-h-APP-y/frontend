@@ -16,30 +16,24 @@ const BottomTabNavigator = () => {
     const [unreadMessages, setUnreadMessages] = useState(0);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
 
-    // 로그인 사용자 ID 가져오기
     const fetchLoggedInUserId = async () => {
         try {
             const tokens = await getTokens();
-            if (!tokens || !tokens.accessToken) {
-                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-                ]);
-                return;
-            }
+            if (!tokens?.accessToken) return;
 
             setAuthToken(tokens.accessToken);
-
             const response = await api.get('/profiles/me');
             setLoggedInUserId(response.data.userId);
+
+            console.log("로그인한 사용자 ID (loggedInUserId):", response.data.userId);
         } catch (error) {
             Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
             console.error('Failed to fetch logged-in user ID:', error);
         }
     };
 
-    // 안 읽은 메시지 개수 가져오기
-    const fetchUnreadMessages = async () => {
-        if (!loggedInUserId) return; // userId가 없으면 호출하지 않음
+    const fetchUnreadMessages = async (userId) => {
+        if (!userId) return;
 
         try {
             const tokens = await getTokens();
@@ -52,25 +46,28 @@ const BottomTabNavigator = () => {
 
             setAuthToken(tokens.accessToken);
 
-            const response = await api.get(`/chat/unread?userId=${loggedInUserId}`);
-            setUnreadMessages(response.data || 0);
+            const response = await api.get(`/chat/unread?userId=${userId}`);
+            console.log("안 읽은 메시지 개수:", response.data.unreadCount);
+            setUnreadMessages(response.data.unreadCount || 0);
         } catch (error) {
             console.error('Failed to fetch unread messages:', error);
         }
     };
 
-    // 로그인 사용자 ID 가져오기
     useEffect(() => {
         fetchLoggedInUserId();
     }, []);
 
-    // unread 메시지 가져오기 (loggedInUserId가 변경될 때 호출)
     useEffect(() => {
-        fetchUnreadMessages();
+        if (loggedInUserId) {
+            fetchUnreadMessages(loggedInUserId);
+        }
 
-        // 필요 시 주기적 업데이트 설정 (예: 1분 간격)
-        const interval = setInterval(fetchUnreadMessages, 60000);
-        return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+        const interval = setInterval(() => {
+            if (loggedInUserId) fetchUnreadMessages(loggedInUserId);
+        }, 60000);
+
+        return () => clearInterval(interval);
     }, [loggedInUserId]);
 
     return (
