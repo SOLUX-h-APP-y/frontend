@@ -10,10 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ChatScreen = ({ route, navigation }) => {
     const { isCompleted, toastMessage, postId, ownerId } = route.params || {};
-    console.log("🚀 Received route params:", route.params);
-    console.log("📌 postId:", postId);
-    console.log("📌 ownerId (writerId):", ownerId);
-    console.log("📌 chatRoomId:", chatRoomId);
+
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const [postData, setPostData] = useState(null);
@@ -24,7 +21,7 @@ const ChatScreen = ({ route, navigation }) => {
     const [chatRoomId, setChatRoomId] = useState(null); // 채팅방 ID 상태 추가
     const [otherUserProfileImage, setOtherUserProfileImage] = useState(null);
 
-    // 🔹 앱이 실행될 때 `AsyncStorage`에서 `chatRoomId` 불러오기
+    // 앱이 실행될 때 `AsyncStorage`에서 `chatRoomId` 불러오기
     useEffect(() => {
         const loadChatRoomId = async () => {
             try {

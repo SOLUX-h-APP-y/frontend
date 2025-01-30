@@ -3,8 +3,6 @@ import colors from '../styles/Colors';
 import { NavigateButton, NavigateButtonTheme } from './Buttons';
 
 function BottomBar({ price, title, postId, writerId }) {
-  console.log("🚀 BottomBar - postId:", postId);  // ✅ postId 확인용 로그 추가
-  console.log("🚀 BottomBar - writerId:", writerId);  // ✅ writerId 확인용 로그 추가
 
   return (
     <View style={styles.container}>
