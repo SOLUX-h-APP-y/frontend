@@ -4,6 +4,7 @@ import ChatItem from '../../components/ChatItem';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
 import { getTokens } from '../../services/TokenManager';
+import { setAuthToken } from '../../services/api';
 
 const ChatListScreen = ({ navigation }) => {
     const [chatRooms, setChatRooms] = useState([]); // 채팅방 목록
@@ -36,7 +37,6 @@ const ChatListScreen = ({ navigation }) => {
         }
     };
 
-    // 로그인 사용자 ID 가져오기
     const fetchLoggedInUserId = async () => {
         try {
             const tokens = await getTokens();
@@ -50,7 +50,11 @@ const ChatListScreen = ({ navigation }) => {
             setAuthToken(tokens.accessToken);
 
             const response = await api.get('/profiles/me');
-            setLoggedInUserId(response.data.userId);
+            const userId = response.data.userId;
+            setLoggedInUserId(userId);
+
+            // 여기서 바로 fetchChatRooms 호출
+            fetchChatRooms(userId);
         } catch (error) {
             Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
             console.error('Failed to fetch logged-in user ID:', error);
@@ -75,7 +79,8 @@ const ChatListScreen = ({ navigation }) => {
             const response = await api.get(`/messages/rooms?userId=${userId}`);
             const mappedChatRooms = response.data.map((room) => ({
                 id: room.chatRoomId,
-                post_id: room.postTitle,
+                post_id: room.postId,
+                post_title: room.postTitle,
                 user: {
                     profile_image: room.profileImage,
                 },

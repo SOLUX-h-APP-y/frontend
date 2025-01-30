@@ -14,8 +14,8 @@ function ChatItem({ item, formatDate, onPress }) {
 
             {/* 채팅 상세 정보 */}
             <View style={ChatItemStyles.chatDetails}>
-                <Text style={ChatItemStyles.post_id} numberOfLines={1} ellipsizeMode="tail">
-                    {item.post_id}
+                <Text style={ChatItemStyles.post_title} numberOfLines={1} ellipsizeMode="tail">
+                    {item.post_title}
                 </Text>
                 <Text style={ChatItemStyles.lastMessage} numberOfLines={1} ellipsizeMode="tail">
                     {item.last_message_content}
@@ -53,7 +53,7 @@ const ChatItemStyles = StyleSheet.create({
     chatDetails: {
         flex: 1,
     },
-    post_id: {
+    post_title: {
         ...fontStyles.blackSemiBold20,
         marginBottom: 5,
     },
