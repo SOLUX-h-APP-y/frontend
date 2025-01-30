@@ -176,6 +176,7 @@ function PostDetailScreen({ navigation }) {
         price={post.price}
         title={post.isMyPost ? '재업로드' : '채팅하기'}
         postId={postId}
+        writerId={post.writerId}
       />
 
       <StateSelector

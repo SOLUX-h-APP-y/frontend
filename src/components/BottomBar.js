@@ -2,8 +2,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import colors from '../styles/Colors';
 import { NavigateButton, NavigateButtonTheme } from './Buttons';
 
-function BottomBar({ price, title, postId }) {
+function BottomBar({ price, title, postId, writerId }) {
   console.log("🚀 BottomBar - postId:", postId);  // ✅ postId 확인용 로그 추가
+  console.log("🚀 BottomBar - writerId:", writerId);  // ✅ writerId 확인용 로그 추가
 
   return (
     <View style={styles.container}>
@@ -26,6 +27,7 @@ function BottomBar({ price, title, postId }) {
           name="ChatScreen"
           // chatRoomId={1}
           postId={postId}
+          ownerId={writerId}
           isCompleted={false}
         />
       )}

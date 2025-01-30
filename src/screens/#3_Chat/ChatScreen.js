@@ -1,58 +1,140 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, FlatList, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, TextInput, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, ActivityIndicator, Alert } from 'react-native';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
 import { NavigateHeader, PostHeader } from '../../components/CustomHeaders';
 import ToastMessage from '../../components/ToastMessage';
+import { getTokens } from '../../services/TokenManager';
+import api, { setAuthToken } from '../../services/api';
 
 
 const ChatScreen = ({ route, navigation }) => {
-    const { chatRoomId, isCompleted, toastMessage } = route.params || {};
-
-    const post = {
-        id: 101,
-        title: '카메라 빌려드려요',
-        image: 'https://via.placeholder.com/50',
-        location: '청파동2가',
-    };
-
-    const [messages, setMessages] = useState([
-        {
-            id: 1,
-            chatroom_id: 1,
-            sender_id: 2,
-            content: '안녕하세요. 카메라 한달동안 빌리고 싶은데 하루 5000원으로 가능할까요? ㅎㅎ',
-            is_read: 0,
-            create_at: '2024-12-25T11:40:00',
-        },
-        {
-            id: 2,
-            chatroom_id: 1,
-            sender_id: 1,
-            content: '넵 가능합니다',
-            is_read: 1,
-            create_at: '2024-12-25T11:41:00',
-        },
-        {
-            id: 3,
-            chatroom_id: 1,
-            sender_id: 2,
-            content: '네 감사합니다 \n내일 3시에 청파초 앞에서 봬요!',
-            is_read: 0,
-            create_at: '2024-12-26T09:30:00',
-        },
-    ]);
-
+    const { chatRoomId, isCompleted, toastMessage, postId, ownerId } = route.params || {};
+    console.log("🚀 Received route params:", route.params);
+    console.log("📌 postId:", postId);
+    console.log("📌 ownerId (writerId):", ownerId);
+    console.log("📌 chatRoomId:", chatRoomId);
+    const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
+    const [postData, setPostData] = useState(null);
+    const [loadingPost, setLoadingPost] = useState(true); // Post 데이터 로딩 상태
     const flatListRef = React.useRef();
+    const [chatRoomData, setChatRoomData] = useState(null); // 채팅방 상세 데이터 상태
+    const [loadingChat, setLoadingChat] = useState(true); // 채팅 데이터 로딩 상태
+    const [loadingSend, setLoadingSend] = useState(false); // 메시지 전송 로딩 상태 추가
+    const [renterId, setRenterId] = useState(null); // 로그인한 사용자 ID
 
     useEffect(() => {
-        if (flatListRef.current) {
-            setTimeout(() => {
-                flatListRef.current.scrollToEnd({ animated: true });
-            }, 100);
+        const fetchLoggedInUserId = async () => {
+            try {
+                const tokens = await getTokens();
+                if (!tokens || !tokens.accessToken) {
+                    Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.');
+                    navigation.navigate('LoginScreen');
+                    return;
+                }
+
+                setAuthToken(tokens.accessToken);
+
+                // 로그인한 사용자 정보 가져오기
+                const response = await api.get('/profiles/me');
+                setRenterId(response.data.userId); // 🔥 로그인한 사용자 ID 설정
+
+                console.log("✅ 로그인한 사용자 ID (renterId):", response.data.userId);
+            } catch (error) {
+                Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
+                console.error('🚨 Failed to fetch logged-in user ID:', error);
+            }
+        };
+
+        fetchLoggedInUserId();
+    }, []);
+
+    // 채팅방 상세 데이터 가져오기
+    const fetchChatDetails = async () => {
+        try {
+            setLoadingChat(true);
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.');
+                return;
+            }
+
+            if (!chatRoomId) {
+                console.warn("⚠️ fetchChatDetails: chatRoomId is undefined.");
+                return;
+            }
+
+            console.log("📌 chatRoomId:", chatRoomId);  // chatRoomId 콘솔 확인
+            console.log("📌 Token:", tokens.accessToken); // 토큰 확인
+
+            setAuthToken(tokens.accessToken);
+            const response = await api.get(`/chat/rooms/${chatRoomId}/details`, {
+                headers: {
+                    Authorization: `Bearer ${tokens.accessToken}`,
+                },
+            });
+
+            console.log("📌 Chat Room Data Response:", response.data); // API 응답 확인
+
+            if (response.status === 200) {
+                setChatRoomData(response.data);
+                setMessages(response.data.messages); // 메시지 리스트 업데이트
+            }
+        } catch (error) {
+            console.error('🚨 Failed to fetch chat details:', error);
+            Alert.alert('오류', '채팅 정보를 불러오는 데 실패했습니다.');
+        } finally {
+            setLoadingChat(false);
         }
-    }, [messages]);
+    };
+
+    // chatRoomId가 변경될 때마다 채팅방 상세 정보 가져오기
+    useEffect(() => {
+        fetchChatDetails();
+    }, [chatRoomId]);
+
+    // 게시글 정보 불러오기 
+    const fetchPostData = async () => {
+        try {
+            setLoadingPost(true);
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.');
+                return;
+            }
+
+            if (!postId) {
+                console.warn("⚠️ fetchPostData: postId is undefined.");
+                return;
+            }
+
+            console.log("📌 postId:", postId);  // postId 콘솔 확인
+            console.log("📌 Token:", tokens.accessToken); // 토큰 확인
+
+            setAuthToken(tokens.accessToken);
+            const response = await api.get(`/chat/rooms/post/${postId}`, {
+                headers: {
+                    Authorization: `Bearer ${tokens.accessToken}`,
+                },
+            });
+
+            console.log("📌 Post Data Response:", response.data); // API 응답 확인
+
+            if (response.status === 200) {
+                setPostData(response.data);
+            }
+        } catch (error) {
+            console.error('🚨 Failed to fetch post data:', error);
+            Alert.alert('오류', '게시글 정보를 불러오는 데 실패했습니다.');
+        } finally {
+            setLoadingPost(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchPostData();
+    }, [postId]);
 
     useEffect(() => {
         if (toastMessage) {
@@ -64,20 +146,69 @@ const ChatScreen = ({ route, navigation }) => {
         }
     }, [toastMessage]);
 
-    const handleSend = () => {
+    useEffect(() => {
+        if (flatListRef.current) {
+            setTimeout(() => {
+                flatListRef.current.scrollToEnd({ animated: true });
+            }, 100);
+        }
+    }, [messages]);
+
+    const handleSendMessage = async () => {
         if (!inputText.trim()) return;
 
-        const newMessage = {
-            id: messages.length + 1,
-            chatroom_id: chatRoomId,
-            sender_id: 1,
+        const tokens = await getTokens();
+        if (!tokens || !tokens.accessToken) {
+            Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.');
+            return;
+        }
+
+        setAuthToken(tokens.accessToken);
+
+        // ChatRoomId가 없는 경우 -> 새로운 채팅방 생성
+        const requestBody = {
+            postId,
+            ownerId,
+            renterId,
             content: inputText,
-            is_read: 0,
-            create_at: new Date().toISOString(),
         };
 
-        setMessages([...messages, newMessage]);
-        setInputText('');
+        // ChatRoomId가 있는 경우 -> 기존 채팅방 메시지 전송
+        if (chatRoomId) {
+            requestBody.chatRoomId = chatRoomId; // 기존 채팅방이면 chatRoomId 추가
+        }
+        console.log("📌 Sending Message Request:", requestBody);
+
+        try {
+            setLoadingSend(true);
+            const response = await api.post('/messages/send', requestBody);
+            console.log("📌 Send Message Response:", response.data);
+
+            if (response.status === 200) {
+                const newMessage = {
+                    id: messages.length + 1,
+                    chatroom_id: chatRoomId || response.data.chatRoomId, // 응답에서 chatRoomId 가져오기
+                    sender_id: renterId, // 본인이 보낸 메시지
+                    content: inputText,
+                    // is_read: 0,
+                    create_at: new Date().toISOString(),
+                };
+
+                setMessages([...messages, newMessage]);
+                setInputText('');
+            }
+        } catch (error) {
+            console.error('Failed to send message:', error);
+            // 403 오류 세부 로그 확인
+            if (error.response) {
+                console.error("🚨 Response Data:", error.response.data);
+                console.error("🚨 Status Code:", error.response.status);
+                console.error("🚨 Headers:", error.response.headers);
+            }
+            Alert.alert('오류', '메시지를 보내는 데 실패했습니다.');
+        } finally {
+            setLoadingSend(false);
+        }
     };
 
     const renderItem = ({ item, index }) => {
@@ -107,10 +238,10 @@ const ChatScreen = ({ route, navigation }) => {
                 <View
                     style={[
                         styles.messageContainer,
-                        item.sender_id === 1 ? styles.myMessage : styles.otherMessage,
+                        item.sender_id === renterId ? styles.myMessage : styles.otherMessage,
                     ]}
                 >
-                    {item.sender_id !== 1 && (
+                    {item.sender_id !== renterId && (
                         <Image
                             source={{ uri: 'https://via.placeholder.com/40' }}
                             style={styles.profileImage}
@@ -119,14 +250,14 @@ const ChatScreen = ({ route, navigation }) => {
                     <View
                         style={[
                             styles.messageBubble,
-                            item.sender_id === 1
+                            item.sender_id === renterId
                                 ? styles.myMessageBubble
                                 : styles.otherMessageBubble,
                         ]}
                     >
                         <Text style={styles.messageText}>{item.content}</Text>
                     </View>
-                    {item.sender_id === 1 && (
+                    {item.sender_id === renterId && (
                         <View style={styles.myMessageMeta}>
                             <Text style={styles.readStatus}>
                                 {item.is_read ? '' : '1'} {/* 안읽은 메시지 1로 표시 */}
@@ -140,7 +271,7 @@ const ChatScreen = ({ route, navigation }) => {
                             </Text>
                         </View>
                     )}
-                    {item.sender_id !== 1 && (
+                    {item.sender_id !== renterId && (
                         <Text style={styles.messageTime}>
                             {new Date(item.create_at).toLocaleTimeString([], {
                                 hour: '2-digit',
@@ -163,7 +294,22 @@ const ChatScreen = ({ route, navigation }) => {
                 <View style={{ paddingHorizontal: 20 }}>
                     <NavigateHeader navigation={navigation} title="채팅" />
                 </View>
-                <PostHeader post={post} />
+                {/* 📌 PostHeader 데이터 로딩 시 로딩 표시 */}
+                {loadingPost ? (
+                    <ActivityIndicator size="large" color={colors.themeColor} style={{ marginTop: 20 }} />
+                ) : (
+                    postData && (
+                        <PostHeader
+                            post={{
+                                id: postData.postId,
+                                title: postData.title,
+                                image: postData.previewImage,
+                                location: postData.locationName,
+                                status: postData.postStatus,
+                            }}
+                        />
+                    )
+                )}
                 <FlatList
                     ref={flatListRef}
                     data={messages}
@@ -192,7 +338,7 @@ const ChatScreen = ({ route, navigation }) => {
                         value={inputText}
                         onChangeText={setInputText}
                     />
-                    <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
+                    <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
                         <Image source={require('../../assets/icons/sendIcon.png')} style={styles.sendIcon} />
                     </TouchableOpacity>
                 </View>
