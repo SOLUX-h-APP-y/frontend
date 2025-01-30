@@ -4,7 +4,7 @@ import ChatItem from '../../components/ChatItem';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
 import { getTokens } from '../../services/TokenManager';
-import { setAuthToken } from '../../services/api';
+import api, { setAuthToken } from '../../services/api';
 
 const ChatListScreen = ({ navigation }) => {
     const [chatRooms, setChatRooms] = useState([]); // 채팅방 목록
@@ -40,12 +40,6 @@ const ChatListScreen = ({ navigation }) => {
     const fetchLoggedInUserId = async () => {
         try {
             const tokens = await getTokens();
-            if (!tokens || !tokens.accessToken) {
-                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-                ]);
-                return;
-            }
 
             setAuthToken(tokens.accessToken);
 
@@ -65,18 +59,12 @@ const ChatListScreen = ({ navigation }) => {
     const fetchChatRooms = async (userId) => {
         try {
             setLoading(true);
-
             const tokens = await getTokens();
-            if (!tokens || !tokens.accessToken) {
-                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-                ]);
-                return;
-            }
-
             setAuthToken(tokens.accessToken);
 
             const response = await api.get(`/messages/rooms?userId=${userId}`);
+            // console.log("📌 API 응답:", response.data);  // ✅ 응답 데이터 확인
+
             const mappedChatRooms = response.data.map((room) => ({
                 id: room.chatRoomId,
                 post_id: room.postId,
@@ -87,6 +75,7 @@ const ChatListScreen = ({ navigation }) => {
                 last_message_content: room.lastMessageContent,
                 last_message_time: room.lastMessageTimestamp,
                 unread_chat_count: room.unreadCount,
+                isCompleted: room.isCompleted ?? false // ✅ 기본값 설정
             }));
 
             setChatRooms(mappedChatRooms);
@@ -106,17 +95,16 @@ const ChatListScreen = ({ navigation }) => {
         initialize();
     }, []);
 
-    useEffect(() => {
-        if (loggedInUserId) {
-            fetchChatRooms(loggedInUserId);
-        }
-    }, [loggedInUserId]);
-
     const renderItem = ({ item }) => (
         <ChatItem
             item={item}
             formatDate={formatDate}
-            onPress={() => navigation.navigate('ChatScreen', { chatRoomId: item.id, post_id: item.post_id, isCompleted: true })}
+            onPress={() => navigation.navigate('ChatScreen', {
+                chatRoomId: item.id,  // ✅ 기존 채팅방 ID 전달
+                postId: item.post_id,
+                // ownerId: item.post.writerId,  // ✅ 추가 (채팅 상대방 ID)
+                isCompleted: item.isCompleted ?? false
+            })}
         />
     );
 

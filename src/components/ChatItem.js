@@ -8,7 +8,11 @@ function ChatItem({ item, formatDate, onPress }) {
         <TouchableOpacity style={ChatItemStyles.chatItem} onPress={onPress}>
             {/* 프로필 이미지 */}
             <Image
-                source={{ uri: item.user.profile_image }}
+                source={
+                    item.user.profile_image
+                        ? { uri: item.user.profile_image } // 네트워크 이미지
+                        : require('../assets/images/defaultProfile.png') // 로컬 기본 이미지
+                }
                 style={ChatItemStyles.profileImage}
             />
 
