@@ -6,10 +6,10 @@ import { NavigateHeader, PostHeader } from '../../components/CustomHeaders';
 import ToastMessage from '../../components/ToastMessage';
 import { getTokens } from '../../services/TokenManager';
 import api, { setAuthToken } from '../../services/api';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ChatScreen = ({ route, navigation }) => {
-    const { chatRoomId, isCompleted, toastMessage, postId, ownerId } = route.params || {};
+    const { isCompleted, toastMessage, postId, ownerId } = route.params || {};
     console.log("🚀 Received route params:", route.params);
     console.log("📌 postId:", postId);
     console.log("📌 ownerId (writerId):", ownerId);
@@ -19,10 +19,32 @@ const ChatScreen = ({ route, navigation }) => {
     const [postData, setPostData] = useState(null);
     const [loadingPost, setLoadingPost] = useState(true); // Post 데이터 로딩 상태
     const flatListRef = React.useRef();
-    const [chatRoomData, setChatRoomData] = useState(null); // 채팅방 상세 데이터 상태
-    const [loadingChat, setLoadingChat] = useState(true); // 채팅 데이터 로딩 상태
-    const [loadingSend, setLoadingSend] = useState(false); // 메시지 전송 로딩 상태 추가
-    const [renterId, setRenterId] = useState(null); // 로그인한 사용자 ID
+    const [renterId, setRenterId] = useState(null);
+    const [loggedInId, setLoggedInId] = useState(null); // 로그인한 사용자 ID
+    const [chatRoomId, setChatRoomId] = useState(null); // 채팅방 ID 상태 추가
+    const [otherUserProfileImage, setOtherUserProfileImage] = useState(null);
+
+    // 🔹 앱이 실행될 때 `AsyncStorage`에서 `chatRoomId` 불러오기
+    useEffect(() => {
+        const loadChatRoomId = async () => {
+            try {
+                const storedChatRoomId = await AsyncStorage.getItem(`chatRoomId-${postId}`);
+                if (storedChatRoomId) {
+                    setChatRoomId(parseInt(storedChatRoomId, 10)); // 🔥 문자열을 숫자로 변환
+                    console.log("🔄 기존 chatRoomId 불러옴:", storedChatRoomId);
+                }
+            } catch (error) {
+                console.error("❌ chatRoomId 불러오기 실패:", error);
+            }
+        };
+        loadChatRoomId();
+    }, [postId]);
+
+    useEffect(() => {
+        if (chatRoomId) {
+            fetchChatDetails(chatRoomId);
+        }
+    }, [chatRoomId]);
 
     useEffect(() => {
         const fetchLoggedInUserId = async () => {
@@ -38,9 +60,9 @@ const ChatScreen = ({ route, navigation }) => {
 
                 // 로그인한 사용자 정보 가져오기
                 const response = await api.get('/profiles/me');
-                setRenterId(response.data.userId); // 🔥 로그인한 사용자 ID 설정
+                setLoggedInId(response.data.userId); // 🔥 로그인한 사용자 ID 설정
 
-                console.log("✅ 로그인한 사용자 ID (renterId):", response.data.userId);
+                console.log("✅ 로그인한 사용자 ID (loggedInId):", response.data.userId);
             } catch (error) {
                 Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
                 console.error('🚨 Failed to fetch logged-in user ID:', error);
@@ -50,49 +72,36 @@ const ChatScreen = ({ route, navigation }) => {
         fetchLoggedInUserId();
     }, []);
 
-    // 채팅방 상세 데이터 가져오기
-    const fetchChatDetails = async () => {
+    const fetchChatDetails = async (roomId) => {
         try {
-            setLoadingChat(true);
             const tokens = await getTokens();
             if (!tokens || !tokens.accessToken) {
                 Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.');
                 return;
             }
 
-            if (!chatRoomId) {
-                console.warn("⚠️ fetchChatDetails: chatRoomId is undefined.");
-                return;
-            }
-
-            console.log("📌 chatRoomId:", chatRoomId);  // chatRoomId 콘솔 확인
-            console.log("📌 Token:", tokens.accessToken); // 토큰 확인
-
+            console.log("📌 fetchChatDetails - chatRoomId:", roomId);
             setAuthToken(tokens.accessToken);
-            const response = await api.get(`/chat/rooms/${chatRoomId}/details`, {
-                headers: {
-                    Authorization: `Bearer ${tokens.accessToken}`,
-                },
-            });
+            const response = await api.get(`/chat/rooms/${roomId}/details`);
 
-            console.log("📌 Chat Room Data Response:", response.data); // API 응답 확인
+            console.log("📌 Chat Details Response:", response.data);
 
             if (response.status === 200) {
-                setChatRoomData(response.data);
-                setMessages(response.data.messages); // 메시지 리스트 업데이트
+                const { messages } = response.data; // 메시지 배열 가져오기
+                setOtherUserProfileImage(otherUserProfileImage);
+                const formattedMessages = messages.map(msg => ({
+                    ...msg,
+                    createAt: msg.createAt && !isNaN(Date.parse(msg.createAt))
+                        ? new Date(msg.createAt)
+                        : new Date(), // ✅ 유효하지 않으면 현재 날짜로 대체
+                }));
+
+                setMessages(formattedMessages); // 변환된 메시지 저장
             }
         } catch (error) {
-            console.error('🚨 Failed to fetch chat details:', error);
-            Alert.alert('오류', '채팅 정보를 불러오는 데 실패했습니다.');
-        } finally {
-            setLoadingChat(false);
+            console.error('🚨 채팅 정보를 불러오는 데 실패:', error);
         }
     };
-
-    // chatRoomId가 변경될 때마다 채팅방 상세 정보 가져오기
-    useEffect(() => {
-        fetchChatDetails();
-    }, [chatRoomId]);
 
     // 게시글 정보 불러오기 
     const fetchPostData = async () => {
@@ -157,40 +166,51 @@ const ChatScreen = ({ route, navigation }) => {
     const handleSendMessage = async () => {
         if (!inputText.trim()) return;
 
-        const tokens = await getTokens();
-        if (!tokens || !tokens.accessToken) {
-            Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.');
-            return;
-        }
-
-        setAuthToken(tokens.accessToken);
-
-        // ChatRoomId가 없는 경우 -> 새로운 채팅방 생성
-        const requestBody = {
-            postId,
-            ownerId,
-            renterId,
-            content: inputText,
-        };
-
-        // ChatRoomId가 있는 경우 -> 기존 채팅방 메시지 전송
-        if (chatRoomId) {
-            requestBody.chatRoomId = chatRoomId; // 기존 채팅방이면 chatRoomId 추가
-        }
-        console.log("📌 Sending Message Request:", requestBody);
-
         try {
-            setLoadingSend(true);
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.');
+                return;
+            }
+
+            setAuthToken(tokens.accessToken);
+
+            let requestBody = {
+                postId,
+                ownerId,
+                renterId,
+                content: inputText,
+            };
+
+            if (chatRoomId) {
+                // 기존 채팅방이 있을 경우 chatRoomId 포함
+                requestBody.chatRoomId = chatRoomId;
+
+                // 🔄 두 번째 대화부터는 ownerId와 renterId를 서로 변경
+                requestBody.ownerId = loggedInId;
+                requestBody.renterId = ownerId;
+            } else {
+                // 새로운 채팅 시작 시 renterId를 현재 로그인한 사용자로 설정
+                requestBody.renterId = loggedInId;
+            }
+
+            console.log("📌 메시지 전송 요청:", requestBody);
             const response = await api.post('/messages/send', requestBody);
-            console.log("📌 Send Message Response:", response.data);
 
             if (response.status === 200) {
+                const newChatRoomId = response.data.chatRoomId || chatRoomId;
+
+                if (!chatRoomId && newChatRoomId) {
+                    setChatRoomId(newChatRoomId); // 🔥 chatRoomId 상태 업데이트
+                    await AsyncStorage.setItem(`chatRoomId-${postId}`, newChatRoomId.toString());
+                    console.log("✅ chatRoomId 저장됨:", newChatRoomId);
+                }
+
                 const newMessage = {
                     id: messages.length + 1,
-                    chatroom_id: chatRoomId || response.data.chatRoomId, // 응답에서 chatRoomId 가져오기
-                    sender_id: renterId, // 본인이 보낸 메시지
+                    chatroom_id: newChatRoomId,
+                    senderUserId: loggedInId, // 메시지 보낸 사람 ID
                     content: inputText,
-                    // is_read: 0,
                     create_at: new Date().toISOString(),
                 };
 
@@ -198,28 +218,23 @@ const ChatScreen = ({ route, navigation }) => {
                 setInputText('');
             }
         } catch (error) {
-            console.error('Failed to send message:', error);
-            // 403 오류 세부 로그 확인
-            if (error.response) {
-                console.error("🚨 Response Data:", error.response.data);
-                console.error("🚨 Status Code:", error.response.status);
-                console.error("🚨 Headers:", error.response.headers);
-            }
+            console.error('❌ 메시지 전송 실패:', error);
             Alert.alert('오류', '메시지를 보내는 데 실패했습니다.');
-        } finally {
-            setLoadingSend(false);
         }
     };
 
     const renderItem = ({ item, index }) => {
-        const currentDate = new Date(item.create_at).toLocaleDateString('ko-KR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-        }).replace(/\.$/, '');
+        const currentDate = item.createAt && !isNaN(item.createAt)
+            ? new Date(item.createAt).toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            }).replace(/\.$/, '')
+            : '';
+
         const prevDate =
-            index > 0
-                ? new Date(messages[index - 1].create_at).toLocaleDateString('ko-KR', {
+            index > 0 && messages[index - 1].createAt && !isNaN(messages[index - 1].createAt)
+                ? new Date(messages[index - 1].createAt).toLocaleDateString('ko-KR', {
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
@@ -227,6 +242,7 @@ const ChatScreen = ({ route, navigation }) => {
                 : null;
 
         const showDate = currentDate !== prevDate;
+        const isMyMessage = item.senderUserId === loggedInId; // ✅ 내 메시지인지 확인
 
         return (
             <View>
@@ -238,46 +254,50 @@ const ChatScreen = ({ route, navigation }) => {
                 <View
                     style={[
                         styles.messageContainer,
-                        item.sender_id === renterId ? styles.myMessage : styles.otherMessage,
+                        isMyMessage ? styles.myMessage : styles.otherMessage,
                     ]}
                 >
-                    {item.sender_id !== renterId && (
+                    {!isMyMessage && (
                         <Image
-                            source={{ uri: 'https://via.placeholder.com/40' }}
+                            source={otherUserProfileImage ? { uri: otherUserProfileImage } : require('../../assets/images/defaultProfile.png')}
                             style={styles.profileImage}
                         />
                     )}
                     <View
                         style={[
                             styles.messageBubble,
-                            item.sender_id === renterId
+                            isMyMessage
                                 ? styles.myMessageBubble
                                 : styles.otherMessageBubble,
                         ]}
                     >
                         <Text style={styles.messageText}>{item.content}</Text>
                     </View>
-                    {item.sender_id === renterId && (
+                    {isMyMessage && (
                         <View style={styles.myMessageMeta}>
                             <Text style={styles.readStatus}>
                                 {item.is_read ? '' : '1'} {/* 안읽은 메시지 1로 표시 */}
                             </Text>
                             <Text style={styles.messageTime}>
-                                {new Date(item.create_at).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: false,
-                                })}
+                                {item.createAt && !isNaN(item.createAt)
+                                    ? new Date(item.createAt).toLocaleTimeString([], {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                        hour12: false,
+                                    })
+                                    : ''}
                             </Text>
                         </View>
                     )}
-                    {item.sender_id !== renterId && (
+                    {!isMyMessage && (
                         <Text style={styles.messageTime}>
-                            {new Date(item.create_at).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                hour12: false,
-                            })}
+                            {item.createAt && !isNaN(item.createAt)
+                                ? new Date(item.createAt).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false,
+                                })
+                                : ''}
                         </Text>
                     )}
                 </View>
@@ -314,7 +334,7 @@ const ChatScreen = ({ route, navigation }) => {
                     ref={flatListRef}
                     data={messages}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id.toString()}
+                    // keyExtractor={(item) => item.id.toString()}
                     style={styles.messageList}
                 />
                 {isCompleted && (
@@ -479,3 +499,4 @@ const styles = StyleSheet.create({
 });
 
 export default ChatScreen;
+
