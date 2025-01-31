@@ -13,27 +13,29 @@ const ChatListScreen = ({ navigation }) => {
 
     // 날짜 포맷 함수
     const formatDate = (dateString) => {
-        const messageDate = new Date(dateString);
+        const utcDate = new Date(dateString); // 서버에서 받은 UTC 시간
+        const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // UTC → KST 변환
         const now = new Date();
+        const nowKST = new Date(now.getTime() + 9 * 60 * 60 * 1000); // 현재 시간도 KST로 변환
 
         const isToday =
-            messageDate.getDate() === now.getDate() &&
-            messageDate.getMonth() === now.getMonth() &&
-            messageDate.getFullYear() === now.getFullYear();
+            kstDate.getDate() === nowKST.getDate() &&
+            kstDate.getMonth() === nowKST.getMonth() &&
+            kstDate.getFullYear() === nowKST.getFullYear();
 
         const isYesterday =
-            messageDate.getDate() === now.getDate() - 1 &&
-            messageDate.getMonth() === now.getMonth() &&
-            messageDate.getFullYear() === now.getFullYear();
+            kstDate.getDate() === nowKST.getDate() - 1 &&
+            kstDate.getMonth() === nowKST.getMonth() &&
+            kstDate.getFullYear() === nowKST.getFullYear();
 
         if (isToday) {
-            return messageDate
+            return kstDate
                 .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 .toLowerCase();
         } else if (isYesterday) {
             return '어제';
         } else {
-            return `${messageDate.getMonth() + 1}월 ${messageDate.getDate()}일`;
+            return `${kstDate.getMonth() + 1}월 ${kstDate.getDate()}일`;
         }
     };
 
@@ -79,6 +81,12 @@ const ChatListScreen = ({ navigation }) => {
                 // isCompleted: room.isCompleted ?? false, // ✅ 기본값 설정
                 // postStatus: room.postStatus,
             }));
+            // 최신순 정렬 (last_message_time 기준 내림차순 정렬)
+            const sortedChatRooms = mappedChatRooms.sort((a, b) => {
+                const dateA = a.last_message_time ? new Date(a.last_message_time).getTime() : 0;
+                const dateB = b.last_message_time ? new Date(b.last_message_time).getTime() : 0;
+                return dateB - dateA;
+            });
 
             setChatRooms(mappedChatRooms);
         } catch (error) {
