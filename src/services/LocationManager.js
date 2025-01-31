@@ -74,3 +74,32 @@ export const getAddressFromCoordinates = async (latitude, longitude) => {
     return null;
   }
 };
+
+export const getCoordinatesFromAddress = async address => {
+  try {
+    // 네이버 Geocoding API URL
+    const url = `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(
+      address,
+    )}`;
+
+    // API 요청 헤더 설정
+    const headers = {
+      'X-NCP-APIGW-API-KEY-ID': NAVER_CLIENT_ID,
+      'X-NCP-APIGW-API-KEY': NAVER_CLIENT_SECRET,
+    };
+
+    // API 요청
+    const response = await axios.get(url, { headers });
+    response.data.addresses[0].y;
+    // 응답 데이터 확인
+    if (response.data.status === 'OK' && response.data.addresses.length > 0) {
+      const { x: longitude, y: latitude } = response.data.addresses[0]; // ✅ 올바른 필드 사용
+      return { latitude, longitude };
+    } else {
+      throw new Error('주소 변환 실패');
+    }
+  } catch (error) {
+    console.error('Geocoding Error:', error.message);
+    return null;
+  }
+};

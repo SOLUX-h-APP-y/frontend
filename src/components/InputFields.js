@@ -55,6 +55,8 @@ function PlainInputField({
   onChangeText,
   isTextarea,
   inactive,
+  keyboardType,
+  onSubmitEditing,
 }) {
   return (
     <View style={styles.container}>
@@ -72,6 +74,8 @@ function PlainInputField({
         }
         multiline={isTextarea ? true : false}
         editable={inactive ? false : true}
+        keyboardType={keyboardType}
+        onSubmitEditing={onSubmitEditing}
       />
     </View>
   );

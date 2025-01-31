@@ -93,7 +93,10 @@ function SetProfileScreen({ navigation }) {
 
       saveTokens(response.data.accessToken, response.data.refreshToken);
 
-      navigation.navigate('MainTabs', { screen: 'SharerPostListScreen' });
+      navigation.navigate('MainTabs', {
+        screen: '홈',
+        params: { actionType: 'share' },
+      });
     } catch (e) {
       console.log('signUp error: ', e);
     }
