@@ -7,16 +7,16 @@ import { getTokens } from '../../services/TokenManager';
 import api, { setAuthToken } from '../../services/api';
 
 const ChatListScreen = ({ navigation }) => {
-    const [chatRooms, setChatRooms] = useState([]); // 채팅방 목록
+    const [chatRooms, setChatRooms] = useState([]);
     const [loading, setLoading] = useState(true);
     const [loggedInUserId, setLoggedInUserId] = useState(null);
 
     // 날짜 포맷 함수
     const formatDate = (dateString) => {
         const utcDate = new Date(dateString); // 서버에서 받은 UTC 시간
-        const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // UTC → KST 변환
+        const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000);
         const now = new Date();
-        const nowKST = new Date(now.getTime() + 9 * 60 * 60 * 1000); // 현재 시간도 KST로 변환
+        const nowKST = new Date(now.getTime() + 9 * 60 * 60 * 1000); // KST로 변환
 
         const isToday =
             kstDate.getDate() === nowKST.getDate() &&
@@ -48,8 +48,6 @@ const ChatListScreen = ({ navigation }) => {
             const response = await api.get('/profiles/me');
             const userId = response.data.userId;
             setLoggedInUserId(userId);
-
-            // 여기서 바로 fetchChatRooms 호출
             fetchChatRooms(userId);
         } catch (error) {
             Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
@@ -65,7 +63,6 @@ const ChatListScreen = ({ navigation }) => {
             setAuthToken(tokens.accessToken);
 
             const response = await api.get(`/messages/rooms?userId=${userId}`);
-            // console.log("📌 API 응답:", response.data);  // ✅ 응답 데이터 확인
 
             const mappedChatRooms = response.data.map((room) => ({
                 id: room.chatRoomId,
@@ -78,8 +75,6 @@ const ChatListScreen = ({ navigation }) => {
                 last_message_content: room.lastMessageContent,
                 last_message_time: room.lastMessageTimestamp,
                 unread_chat_count: room.unreadCount,
-                // isCompleted: room.isCompleted ?? false, // ✅ 기본값 설정
-                // postStatus: room.postStatus,
             }));
             // 최신순 정렬 (last_message_time 기준 내림차순 정렬)
             const sortedChatRooms = mappedChatRooms.sort((a, b) => {
@@ -110,10 +105,9 @@ const ChatListScreen = ({ navigation }) => {
             item={item}
             formatDate={formatDate}
             onPress={() => navigation.navigate('ChatScreen', {
-                chatRoomId: item.id,  // ✅ 기존 채팅방 ID 전달
+                chatRoomId: item.id,  //기존 채팅방 ID 전달
                 postId: item.post_id,
-                ownerId: item.writer_id,  // ✅ 추가 (채팅 상대방 ID)
-                // isCompleted: item.isCompleted ?? false,
+                ownerId: item.writer_id,
             })}
         />
     );
