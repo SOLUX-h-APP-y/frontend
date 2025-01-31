@@ -63,13 +63,13 @@ function CategoryButton({ title, active, onPress }) {
   );
 }
 
-function NavigateButton({ title, name }) {
+function NavigateButton({ title, name, params }) {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={styles.navigateButton}
-      onPress={() => navigation.navigate(name)}>
+      onPress={() => navigation.navigate(name, params)}>
       <Text>{title}</Text>
     </TouchableOpacity>
   );
@@ -87,9 +87,9 @@ function NavigateButtonTheme({ title, name, isCompleted, postId, ownerId }) {
   );
 }
 
-function AddPhotoButton() {
+function AddPhotoButton({ onPress }) {
   return (
-    <TouchableOpacity style={styles.addPhotoButton}>
+    <TouchableOpacity style={styles.addPhotoButton} onPress={onPress}>
       <Image source={plusIcon} />
     </TouchableOpacity>
   );
