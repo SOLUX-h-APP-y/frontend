@@ -75,13 +75,26 @@ function NavigateButton({ title, name, params }) {
   );
 }
 
-function NavigateButtonTheme({ title, name, chatRoomId, isCompleted }) {
+function NavigateButtonTheme({
+  title,
+  name,
+  chatRoomId,
+  isCompleted,
+  postInfo,
+}) {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={styles.activeCategoryButton}
-      onPress={() => navigation.navigate(name, { chatRoomId, isCompleted })}>
+      onPress={() =>
+        title === '채팅하기'
+          ? navigation.navigate(name, { chatRoomId, isCompleted })
+          : navigation.navigate(name, {
+              actionType: postInfo.postType === 'share' ? 'share' : 'borrow',
+              postId: postInfo.postId,
+            })
+      }>
       <Text style={{ color: 'white', fontWeight: 700 }}>{title}</Text>
     </TouchableOpacity>
   );

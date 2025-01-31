@@ -15,6 +15,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { Image } from 'react-native-animatable';
 import axios from 'axios';
 import { API_BASE_URL } from 'react-native-dotenv';
+import api from '../../services/api.js';
 
 const options = {
   distance: ['거리무관', '3km', '5km', '10km'],
@@ -23,6 +24,8 @@ const options = {
 
 function CreatePostScreen({ navigation, route }) {
   const { actionType } = route.params;
+  const { postId } = route.params;
+
   const [isPostValid, setIsPostValid] = useState(false);
 
   const [post, setPost] = useState({
@@ -59,6 +62,7 @@ function CreatePostScreen({ navigation, route }) {
   };
 
   const onChangeTitle = title => {
+    console.log(title);
     setPost({ ...post, title });
   };
 
@@ -101,7 +105,7 @@ function CreatePostScreen({ navigation, route }) {
       locationName: newLocation.address,
       locationLatitude: newLocation.latitude,
       locationLongitude: newLocation.longitude,
-      actionType: newLocation.actionType,
+      type: newLocation.actionType,
     }));
   };
 
@@ -117,10 +121,65 @@ function CreatePostScreen({ navigation, route }) {
       post.locationLongitude !== null;
 
     setIsPostValid(isValid);
+
+    console.log('post', post);
   }, [post]);
 
   useEffect(() => {
-    console.log(actionType);
+    const fetchPostData = async () => {
+      if (!postId) {
+        // postId가 없으면 초기화 (유저가 직접 채워넣어야 함)
+        setPost({
+          title: '',
+          content: '',
+          price: null,
+          type: actionType,
+          category: '',
+          distance: '',
+          locationName: '',
+          locationLatitude: null,
+          locationLongitude: null,
+          images: [],
+        });
+        return;
+      }
+
+      try {
+        const response = await api.get(`/posts/${postId}`);
+        const postData = response.data;
+
+        console.log('Fetched postData:', postData);
+
+        setPost(prevPost => ({
+          ...prevPost,
+          title: postData.title || '',
+          content: postData.content || '',
+          price: postData.price !== undefined ? postData.price.toString() : '',
+          category: postData.category || '',
+          distance: postData.distance || '',
+          locationName: postData.locationName || '',
+          locationLatitude: postData.locationLatitude ?? null,
+          locationLongitude: postData.locationLongitude ?? null,
+          images: postData.imageUrls
+            ? postData.imageUrls.map(url => ({ uri: url }))
+            : [],
+          type: postData.type ?? actionType,
+        }));
+
+        // 선택된 버튼 상태도 동기화
+        setSelectedDistance(postData.distance || null);
+        setSelectedCategory(postData.category || null);
+        setSelectedFree(postData.price === 0); // 가격이 0이면 무료 버튼 활성화
+      } catch (error) {
+        console.error('게시글 불러오기 오류:', error);
+        alert('게시글을 불러오는데 실패했습니다.');
+      }
+    };
+
+    fetchPostData();
+  }, [postId]); // postId가 변경될 때 실행
+
+  useEffect(() => {
     if (actionType) {
       setPost(prevPost => ({
         ...prevPost,
@@ -130,44 +189,101 @@ function CreatePostScreen({ navigation, route }) {
   }, [actionType]);
 
   const uploadPost = async () => {
-    try {
-      const formData = new FormData();
+    if (postId) {
+      console.log('재업로드');
+      try {
+        const formData = new FormData();
 
-      formData.append('title', post.title);
-      formData.append('content', post.content);
-      formData.append('price', post.price);
-      formData.append('type', post.type);
-      formData.append('category', post.category);
-      formData.append('distance', post.distance);
-      formData.append('locationName', post.locationName);
-      formData.append('locationLatitude', post.locationLatitude);
-      formData.append('locationLongitude', post.locationLongitude);
+        formData.append('title', post.title);
+        formData.append('content', post.content);
+        formData.append('price', post.price);
+        formData.append('type', post.type);
+        formData.append('category', post.category);
+        formData.append('distance', post.distance);
+        formData.append('locationName', post.locationName);
+        formData.append('locationLatitude', post.locationLatitude);
+        formData.append('locationLongitude', post.locationLongitude);
 
-      post.images.forEach((imgUri, index) => {
-        const file = {
-          uri:
-            Platform.OS === 'android' ? imgUri : imgUri.replace('file://', ''), // iOS에서는 "file://" 제거
-          name: `image_${index}.jpg`,
-          type: 'image/jpeg',
-        };
-        formData.append('images', file);
-      });
+        post.images.forEach((img, index) => {
+          if (!img || !img.uri) return; // ✅ 이미지 데이터가 없으면 스킵
 
-      const tokens = await getTokens(); // 토큰 가져오기
+          const file = {
+            uri:
+              Platform.OS === 'android'
+                ? img.uri
+                : img.uri.replace('file://', ''), // ✅ iOS "file://" 제거
+            name: `image_${index}.jpg`,
+            type: 'image/jpeg',
+          };
+          formData.append('images', file);
+        });
 
-      await axios.post(`${API_BASE_URL}/posts`, formData, {
-        headers: {
-          Authorization: `Bearer ${tokens.accessToken}`,
-        },
-      });
+        const tokens = await getTokens(); // 토큰 가져오기
 
-      navigation.navigate('MainTabs', {
-        screen: '홈',
-        params: { actionType: 'share' },
-      });
-    } catch (error) {
-      console.error('업로드 오류:', error);
-      alert('업로드 실패!');
+        const response = await axios.post(
+          `${API_BASE_URL}/posts/${postId}/reupload`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${tokens.accessToken}`,
+            },
+          },
+        );
+        console.log(response);
+
+        navigation.navigate('MainTabs', {
+          screen: '홈',
+          params: { actionType: 'share' },
+        });
+      } catch (error) {
+        console.error('재업로드 오류:', error);
+        alert('글을 수정한 후 업로드 해주세요');
+      }
+    } else {
+      console.log('새로업로드');
+      try {
+        const formData = new FormData();
+
+        formData.append('title', post.title);
+        formData.append('content', post.content);
+        formData.append('price', post.price);
+        formData.append('type', post.type);
+        formData.append('category', post.category);
+        formData.append('distance', post.distance);
+        formData.append('locationName', post.locationName);
+        formData.append('locationLatitude', post.locationLatitude);
+        formData.append('locationLongitude', post.locationLongitude);
+
+        post.images.forEach((img, index) => {
+          if (!img || !img.uri) return; // ✅ 이미지 데이터가 없으면 스킵
+
+          const file = {
+            uri:
+              Platform.OS === 'android'
+                ? img.uri
+                : img.uri.replace('file://', ''), // ✅ iOS "file://" 제거
+            name: `image_${index}.jpg`,
+            type: 'image/jpeg',
+          };
+          formData.append('images', file);
+        });
+
+        const tokens = await getTokens(); // 토큰 가져오기
+
+        await axios.post(`${API_BASE_URL}/posts`, formData, {
+          headers: {
+            Authorization: `Bearer ${tokens.accessToken}`,
+          },
+        });
+
+        navigation.navigate('MainTabs', {
+          screen: '홈',
+          params: { actionType: 'share' },
+        });
+      } catch (error) {
+        console.error('업로드 오류:', error);
+        alert('업로드 실패!');
+      }
     }
   };
 

@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 10,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 14,
   },
   content: {
     gap: 10,
