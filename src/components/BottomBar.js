@@ -2,7 +2,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import colors from '../styles/Colors';
 import { NavigateButton, NavigateButtonTheme } from './Buttons';
 
-function BottomBar({ price, title }) {
+function BottomBar({ price, title, postId, writerId }) {
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
@@ -22,7 +23,9 @@ function BottomBar({ price, title }) {
         <NavigateButtonTheme
           title={title}
           name="ChatScreen"
-          chatRoomId={1}
+          // chatRoomId={1}
+          postId={postId}
+          ownerId={writerId}
           isCompleted={false}
         />
       )}

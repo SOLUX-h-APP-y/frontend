@@ -1,90 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import ChatItem from '../../components/ChatItem';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
+import { getTokens } from '../../services/TokenManager';
+import api, { setAuthToken } from '../../services/api';
 
 const ChatListScreen = ({ navigation }) => {
-    const [chatRooms, setChatRooms] = useState([
-        {
-            id: 1,
-            post_id: '게시물1',
-            user: {
-                profile_image: 'https://via.placeholder.com/50',
-                nickname: '사용자1',
-            },
-            last_message_content: '안녕하세요. 채팅 내용',
-            last_message_time: '2024-12-27T15:55:00',
-            unread_chat_count: 2,
-        },
-        {
-            id: 2,
-            post_id: '게시물2',
-            user: {
-                profile_image: 'https://via.placeholder.com/50',
-                nickname: '사용자2',
-            },
-            last_message_content: '안녕하세요. 채팅 내용',
-            last_message_time: '2024-12-27T14:10:00',
-            unread_chat_count: 3,
-        },
-        {
-            id: 3,
-            post_id: '게시물3',
-            user: {
-                profile_image: 'https://via.placeholder.com/50',
-                nickname: '사용자3',
-            },
-            last_message_content: '안녕하세요. 채팅 내용',
-            last_message_time: '2024-12-26T11:30:00',
-            unread_chat_count: 0,
-        },
-        {
-            id: 4,
-            post_id: '게시물4',
-            user: {
-                profile_image: 'https://via.placeholder.com/50',
-                nickname: '사용자4',
-            },
-            last_message_content: '안녕하세요. 채팅 내용',
-            last_message_time: '2024-12-25T09:20:00',
-            unread_chat_count: 3,
-        },
-        {
-            id: 5,
-            post_id: '게시물5',
-            user: {
-                profile_image: 'https://via.placeholder.com/50',
-                nickname: '사용자5',
-            },
-            last_message_content: '안녕하세요. 채팅 내용',
-            last_message_time: '2024-12-25T09:20:00',
-            unread_chat_count: 3,
-        },
-        {
-            id: 6,
-            post_id: '게시물6',
-            user: {
-                profile_image: 'https://via.placeholder.com/50',
-                nickname: '사용자6',
-            },
-            last_message_content: '안녕하세요. 채팅 내용',
-            last_message_time: '2024-12-25T09:20:00',
-            unread_chat_count: 10,
-        },
-        {
-            id: 7,
-            post_id: '게시물7',
-            user: {
-                profile_image: 'https://via.placeholder.com/50',
-                nickname: '사용자7',
-            },
-            last_message_content: '안녕하세요. 채팅 내용',
-            last_message_time: '2024-12-25T09:20:00',
-            unread_chat_count: 7,
-        },
-    ]);
+    const [chatRooms, setChatRooms] = useState([]); // 채팅방 목록
+    const [loading, setLoading] = useState(true);
+    const [loggedInUserId, setLoggedInUserId] = useState(null);
 
+    // 날짜 포맷 함수
     const formatDate = (dateString) => {
         const messageDate = new Date(dateString);
         const now = new Date();
@@ -110,11 +37,76 @@ const ChatListScreen = ({ navigation }) => {
         }
     };
 
+    const fetchLoggedInUserId = async () => {
+        try {
+            const tokens = await getTokens();
+
+            setAuthToken(tokens.accessToken);
+
+            const response = await api.get('/profiles/me');
+            const userId = response.data.userId;
+            setLoggedInUserId(userId);
+
+            // 여기서 바로 fetchChatRooms 호출
+            fetchChatRooms(userId);
+        } catch (error) {
+            Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
+            console.error('Failed to fetch logged-in user ID:', error);
+        }
+    };
+
+    // 채팅 목록 API 호출
+    const fetchChatRooms = async (userId) => {
+        try {
+            setLoading(true);
+            const tokens = await getTokens();
+            setAuthToken(tokens.accessToken);
+
+            const response = await api.get(`/messages/rooms?userId=${userId}`);
+            // console.log("📌 API 응답:", response.data);  // ✅ 응답 데이터 확인
+
+            const mappedChatRooms = response.data.map((room) => ({
+                id: room.chatRoomId,
+                writer_id: room.writerId,
+                post_id: room.postId,
+                post_title: room.postTitle,
+                user: {
+                    profile_image: room.profileImage,
+                },
+                last_message_content: room.lastMessageContent,
+                last_message_time: room.lastMessageTimestamp,
+                unread_chat_count: room.unreadCount,
+                // isCompleted: room.isCompleted ?? false, // ✅ 기본값 설정
+                // postStatus: room.postStatus,
+            }));
+
+            setChatRooms(mappedChatRooms);
+        } catch (error) {
+            Alert.alert('오류', '채팅 목록을 불러오는 데 실패했습니다.');
+            console.error('Failed to fetch chat rooms:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 로그인 사용자 ID 가져온 후 채팅 목록 호출
+    useEffect(() => {
+        const initialize = async () => {
+            await fetchLoggedInUserId();
+        };
+        initialize();
+    }, []);
+
     const renderItem = ({ item }) => (
         <ChatItem
             item={item}
             formatDate={formatDate}
-            onPress={() => navigation.navigate('ChatScreen', { chatRoomId: item.id, post_id: item.post_id, isCompleted: true })}
+            onPress={() => navigation.navigate('ChatScreen', {
+                chatRoomId: item.id,  // ✅ 기존 채팅방 ID 전달
+                postId: item.post_id,
+                ownerId: item.writer_id,  // ✅ 추가 (채팅 상대방 ID)
+                // isCompleted: item.isCompleted ?? false,
+            })}
         />
     );
 
