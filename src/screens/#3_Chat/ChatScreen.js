@@ -29,7 +29,7 @@ const ChatScreen = ({ route, navigation }) => {
                 const storedChatRoomId = await AsyncStorage.getItem(`chatRoomId-${postId}`);
                 if (storedChatRoomId) {
                     setChatRoomId(parseInt(storedChatRoomId, 10)); // 문자열을 숫자로 변환
-                    console.log("기존 chatRoomId 불러옴:", storedChatRoomId);
+                    // console.log("기존 chatRoomId 불러옴:", storedChatRoomId);
                 }
             } catch (error) {
                 console.error("chatRoomId 불러오기 실패:", error);
@@ -56,7 +56,7 @@ const ChatScreen = ({ route, navigation }) => {
                 const response = await api.get('/profiles/me');
                 setLoggedInId(response.data.userId);
 
-                console.log("로그인한 사용자 ID (loggedInId):", response.data.userId);
+                // console.log("로그인한 사용자 ID (loggedInId):", response.data.userId);
             } catch (error) {
                 Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
                 console.error('Failed to fetch logged-in user ID:', error);
@@ -164,7 +164,6 @@ const ChatScreen = ({ route, navigation }) => {
                 // 기존 채팅방이 있을 경우 chatRoomId 포함
                 requestBody.chatRoomId = chatRoomId;
 
-                // 두 번째 대화부터는 ownerId와 renterId를 서로 변경
                 requestBody.ownerId = loggedInId;
                 requestBody.renterId = finalOwnerId;
             } else {
@@ -307,7 +306,6 @@ const ChatScreen = ({ route, navigation }) => {
                     ref={flatListRef}
                     data={messages}
                     renderItem={renderItem}
-                    // keyExtractor={(item) => item.id.toString()}
                     style={styles.messageList}
                 />
                 {postStatus === '거래완료' && (
