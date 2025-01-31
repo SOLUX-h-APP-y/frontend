@@ -33,7 +33,7 @@ function PostDetailScreen({ navigation }) {
     setStateActive(!stateActive);
   };
 
-  const fetchPostDetail = async token => {
+  const fetchPostDetail = async () => {
     try {
       const response = await api.get(`/posts/${postId}`);
       setPost(response.data);
@@ -177,6 +177,7 @@ function PostDetailScreen({ navigation }) {
         title={post.isMyPost ? '재업로드' : '채팅하기'}
         postId={postId}
         writerId={post.writerId}
+        postInfo={post.isMyPost ? { postId, postType: post.postType } : null}
       />
 
       <StateSelector

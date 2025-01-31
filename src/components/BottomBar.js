@@ -2,7 +2,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import colors from '../styles/Colors';
 import { NavigateButton, NavigateButtonTheme } from './Buttons';
 
-function BottomBar({ price, title, postId, writerId }) {
+function BottomBar({ price, title, postInfo, postId, writerId }) {
+  const reuploadPost = () => {};
+  console.log(postInfo);
 
   return (
     <View style={styles.container}>
@@ -16,8 +18,7 @@ function BottomBar({ price, title, postId, writerId }) {
         <NavigateButtonTheme
           title={title}
           name="CreatePostScreen"
-          chatRoomId={1}
-          isCompleted={false}
+          postInfo={postInfo}
         />
       ) : (
         <NavigateButtonTheme

@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 20,
+    gap: 8,
   },
 });
 
