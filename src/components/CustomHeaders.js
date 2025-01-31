@@ -100,8 +100,10 @@ function NavigateHeader({ title, type }) {
 function PostHeader({ post }) {
   return (
     <View style={PostHeaderStyles.postDetails}>
-      <Image source={{ uri: post.image }} style={PostHeaderStyles.postImage} />
-      <View>
+      {post.image ? (
+        <Image source={{ uri: post.image }} style={PostHeaderStyles.postImage} />
+      ) : null}
+      <View style={{ flex: 1, justifyContent: 'center', marginLeft: post.image ? 0 : 15 }}>
         <Text style={PostHeaderStyles.postTitle}>{post.title}</Text>
         <View style={PostHeaderStyles.locationContainer}>
           <Image

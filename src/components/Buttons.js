@@ -78,8 +78,10 @@ function NavigateButton({ title, name, params }) {
 function NavigateButtonTheme({
   title,
   name,
-  chatRoomId,
+
   isCompleted,
+  postId,
+  ownerId,
   postInfo,
 }) {
   const navigation = useNavigation();
@@ -89,7 +91,7 @@ function NavigateButtonTheme({
       style={styles.activeCategoryButton}
       onPress={() =>
         title === '채팅하기'
-          ? navigation.navigate(name, { chatRoomId, isCompleted })
+          ? navigation.navigate(name, { isCompleted, postId, ownerId })
           : navigation.navigate(name, {
               actionType: postInfo.postType === 'share' ? 'share' : 'borrow',
               postId: postInfo.postId,
