@@ -235,10 +235,14 @@ const ChatScreen = ({ route, navigation }) => {
                     ]}
                 >
                     {!isMyMessage && (
-                        <Image
-                            source={otherUserProfileImage ? { uri: otherUserProfileImage } : require('../../assets/images/defaultProfile.png')}
-                            style={styles.profileImage}
-                        />
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('OtherMypageScreen', { userId: ownerId || writerId })}
+                        >
+                            <Image
+                                source={otherUserProfileImage ? { uri: otherUserProfileImage } : require('../../assets/images/defaultProfile.png')}
+                                style={styles.profileImage}
+                            />
+                        </TouchableOpacity>
                     )}
                     <View
                         style={[
