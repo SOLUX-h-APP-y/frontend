@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, SafeAreaView, RefreshControl } from 'react-native';
 import ChatItem from '../../components/ChatItem';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
@@ -9,6 +9,7 @@ import api, { setAuthToken } from '../../services/api';
 const ChatListScreen = ({ navigation }) => {
     const [chatRooms, setChatRooms] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false); // 새로고침 상태
     const [loggedInUserId, setLoggedInUserId] = useState(null);
 
     // 날짜 포맷 함수
@@ -56,9 +57,11 @@ const ChatListScreen = ({ navigation }) => {
     };
 
     // 채팅 목록 API 호출
-    const fetchChatRooms = async (userId) => {
+    const fetchChatRooms = async (userId, isRefresh = false) => {
         try {
-            setLoading(true);
+            if (!isRefresh) setLoading(true);
+            else setRefreshing(true);
+
             const tokens = await getTokens();
             setAuthToken(tokens.accessToken);
 
@@ -89,16 +92,32 @@ const ChatListScreen = ({ navigation }) => {
             console.error('Failed to fetch chat rooms:', error);
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
+    };
+
+    // 새로고침 요청 시 호출
+    const onRefresh = async () => {
+        if (!loggedInUserId) return;
+        await fetchChatRooms(loggedInUserId, true);
     };
 
     // 로그인 사용자 ID 가져온 후 채팅 목록 호출
     useEffect(() => {
-        const initialize = async () => {
-            await fetchLoggedInUserId();
-        };
-        initialize();
+        fetchLoggedInUserId();
     }, []);
+
+    // 실시간 업데이트
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (loggedInUserId) {
+                fetchChatRooms(loggedInUserId);
+            }
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [loggedInUserId]);
+
 
     const renderItem = ({ item }) => (
         <ChatItem
@@ -122,6 +141,9 @@ const ChatListScreen = ({ navigation }) => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={styles.listContainer}
+                refreshControl={ // 새로고침 기능 추가
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
             />
         </SafeAreaView>
     );
