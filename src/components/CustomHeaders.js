@@ -98,7 +98,6 @@ function NavigateHeader({ title, type }) {
 }
 
 function PostHeader({ post }) {
-
   const navigation = useNavigation();
 
   return (

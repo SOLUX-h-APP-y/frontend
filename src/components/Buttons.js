@@ -189,11 +189,11 @@ function ReviewButton({ postId }) {
 
 const EncourageButton = ({
   totalCount = 0,
-  profileOwnerId,
-  currentUserId,
+  userId,
+  loggedInUserId,
   onPress,
 }) => {
-  const isMyProfile = profileOwnerId === currentUserId; // 내 프로필 여부 확인
+  const isMyProfile = userId === loggedInUserId; // 내 프로필 여부 확인
 
   const handlePress = () => {
     if (isMyProfile) {

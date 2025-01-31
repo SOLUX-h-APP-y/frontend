@@ -15,7 +15,7 @@ import { NavigateHeader } from '../../components/CustomHeaders';
 import settingIcon from '../../assets/icons/settingIcon.png';
 import { useEffect, useState } from 'react';
 import StateSelector from '../../components/StateSelector';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { getTokens } from '../../services/TokenManager';
 import api, { setAuthToken } from '../../services/api';
 import MiniMap from '../../components/MiniMap';
@@ -111,7 +111,9 @@ function PostDetailScreen({ navigation }) {
           </View>
         )}
         <View style={styles.contentContainer}>
-          <View style={styles.profile}>
+          < TouchableOpacity
+            style={styles.profile}
+            onPress={() => navigation.navigate('OtherMypageScreen', { userId: post.writerId })}>
             <Image source={{ uri: post.writerProfileImage }} />
             <View
               style={{
@@ -139,7 +141,7 @@ function PostDetailScreen({ navigation }) {
                 </TouchableOpacity>
               ) : null}
             </View>
-          </View>
+          </TouchableOpacity>
           <View style={styles.tags}>
             <CategoryTag title={post.category} />
             <StateTag title={post.postStatus} />
@@ -156,7 +158,6 @@ function PostDetailScreen({ navigation }) {
           <View style={styles.content}>
             <Text>{post.content}</Text>
           </View>
-
           <View
             style={{
               flexDirection: 'row',
@@ -171,7 +172,7 @@ function PostDetailScreen({ navigation }) {
             longitude={post.locationLongitude}
           />
         </View>
-      </ScrollView>
+      </ScrollView >
       <BottomBar
         price={post.price}
         title={post.isMyPost ? '재업로드' : '채팅하기'}
@@ -186,7 +187,7 @@ function PostDetailScreen({ navigation }) {
         visible={stateActive}
         navigation={navigation}
       />
-    </View>
+    </View >
   );
 }
 
