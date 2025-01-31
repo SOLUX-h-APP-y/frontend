@@ -152,6 +152,18 @@ const ChatScreen = ({ route, navigation }) => {
                 content: inputText,
             };
 
+            // if (chatRoomId) {
+            //     // 기존 채팅방이 있을 경우 chatRoomId 포함
+            //     requestBody.chatRoomId = chatRoomId;
+
+            //     // 두 번째 대화부터는 ownerId와 renterId를 서로 변경
+            //     requestBody.ownerId = loggedInId;
+            //     requestBody.renterId = ownerId;
+            // } else {
+            //     // 새로운 채팅 시작 시 renterId를 현재 로그인한 사용자로 설정
+            //     requestBody.ownerId = ownerId;
+            //     requestBody.renterId = loggedInId;
+            // }
             if (chatRoomId) {
                 // 기존 채팅방이 있을 경우 chatRoomId 포함
                 requestBody.chatRoomId = chatRoomId;
@@ -161,8 +173,8 @@ const ChatScreen = ({ route, navigation }) => {
                 requestBody.renterId = ownerId;
             } else {
                 // 새로운 채팅 시작 시 renterId를 현재 로그인한 사용자로 설정
-                requestBody.ownerId = ownerId;
-                requestBody.renterId = loggedInId;
+                requestBody.ownerId = loggedInId;
+                requestBody.renterId = ownerId;
             }
 
             console.log("메시지 전송 요청:", requestBody);
@@ -244,18 +256,18 @@ const ChatScreen = ({ route, navigation }) => {
                         <Text style={styles.messageText}>{item.content}</Text>
                     </View>
                     {isMyMessage && (
-                        <View style={styles.myMessageMeta}>
-                            <Text style={styles.readStatus}>
-                                {item.is_read ? '' : '1'} {/* 안읽은 메시지 1로 표시 */}
-                            </Text>
-                            <Text style={styles.messageTime}>
-                                {new Date(item.createAt).toLocaleTimeString([], {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: false,
-                                })}
-                            </Text>
-                        </View>
+                        // <View style={styles.myMessageMeta}>
+                        //     <Text style={styles.readStatus}>
+                        //         {item.is_read ? '' : '1'} {/* 안읽은 메시지 1로 표시 */}
+                        //     </Text>
+                        <Text style={styles.messageTime}>
+                            {new Date(item.createAt).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false,
+                            })}
+                        </Text>
+                        // </View>
                     )}
                     {!isMyMessage && (
                         <Text style={styles.messageTime}>
