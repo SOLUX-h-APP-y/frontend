@@ -9,7 +9,8 @@ import api, { setAuthToken } from '../../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ChatScreen = ({ route, navigation }) => {
-    const { isCompleted, toastMessage, postId, ownerId } = route.params || {};
+    const { toastMessage, postId, ownerId
+    } = route.params || {};
 
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
@@ -20,6 +21,7 @@ const ChatScreen = ({ route, navigation }) => {
     const [loggedInId, setLoggedInId] = useState(null); // 로그인한 사용자 ID
     const [chatRoomId, setChatRoomId] = useState(null); // 채팅방 ID 상태 추가
     const [otherUserProfileImage, setOtherUserProfileImage] = useState(null);
+    const [postStatus, setPostStatus] = useState(null);
 
     // 앱이 실행될 때 `AsyncStorage`에서 `chatRoomId` 불러오기
     useEffect(() => {
@@ -40,6 +42,8 @@ const ChatScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (chatRoomId) {
             fetchChatDetails(chatRoomId);
+        } else {
+            fetchChatDetails(postId);
         }
     }, [chatRoomId]);
 
@@ -70,15 +74,16 @@ const ChatScreen = ({ route, navigation }) => {
             const response = await api.get(`/chat/rooms/${roomId}/details`);
 
             if (response.status === 200) {
-                const { messages } = response.data; // 메시지 배열 가져오기
+                const { messages, postStatus, otherUserProfileImage } = response.data; // 메시지 배열 가져오기
                 setOtherUserProfileImage(otherUserProfileImage);
+                setPostStatus(postStatus); // ✅ postStatus 상태 저장
                 const formattedMessages = messages.map(msg => {
                     const utcDate = new Date(msg.createAt); // 서버에서 받은 UTC 시간
                     const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // ✅ UTC → KST 변환
 
                     return {
                         ...msg,
-                        createAt: kstDate, // KST 변환 적용
+                        createAt: kstDate, //KST 변환 적용
                     };
                 });
 
@@ -314,7 +319,7 @@ const ChatScreen = ({ route, navigation }) => {
                     // keyExtractor={(item) => item.id.toString()}
                     style={styles.messageList}
                 />
-                {isCompleted && (
+                {postStatus === '거래완료' && (
                     <View style={styles.reviewContainer}>
                         <Text style={styles.reviewText}>
                             거래는 어떠셨나요?{'\n'}
