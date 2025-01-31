@@ -52,6 +52,12 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+	<dict>
+    	<key>NaverMapPreciseLocation</key>
+    	<string>현재 위치를 기준으로 지도를 중앙에 맞추기 위해 정확한 위치 정보가 필요합니다.</string>	
+	</dict>
+
 	<key>NSCameraUsageDescription</key>
 	<string>이 앱은 카메라에 접근해야 합니다.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

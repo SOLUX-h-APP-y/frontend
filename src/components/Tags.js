@@ -19,10 +19,9 @@ function StateTag({ title }) {
 
 function TypeTag({ type }) {
   return (
-    <View
-      style={type == 'sharer' ? styles.typeTagSharer : styles.typeTagBorrower}>
+    <View style={type == 'share' ? styles.typeTagShare : styles.typeTagBorrow}>
       <Text style={{ color: colors.themeColor }}>
-        {type == 'sharer' ? '빌려드려요' : '빌려주세요'}
+        {type == 'share' ? '빌려드려요' : '빌려주세요'}
       </Text>
     </View>
   );
@@ -47,7 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12.5,
   },
-  typeTagSharer: {
+  typeTagShare: {
     width: 90,
     height: 25,
     borderWidth: 1,
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12.5,
   },
-  typeTagBorrower: {
+  typeTagBorrow: {
     width: 90,
     height: 25,
     backgroundColor: colors.vPale,

@@ -1,63 +1,38 @@
 import { StyleSheet, ScrollView, View } from 'react-native';
 import PostPreviewItem from '../../components/PostPreviewItem';
-import sampleImage from '../../assets/images/sample.png';
 import { NavigateHeader } from '../../components/CustomHeaders';
-
-const data = [
-  {
-    id: 0,
-    title: '카메라 빌려주십쇼 어쩌구 저쩌구',
-    price: 5500,
-    location: '청파동2가',
-    image: sampleImage,
-    type: 'borrower',
-  },
-  {
-    id: 1,
-    title: '가방 빌려줘어ㅓ어ㅓ',
-    price: 2500,
-    location: '청파동2가',
-    type: 'borrower',
-  },
-  {
-    id: 2,
-    title: '원피스형 정장 달라고?',
-    price: 3500,
-    location: '청파동2가',
-    type: 'sharer',
-  },
-  {
-    id: 3,
-    title: '카메라 빌려드려요 어쩌구 저쩌구',
-    price: 5500,
-    location: '청파동2가',
-    image: sampleImage,
-    type: 'sharer',
-  },
-  {
-    id: 4,
-    title: '가방 빌asdf sdasdfa sdfasesad sefadsfas sdfasefasd 려드립니다',
-    price: 2500,
-    location: '청파동2가',
-    type: 'sharer',
-  },
-  {
-    id: 5,
-    title: '원피스형 정장 필요하신분?',
-    price: 3500,
-    location: '청파동2가',
-    type: 'sharer',
-  },
-];
+import { useEffect, useState } from 'react';
+import api from '../../services/api';
+import { Text } from 'react-native-animatable';
 
 function MyPostList() {
+  const [myPosts, setMyPosts] = useState([]); // 초기 상태를 []로 설정
+
+  const fetchMyPosts = async () => {
+    try {
+      const response = await api.get(`/users/me/posts`);
+      setMyPosts(response.data);
+      console.log('Fetched posts:', response.data); // ⚠️ 상태 변경 후 콘솔 출력
+    } catch (e) {
+      console.error('Failed to fetch posts:', e);
+    }
+  };
+
+  useEffect(() => {
+    fetchMyPosts(); // 처음 한 번만 실행되도록 설정
+  }, []); // ⚠️ 빈 배열을 넣어 한 번만 실행되게 함
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ gap: 20, padding: 20 }}>
         <NavigateHeader title={'내글보기'} />
-        {data.map((v, i) => (
-          <PostPreviewItem data={v} />
-        ))}
+        {myPosts.length > 0 ? (
+          myPosts.map((v, i) => <PostPreviewItem key={i} data={v} />)
+        ) : (
+          <View style={{ alignItems: 'center', marginTop: 20 }}>
+            <Text>게시물이 없습니다.</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   );

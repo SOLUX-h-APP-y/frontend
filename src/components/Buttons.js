@@ -1,4 +1,11 @@
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import colors from '../styles/Colors';
 import { useNavigation } from '@react-navigation/native';
 import plusIcon from '../assets/icons/plusIcon.png';
@@ -45,33 +52,48 @@ function CategoryButton({ title, active, onPress }) {
   );
 }
 
-function NavigateButton({ title, name }) {
+function NavigateButton({ title, name, params }) {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={styles.navigateButton}
-      onPress={() => navigation.navigate(name)}>
+      onPress={() => navigation.navigate(name, params)}>
       <Text>{title}</Text>
     </TouchableOpacity>
   );
 }
 
-function NavigateButtonTheme({ title, name, chatRoomId, isCompleted }) {
+function NavigateButtonTheme({
+  title,
+  name,
+
+  isCompleted,
+  postId,
+  ownerId,
+  postInfo,
+}) {
   const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={styles.activeCategoryButton}
-      onPress={() => navigation.navigate(name, { chatRoomId, isCompleted })}>
+      onPress={() =>
+        title === '채팅하기'
+          ? navigation.navigate(name, { isCompleted, postId, ownerId })
+          : navigation.navigate(name, {
+              actionType: postInfo.postType === 'share' ? 'share' : 'borrow',
+              postId: postInfo.postId,
+            })
+      }>
       <Text style={{ color: 'white', fontWeight: 700 }}>{title}</Text>
     </TouchableOpacity>
   );
 }
 
-function AddPhotoButton() {
+function AddPhotoButton({ onPress }) {
   return (
-    <TouchableOpacity style={styles.addPhotoButton}>
+    <TouchableOpacity style={styles.addPhotoButton} onPress={onPress}>
       <Image source={plusIcon} />
     </TouchableOpacity>
   );
@@ -163,7 +185,12 @@ function ReviewButton({ revieweeId }) {
   );
 }
 
-const EncourageButton = ({ totalCount = 0, profileOwnerId, currentUserId, onPress }) => {
+const EncourageButton = ({
+  totalCount = 0,
+  profileOwnerId,
+  currentUserId,
+  onPress,
+}) => {
   const isMyProfile = profileOwnerId === currentUserId; // 내 프로필 여부 확인
 
   const handlePress = () => {
@@ -184,7 +211,8 @@ const EncourageButton = ({ totalCount = 0, profileOwnerId, currentUserId, onPres
     >
       <View style={EncourageButtonstyles.textContainer}>
         <Text style={EncourageButtonstyles.buttonText}>응원하기</Text>
-        <Text style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
+        <Text
+          style={EncourageButtonstyles.totalCountText}>{`${totalCount}`}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -237,8 +265,8 @@ const styles = StyleSheet.create({
   },
   createPostButton: {
     position: 'absolute',
-    bottom: 50,
-    right: 50,
+    bottom: 30,
+    right: 30,
     width: 50,
     height: 50,
     backgroundColor: colors.themeColor,
@@ -253,7 +281,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 21,
   },
   inactiveCategoryButton: {
     height: 40,

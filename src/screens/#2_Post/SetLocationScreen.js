@@ -7,12 +7,18 @@ import {
   requestLocationAccuracy,
 } from 'react-native-permissions';
 import { NaverMapView } from '@mj-studio/react-native-naver-map';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BottomButton } from '../../components/Buttons';
-import { useNavigation } from '@react-navigation/native';
+import {
+  requestLocationPermission,
+  getCurrentCoordinates,
+  searchPlace,
+  getCoordinatesFromAddress,
+} from '../../services/LocationManager';
 
-function SetLocationScreen() {
-  const navigation = useNavigation();
+function SetLocationScreen({ navigation, route }) {
+  const [location, setLocation] = useState({ latitude: null, longitude: null });
+  const [address, setAddress] = useState('');
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -31,28 +37,71 @@ function SetLocationScreen() {
         }
       });
     }
+
+    handleStartLocation();
   }, []);
 
-  const handleLocation = () => {
+  const handleStartLocation = async () => {
+    try {
+      await requestLocationPermission();
+
+      const coordinates = await new Promise((resolve, reject) => {
+        const result = getCurrentCoordinates();
+
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('좌표 가져오기 실패'));
+        }
+      });
+
+      const { latitude, longitude } = coordinates;
+
+      setLocation({ latitude, longitude });
+    } catch (e) {
+      console.log('handleLocation Error: ', e);
+    }
+  };
+
+  const updateLocation = async () => {
+    const { latitude, longitude } = await getCoordinatesFromAddress(address);
+    console.log(latitude, longitude);
+    setLocation({ latitude, longitude });
+  };
+
+  const submitLocation = () => {
     navigation.goBack();
-    console.log('위치 저장하고 CreatePostScreen으로 돌아가기')
+    route.params?.setLocation({
+      latitude: location.latitude,
+      longitude: location.longitude,
+      address,
+      actionType: route.params.actionType,
+    });
   };
 
   return (
     <View style={styles.container}>
       <NaverMapView
         style={{ flex: 1 }}
-        onInitialized={() => {
-          return console.log('initialized!');
+        camera={{
+          latitude: location.latitude, // 초기 위도
+          longitude: location.longitude, // 초기 경도
+          zoom: 15,
         }}
+        showsMyLocationButton={true}
       />
 
       <View style={styles.overlay}>
         <NavigateHeader title="위치 입력" />
-        <PlainInputField placeholder="원하는 위치를 입력하세요" />
+        <PlainInputField
+          placeholder="원하는 위치를 입력하세요"
+          value={address}
+          onChangeText={v => setAddress(v)}
+          onSubmitEditing={updateLocation}
+        />
       </View>
       <View style={styles.button}>
-        <BottomButton title="완료하기" onPress={handleLocation} active={true} />
+        <BottomButton title="완료하기" onPress={submitLocation} active={true} />
       </View>
     </View>
   );

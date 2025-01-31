@@ -2,7 +2,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import colors from '../styles/Colors';
 import { NavigateButton, NavigateButtonTheme } from './Buttons';
 
-function BottomBar({ price }) {
+function BottomBar({ price, title, postInfo, postId, writerId }) {
+  const reuploadPost = () => {};
+  console.log(postInfo);
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
@@ -11,12 +14,22 @@ function BottomBar({ price }) {
           {price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
         </Text>
       </Text>
-      <NavigateButtonTheme
-        title="채팅하기"
-        name="ChatScreen"
-        chatRoomId={1}
-        isCompleted={false}
-      />
+      {title === '재업로드' ? (
+        <NavigateButtonTheme
+          title={title}
+          name="CreatePostScreen"
+          postInfo={postInfo}
+        />
+      ) : (
+        <NavigateButtonTheme
+          title={title}
+          name="ChatScreen"
+          // chatRoomId={1}
+          postId={postId}
+          ownerId={writerId}
+          isCompleted={false}
+        />
+      )}
     </View>
   );
 }
