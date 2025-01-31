@@ -82,9 +82,9 @@ function NavigateButtonTheme({
         title === '채팅하기'
           ? navigation.navigate(name, { isCompleted, postId, ownerId })
           : navigation.navigate(name, {
-              actionType: postInfo.postType === 'share' ? 'share' : 'borrow',
-              postId: postInfo.postId,
-            })
+            actionType: postInfo.postType === 'share' ? 'share' : 'borrow',
+            postId: postInfo.postId,
+          })
       }>
       <Text style={{ color: 'white', fontWeight: 700 }}>{title}</Text>
     </TouchableOpacity>
@@ -131,7 +131,7 @@ function SubmitButton({ onPress, title, disabled }) {
   );
 }
 
-function ReviewButton({ revieweeId }) {
+function ReviewButton({ postId }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -148,14 +148,16 @@ function ReviewButton({ revieweeId }) {
       const accessToken = tokens.accessToken;
       setAuthToken(accessToken);
 
-      const response = await axios.get(`${API_BASE_URL}/reviews/${revieweeId}`, {
+      const response = await axios.get(`${API_BASE_URL}/reviews/${postId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
+      console.log('📌 후기 불러오기:', response.data);
 
       if (response.status === 200) {
-        setReviews(response.data);
+        const fetchedReviews = response.data.length > 0 ? response.data : [{ content: "작성된 리뷰가 없습니다.", isDefault: true }];
+        setReviews(fetchedReviews);
         setModalVisible(true);
       }
     } catch (error) {
