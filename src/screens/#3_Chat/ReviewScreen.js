@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -23,15 +23,8 @@ import { API_BASE_URL } from 'react-native-dotenv'
 import { setAuthToken } from '../../services/api';
 
 const ReviewScreen = ({ route, navigation }) => {
-    const { chatRoomId, postID, revieweeId } = route.params; // API 요청에 필요한 데이터 전달
-    // chatRoomID는 필요없는지?
-
-    const post = {
-        id: 101,
-        title: '카메라 빌려드려요',
-        image: 'https://via.placeholder.com/50',
-        location: '청파동2가',
-    };
+    const { postId, revieweeId, postData } = route.params; // API 요청에 필요한 데이터 전달
+    const [loadingPost, setLoadingPost] = useState(false);
 
     const [rating, setRating] = useState(0); // 초기 별점 값
     const [reviewText, setReviewText] = useState('');
@@ -60,7 +53,7 @@ const ReviewScreen = ({ route, navigation }) => {
 
             // 리뷰 작성 API 호출
             const response = await axios.post(
-                `${API_BASE_URL}/reviews/${postID}`,
+                `${API_BASE_URL}/reviews/${postId}`,
                 {
                     revieweeId,
                     rate: rating,
@@ -82,12 +75,7 @@ const ReviewScreen = ({ route, navigation }) => {
                 navigation.goBack(); // 작성 완료 후 이전 화면으로 이동
             }
         } catch (error) {
-            console.error('후기 작성 실패:', error.message);
-            if (error.response?.data?.message) {
-                Alert.alert('오류', error.response.data.message);
-            } else {
-                Alert.alert('오류', '후기 작성 중 문제가 발생했습니다. 다시 시도해주세요.');
-            }
+            console.error('🚨 후기 작성 실패:', error.response?.data || error.message);
         } finally {
             setLoading(false);
         }
@@ -98,7 +86,21 @@ const ReviewScreen = ({ route, navigation }) => {
             <View style={{ paddingHorizontal: 20 }}>
                 <NavigateHeader navigation={navigation} title="후기 작성" />
             </View>
-            <PostHeader post={post} />
+            {loadingPost ? (
+                <ActivityIndicator size="large" color={colors.themeColor} style={{ marginTop: 20 }} />
+            ) : (
+                postData && (
+                    <PostHeader
+                        post={{
+                            id: postData.postId,
+                            title: postData.title,
+                            image: postData.previewImage,
+                            location: postData.locationName,
+                            status: postData.postStatus,
+                        }}
+                    />
+                )
+            )}
             {/* 키보드가 올라왔을 때 키보드 영역 외의 다른 영역을 터치하면 키보드가 내려감 */}
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <KeyboardAvoidingView // 키보드가 올라와도 화면이 가려지지 않도록 키보드 뷰 사용
