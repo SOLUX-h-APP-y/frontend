@@ -17,10 +17,13 @@ import { API_BASE_URL } from 'react-native-dotenv';
 import axios from 'axios';
 import { saveTokens } from '../../services/TokenManager.js';
 import { UserContext } from '../../states/UserContext.js';
+import colors from '../../styles/Colors.js';
 
 function SetProfileScreen({ navigation }) {
   const { userInfo } = useContext(UserContext);
   const [step, setStep] = useState(1);
+  const [checkName, setCheckName] = useState();
+
   const [profile, setProfile] = useState({
     name: '',
     location: '',
@@ -30,13 +33,29 @@ function SetProfileScreen({ navigation }) {
 
   const nextStep = () => {
     if (step === 1) {
-      setStep(2);
+      submitName();
     } else {
       signUp();
     }
   };
 
-  const handleName = text => {
+  const submitName = async () => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/auth/check-nickname`, {
+        nickname: profile.name,
+      });
+
+      setCheckName(response.data.isDuplicate);
+
+      if (checkName) {
+        setStep(2);
+      }
+    } catch (e) {
+      console.log('submitName error:', e.response?.data || e);
+    }
+  };
+
+  const handleName = async text => {
     setProfile(prev => ({
       ...prev,
       name: text.trim(),
@@ -111,12 +130,25 @@ function SetProfileScreen({ navigation }) {
           : '앱을 사용할 위치를\n입력해주세요'}
       </Text>
       {step == 1 ? (
-        <InputFieldWithClear
-          placeholder={'ex) 빌링이'}
-          value={profile.name}
-          onChangeText={handleName}
-          onClear={prev => setProfile({ ...prev, name: '' })}
-        />
+        <>
+          <InputFieldWithClear
+            placeholder={'ex) 빌링이'}
+            value={profile.name}
+            onChangeText={handleName}
+            onClear={prev => setProfile({ ...prev, name: '' })}
+          />
+          {checkName !== undefined && (
+            <Text
+              style={[
+                styles.message,
+                { color: checkName ? colors.error : '#00C147' },
+              ]}>
+              {checkName
+                ? '이미 사용중인 아이디 입니다'
+                : '사용가능한 아이디 입니다'}
+            </Text>
+          )}
+        </>
       ) : (
         <View style={{ alignItems: 'center', gap: 20 }}>
           <OutputField
@@ -162,6 +194,9 @@ const styles = StyleSheet.create({
   },
   center: {
     alignItems: 'center',
+  },
+  message: {
+    paddingHorizontal: 20,
   },
 });
 

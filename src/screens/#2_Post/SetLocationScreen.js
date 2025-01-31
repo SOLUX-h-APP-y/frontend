@@ -64,7 +64,6 @@ function SetLocationScreen({ navigation, route }) {
   };
 
   const updateLocation = async () => {
-    console.log('와이라노', address);
     const { latitude, longitude } = await getCoordinatesFromAddress(address);
     console.log(latitude, longitude);
     setLocation({ latitude, longitude });
