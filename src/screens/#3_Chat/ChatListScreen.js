@@ -67,6 +67,7 @@ const ChatListScreen = ({ navigation }) => {
 
             const mappedChatRooms = response.data.map((room) => ({
                 id: room.chatRoomId,
+                writer_id: room.writerId,
                 post_id: room.postId,
                 post_title: room.postTitle,
                 user: {
@@ -75,7 +76,8 @@ const ChatListScreen = ({ navigation }) => {
                 last_message_content: room.lastMessageContent,
                 last_message_time: room.lastMessageTimestamp,
                 unread_chat_count: room.unreadCount,
-                isCompleted: room.isCompleted ?? false // ✅ 기본값 설정
+                // isCompleted: room.isCompleted ?? false, // ✅ 기본값 설정
+                // postStatus: room.postStatus,
             }));
 
             setChatRooms(mappedChatRooms);
@@ -102,8 +104,8 @@ const ChatListScreen = ({ navigation }) => {
             onPress={() => navigation.navigate('ChatScreen', {
                 chatRoomId: item.id,  // ✅ 기존 채팅방 ID 전달
                 postId: item.post_id,
-                // ownerId: item.post.writerId,  // ✅ 추가 (채팅 상대방 ID)
-                isCompleted: item.isCompleted ?? false
+                ownerId: item.writer_id,  // ✅ 추가 (채팅 상대방 ID)
+                // isCompleted: item.isCompleted ?? false,
             })}
         />
     );
