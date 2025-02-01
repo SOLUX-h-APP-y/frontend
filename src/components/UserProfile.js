@@ -5,22 +5,10 @@ import fontStyles from '../styles/FontStyles';
 import { Image } from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 
-function UserProfile({ userData, isNotificationOn, setIsNotificationOn, profileOwnerId, onEncouragePress }) {
+function UserProfile({ userData, isNotificationOn, setIsNotificationOn, loggedInUserId, }) {
     const navigation = useNavigation();
 
-    const isEditable = profileOwnerId === userData?.userId;
-
-    // console.log("isEditable:", isEditable); // 디버깅용
-    // console.log("profileOwnerId:", profileOwnerId); // 디버깅용
-    // console.log("userData.userId:", userData?.userId); // 디버깅용
-
-    // console.log('UserProfile userData:', userData);
-    // UserProfile userData: 
-    // { "allowNotification": true, "bio": null, "cheerCount": 0, 
-    //     "level": "씨앗", "locationName": "경기도 군포시 산본동", 
-    //     "nextTier": "새싹", "nickname": "Dd", "profileImage": null, 
-    //     "remainingCountToNextTier": 10, "rentalCount": 0, 
-    //     "tier": "씨앗", "userId": 25 }
+    const isEditable = loggedInUserId === userData?.userId;
 
     return (
         <View style={styles.header}>
@@ -73,7 +61,8 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 16,
+        paddingHorizontal: 16,
+        paddingBottom: 16,
         borderBottomWidth: 3,
         borderBottomColor: colors.gray1,
     },

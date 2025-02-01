@@ -98,8 +98,19 @@ function NavigateHeader({ title, type }) {
 }
 
 function PostHeader({ post }) {
+  const navigation = useNavigation();
+
   return (
-    <View style={PostHeaderStyles.postDetails}>
+    <TouchableOpacity
+      style={PostHeaderStyles.postDetails}
+      onPress={() => {
+        if (post.id) {
+          navigation.navigate('PostDetailScreen', { postId: post.id });
+        } else {
+          console.warn('postId 없음');
+        }
+      }}
+    >
       {post.image ? (
         <Image source={{ uri: post.image }} style={PostHeaderStyles.postImage} />
       ) : null}
@@ -113,7 +124,7 @@ function PostHeader({ post }) {
           <Text style={PostHeaderStyles.postLocation}>{post.location}</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

@@ -82,6 +82,7 @@ const EditMypageScreen = () => {
             const formData = new FormData();
             formData.append('nickname', nickname);
             formData.append('bio', intro || '');
+
             if (profileImage && profileImage !== require('../../assets/images/defaultProfile.png')) {
                 formData.append('profileImageFile', {
                     uri: profileImage,

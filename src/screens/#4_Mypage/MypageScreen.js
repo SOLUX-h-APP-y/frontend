@@ -29,140 +29,97 @@ const MypageScreen = () => {
   const [posts, setPosts] = useState([]); // 게시글 목록
   const tabs = ['거래중', '대여중', '거래완료'];
 
-  const profileOwnerId = 25; // 현재 보고 있는 프로필 소유자 ID (하드코딩된 임시 데이터로 추후에 동적 프로필 소유자 id로 변경 필요)
-
-  // 로그인 사용자 ID를 가져옴
+  // 로그인 사용자 ID 가져오기
   const fetchLoggedInUserId = async () => {
     try {
       const tokens = await getTokens();
-      if (!tokens || !tokens.accessToken) {
-        Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-          { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-        ]);
-        return;
-      }
+      setAuthToken(tokens.accessToken);
 
-      const accessToken = tokens.accessToken;
-      setAuthToken(accessToken);
-
-      // 자신의 프로필 조회를 통해 로그인한 사용자 ID를 가져옴
       const response = await api.get('/profiles/me');
-      setLoggedInUserId(response.data.userId); // 로그인한 사용자 ID 설정
+      setLoggedInUserId(response.data.userId);
     } catch (error) {
-      Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
       console.error('Failed to fetch logged-in user ID:', error);
     }
   };
 
-  // 사용자가 작성한 글 목록 조회
-  const fetchUserPosts = async () => {
+  // 프로필 정보 가져오기 (ID가 설정된 후 실행)
+  const fetchUserProfile = async (userId) => {
+    if (!userId) return; // userId가 없으면 실행하지 않음
+
     try {
       const tokens = await getTokens();
-      if (!tokens || !tokens.accessToken) {
-        Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-          { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-        ]);
-        return;
-      }
+      setAuthToken(tokens.accessToken);
 
-      const accessToken = tokens.accessToken;
-      setAuthToken(accessToken);
-
-      const response = await api.get(
-        `/users/${profileOwnerId}/posts?status=${activeTab}`,
-      );
-      setPosts(response.data); // 조회한 글 데이터 설정
-
-      // console.log('Current Active Tab:', activeTab);
+      const response = await api.get(`/profiles/${userId}`);
+      setUserData(response.data);
     } catch (error) {
-      Alert.alert('오류', '글 목록을 불러오는 데 실패했습니다.');
-      console.error('Failed to fetch user posts:', error);
+      console.error('Failed to fetch user profile:', error);
+      if (error.response?.status === 403) {
+        Alert.alert('오류', '프로필을 조회할 권한이 없습니다.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // 특정 프로필 조회
-  const fetchUserProfile = async userId => {
+  // 게시글 목록 가져오기 (ID가 설정된 후 실행)
+  const fetchUserPosts = async (userId) => {
+    if (!userId) return; // userId가 없으면 실행하지 않음
+
     try {
-      setLoading(true);
-
       const tokens = await getTokens();
-      if (!tokens || !tokens.accessToken) {
-        Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-          { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-        ]);
-        return;
-      }
+      setAuthToken(tokens.accessToken);
 
-      const accessToken = tokens.accessToken;
-      setAuthToken(accessToken);
-
-      const response = await api.get(`/profiles/${userId}`);
-      setUserData(response.data); // 조회한 프로필 데이터 설정
+      const response = await api.get(`/users/${userId}/posts?status=${activeTab}`);
+      setPosts(response.data);
     } catch (error) {
-      Alert.alert('오류', '프로필 정보를 불러오는 데 실패했습니다.');
-      console.error('Failed to fetch user profile:', error);
-    } finally {
-      setLoading(false);
+      console.error('Failed to fetch user posts:', error);
+      if (error.response?.status === 500) {
+        Alert.alert('오류', '게시글을 불러오는 중 문제가 발생했습니다.');
+      }
     }
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchLoggedInUserId(); // 로그인 사용자 ID 가져오기
-      fetchUserProfile(profileOwnerId); // 특정 프로필 조회
-      fetchUserPosts(); // 사용자가 작성한 글 목록 조회
-    }, [profileOwnerId]),
+      const loadData = async () => {
+        await fetchLoggedInUserId(); // 로그인한 사용자 ID 가져오기
+      };
+      loadData();
+    }, [])
   );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (loggedInUserId) {
+        fetchUserProfile(loggedInUserId); // ✅ 프로필 정보 다시 불러오기
+      }
+    }, [loggedInUserId])
+  );
+
+  useEffect(() => {
+    if (loggedInUserId) {
+      fetchUserProfile(loggedInUserId);
+      fetchUserPosts(loggedInUserId);
+    }
+  }, [loggedInUserId, activeTab]);
 
   // activeTab 변경 시 게시글 목록 조회
   useEffect(() => {
     fetchUserPosts();
   }, [activeTab]);
 
-  // 응원하기
-  const encourageUser = async receiverId => {
+  // 응원하기 기능
+  const encourageUser = async () => {
     try {
-      setLoading(true);
-
       const tokens = await getTokens();
-      if (!tokens || !tokens.accessToken) {
-        Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-          { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-        ]);
-        return;
-      }
+      setAuthToken(tokens.accessToken);
 
-      const accessToken = tokens.accessToken;
-      setAuthToken(accessToken);
-
-      const response = await api.post(`/profiles/${receiverId}/cheers`);
-
-      if (response.status === 200) {
-        Alert.alert('응원 성공!', '응원을 보냈습니다.');
-        fetchUserProfile(profileOwnerId); // 프로필 데이터 새로고침
-      } else {
-        Alert.alert('오류', '응원에 실패했습니다.');
-      }
+      await api.post(`/profiles/${loggedInUserId}/cheers`);
+      Alert.alert('응원 성공!', '응원을 보냈습니다.');
     } catch (error) {
-      if (error.response?.status === 403) {
-        Alert.alert('오류', '이미 응원한 사용자입니다.');
-      } else if (error.response?.status === 400) {
-        Alert.alert('오류', '자신은 응원할 수 없습니다.');
-      } else if (error.response?.status === 401) {
-        Alert.alert('로그인이 만료되었습니다', '다시 로그인해주세요.');
-        navigation.navigate('LoginScreen');
-      } else if (error.response?.status === 404) {
-        Alert.alert('오류', '사용자를 찾을 수 없습니다.');
-      } else {
-        Alert.alert(
-          '오류',
-          `응원 요청 중 문제가 발생했습니다: ${error.message}`,
-        );
-      }
-    } finally {
-      setLoading(false);
+      console.error('응원하기 API 에러:', error);
+      Alert.alert('오류', error.response?.data?.message || '응원 요청 중 문제가 발생했습니다.');
     }
   };
 
@@ -190,8 +147,6 @@ const MypageScreen = () => {
     );
   }
 
-  const tabTitle =
-    profileOwnerId === loggedInUserId ? '내 글 보기' : '거래 목록';
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -206,16 +161,14 @@ const MypageScreen = () => {
                 userData={userData}
                 isNotificationOn={isNotificationOn}
                 setIsNotificationOn={setIsNotificationOn}
-                profileOwnerId={loggedInUserId} // 현재 프로필 소유자 ID
+                loggedInUserId={loggedInUserId}
               />
             )}
             <View style={styles.relativeContainer}>
               <EncourageButton
                 totalCount={userData?.cheerCount || 0}
-                profileOwnerId={profileOwnerId}
-                currentUserId={loggedInUserId}
-                onPress={() => encourageUser(profileOwnerId)} // 응원 버튼 클릭
-                disabled={loading || profileOwnerId === loggedInUserId} // 로딩 중 또는 내 프로필일 경우 비활성화
+                onPress={encourageUser}
+                disabled={true} // 로딩 중 또는 내 프로필일 경우 비활성화
               />
               <LevelProgress
                 rentalCount={userData?.rentalCount || 0}
@@ -223,7 +176,7 @@ const MypageScreen = () => {
               />
             </View>
             <View style={styles.tabsContainer}>
-              <Text style={styles.tabsTitle}>{tabTitle}</Text>
+              <Text style={styles.tabsTitle}>내 글 보기</Text>
             </View>
             <Tabs
               tabs={tabs}
