@@ -16,7 +16,7 @@ const ChatScreen = ({ route, navigation }) => {
     const [postData, setPostData] = useState(null);
     const [loadingPost, setLoadingPost] = useState(true);
     const flatListRef = React.useRef();
-    const [renterId, setRenterId] = useState(null);
+    const [writerId, setWriterId] = useState(null);
     const [loggedInId, setLoggedInId] = useState(null); // 로그인한 사용자 ID
     const [chatRoomId, setChatRoomId] = useState(null); // 채팅방 ID 상태 추가
     const [otherUserProfileImage, setOtherUserProfileImage] = useState(null);
@@ -42,7 +42,7 @@ const ChatScreen = ({ route, navigation }) => {
         if (chatRoomId) {
             fetchChatDetails(chatRoomId);
         } else {
-            fetchChatDetails(postId);
+            // fetchChatDetails(chatRoomId);
         }
     }, [chatRoomId]);
 
@@ -73,9 +73,10 @@ const ChatScreen = ({ route, navigation }) => {
             const response = await api.get(`/chat/rooms/${roomId}/details`);
 
             if (response.status === 200) {
-                const { messages, postStatus, otherUserProfileImage } = response.data; // 메시지 배열 가져오기
+                const { messages, postStatus, otherUserProfileImage, writerId } = response.data; // 메시지 배열 가져오기
                 setOtherUserProfileImage(otherUserProfileImage);
                 setPostStatus(postStatus);
+                setWriterId(writerId);
                 const formattedMessages = messages.map(msg => {
                     const utcDate = new Date(msg.createAt); // 서버에서 받은 UTC 시간
                     const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // ✅ UTC → KST 변환
@@ -149,36 +150,27 @@ const ChatScreen = ({ route, navigation }) => {
             const tokens = await getTokens();
             setAuthToken(tokens.accessToken);
 
+
+            const finalOwnerId = ownerId ?? writerId;
+
             let requestBody = {
                 postId,
                 ownerId,
-                renterId,
+                renterId: finalOwnerId,
                 content: inputText,
             };
 
-            // if (chatRoomId) {
-            //     // 기존 채팅방이 있을 경우 chatRoomId 포함
-            //     requestBody.chatRoomId = chatRoomId;
-
-            //     // 두 번째 대화부터는 ownerId와 renterId를 서로 변경
-            //     requestBody.ownerId = loggedInId;
-            //     requestBody.renterId = ownerId;
-            // } else {
-            //     // 새로운 채팅 시작 시 renterId를 현재 로그인한 사용자로 설정
-            //     requestBody.ownerId = ownerId;
-            //     requestBody.renterId = loggedInId;
-            // }
             if (chatRoomId) {
                 // 기존 채팅방이 있을 경우 chatRoomId 포함
                 requestBody.chatRoomId = chatRoomId;
 
                 // 두 번째 대화부터는 ownerId와 renterId를 서로 변경
                 requestBody.ownerId = loggedInId;
-                requestBody.renterId = ownerId;
+                requestBody.renterId = finalOwnerId;
             } else {
                 // 새로운 채팅 시작 시 renterId를 현재 로그인한 사용자로 설정
                 requestBody.ownerId = loggedInId;
-                requestBody.renterId = ownerId;
+                requestBody.renterId = finalOwnerId;
             }
 
             console.log("메시지 전송 요청:", requestBody);
