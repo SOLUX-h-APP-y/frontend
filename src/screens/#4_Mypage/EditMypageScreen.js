@@ -5,6 +5,7 @@ import {
     KeyboardAvoidingView,
     ScrollView,
     Platform,
+    Text,
 } from 'react-native';
 import ToastMessage from '../../components/ToastMessage';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,6 +19,9 @@ import { InputFieldWithClear } from '../../components/InputFields';
 import { getTokens } from '../../services/TokenManager';
 import axios from 'axios';
 import { API_BASE_URL } from 'react-native-dotenv';
+import colors from '../../styles/Colors';
+import api from '../../services/api';
+import fontStyles from '../../styles/FontStyles';
 
 
 const EditMypageScreen = () => {
@@ -27,22 +31,15 @@ const EditMypageScreen = () => {
     const [intro, setIntro] = useState('');
     const [profileImage, setProfileImage] = useState(require('../../assets/images/defaultProfile.png'));
     const [loading, setLoading] = useState(false);
+    const [isNicknameValid, setIsNicknameValid] = useState(null); // 닉네임 중복 체크 상태
+    const [checkingNickname, setCheckingNickname] = useState(false); // 닉네임 중복 체크 로딩
 
     useEffect(() => {
         const fetchProfile = async () => {
             setLoading(true);
             try {
                 const tokens = await getTokens();
-
-                if (!tokens || !tokens.accessToken) {
-                    Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-                        { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-                    ]);
-                    return;
-                }
-
                 const accessToken = tokens.accessToken;
-
                 const response = await axios.get(`${API_BASE_URL}/profiles/me`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
@@ -53,6 +50,7 @@ const EditMypageScreen = () => {
                 setNickname(nickname);
                 setIntro(bio);
                 setProfileImage(profileImage);
+                setIsNicknameValid(true);
             } catch (error) {
                 console.error('프로필 불러오기 실패:', error.message);
                 Alert.alert('오류', '프로필을 불러오는 데 실패했습니다. 다시 시도해주세요.');
@@ -64,7 +62,32 @@ const EditMypageScreen = () => {
         fetchProfile();
     }, [navigation]);
 
+    const checkNicknameAvailability = async (newNickname) => {
+        if (!newNickname.trim()) {
+            setIsNicknameValid(null);
+            return;
+        }
+        setCheckingNickname(true);
+        try {
+            const response = await api.post(`/auth/check-nickname`, {
+                nickname: newNickname,
+            });
+            setIsNicknameValid(!response.data.isDuplicate);
+        } catch (error) {
+            console.error('닉네임 중복 검사 실패:', error.message);
+        } finally {
+            setCheckingNickname(false);
+        }
+    };
+
+    const handleNicknameChange = (text) => {
+        setNickname(text.trim());
+        checkNicknameAvailability(text.trim());
+    };
+
     const handleSubmitProfile = async () => {
+        if (!isNicknameValid) return;
+
         setLoading(true);
         try {
             const tokens = await getTokens();
@@ -156,10 +179,18 @@ const EditMypageScreen = () => {
                     <InputFieldWithClear
                         label="닉네임"
                         value={nickname}
-                        onChangeText={setNickname}
+                        onChangeText={handleNicknameChange}
                         placeholder="닉네임을 입력해주세요"
-                        onClear={() => setNickname('')}
+                        onClear={() => {
+                            setNickname('');
+                            setIsNicknameValid(null);
+                        }}
                     />
+                    {isNicknameValid !== null && (
+                        <Text style={[styles.message, { color: isNicknameValid ? '#00C147' : colors.error }]}>
+                            {isNicknameValid ? '사용가능한 닉네임입니다' : '이미 사용중인 닉네임입니다'}
+                        </Text>
+                    )}
                     <InputFieldWithClear
                         label="소개글"
                         value={intro}
@@ -172,7 +203,7 @@ const EditMypageScreen = () => {
                     <SubmitButton
                         onPress={handleSubmitProfile}
                         title={loading ? '저장 중...' : '저장하기'}
-                        disabled={loading}
+                        disabled={loading || !isNicknameValid}
                     />
                 </View>
                 <ToastMessage />
@@ -193,6 +224,11 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingBottom: 16,
         paddingTop: 20,
+    },
+    message: {
+        paddingHorizontal: 30,
+        ...fontStyles.Medium14,
+        marginBottom: 12,
     },
 });
 
