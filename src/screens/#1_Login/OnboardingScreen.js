@@ -1,6 +1,4 @@
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
-import colorLogoKo from '../../assets/logos/colorLogoKo.png';
-import colorLogoEn from '../../assets/logos/colorLogoEn.png';
+import { StyleSheet, View, Image, TouchableOpacity, Dimensions } from 'react-native';
 import kakaoStart from '../../assets/images/kakaoStart.png';
 import { login } from '@react-native-seoul/kakao-login';
 import { useContext } from 'react';
@@ -8,6 +6,9 @@ import { API_BASE_URL } from 'react-native-dotenv';
 import axios from 'axios';
 import { UserContext } from '../../states/UserContext';
 import { saveTokens } from '../../services/TokenManager.js';
+
+const { height } = Dimensions.get('window');
+const KAKAO_BUTTON_HEIGHT = 110;
 
 function OnboardingScreen({ navigation }) {
   const { userInfo, setUserInfo } = useContext(UserContext);
@@ -69,9 +70,17 @@ function OnboardingScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.logoContainer}>
-        <Image source={colorLogoKo} />
-        <Image source={colorLogoEn} />
+      <View style={styles.container}>
+        <View style={[styles.logoContainer, { top: (height - KAKAO_BUTTON_HEIGHT) / 2 }]}>
+          <Image
+            source={require('../../assets/logos/bigThemeLogoKo.png')}
+            style={styles.koLogo}
+          />
+          <Image
+            source={require('../../assets/logos/bigThemeLogoEng.png')}
+            style={styles.engLogo}
+          />
+        </View>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={onPressKakaoStart}>
@@ -86,13 +95,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   logoContainer: {
-    flex: 1, // 화면에서 로고가 차지하는 공간
-    justifyContent: 'center', // 로고를 세로 중앙에 배치
-    gap: 10,
-    padding: 30,
+    position: 'absolute',
+    alignItems: 'flex-start',
+    paddingLeft: 40,
+  },
+  koLogo: {
+    width: 104,
+    height: 46.17,
+    resizeMode: 'contain',
+  },
+  engLogo: {
+    width: 209,
+    height: 47.66,
+    resizeMode: 'contain',
+    marginTop: 15,
   },
   buttonContainer: {
     padding: 20, // 버튼 주위 여백
