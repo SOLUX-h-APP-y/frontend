@@ -1,7 +1,5 @@
 import { StyleSheet, Image, View } from 'react-native';
 import colors from '../../styles/Colors';
-import whiteLogoKo from '../../assets/logos/whiteLogoKo.png';
-import whiteLogoEn from '../../assets/logos/whiteLogoEn.png';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect } from 'react';
 
@@ -19,8 +17,16 @@ function SplashScreen() {
 
   return (
     <View style={styles.container}>
-      <Image source={whiteLogoKo} />
-      <Image source={whiteLogoEn} />
+      <View style={styles.logoContainer}>
+        <Image
+          source={require('../../assets/logos/bigWhiteLogoKo.png')}
+          style={styles.koLogo}
+        />
+        <Image
+          source={require('../../assets/logos/bigWhiteLogoEng.png')}
+          style={styles.engLogo}
+        />
+      </View>
     </View>
   );
 }
@@ -30,8 +36,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.themeColor,
     justifyContent: 'center',
-    padding: 30,
-    gap: 10,
+    paddingLeft: 40,
+  },
+  logoContainer: {
+    alignItems: 'flex-start',
+  },
+  koLogo: {
+    width: 104,
+    height: 46.17,
+    resizeMode: 'contain',
+  },
+  engLogo: {
+    width: 209,
+    height: 47.66,
+    resizeMode: 'contain',
+    marginTop: 15,
   },
 });
 
