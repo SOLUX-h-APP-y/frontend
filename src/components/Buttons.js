@@ -12,21 +12,10 @@ import plusIcon from '../assets/icons/plusIcon.png';
 import fontStyles from '../styles/FontStyles';
 import ReviewModal from './ReviewModal';
 import { useState } from 'react';
-
-const reviewData = [
-  {
-    reviewer_id: 1,
-    reviewee_id: 0,
-    rate: 5,
-    content: '좋은 상품 감사합니다',
-  },
-  {
-    reviewer_id: 2,
-    reviewee_id: 1,
-    rate: 3,
-    content: '상품이 조금 더럽네요',
-  },
-];
+import { getTokens } from '../services/TokenManager';
+import axios from 'axios';
+import { API_BASE_URL } from 'react-native-dotenv'
+import { setAuthToken } from '../services/api';
 
 function BottomButton({ title, active, onPress }) {
   return (
@@ -93,9 +82,9 @@ function NavigateButtonTheme({
         title === '채팅하기'
           ? navigation.navigate(name, { isCompleted, postId, ownerId })
           : navigation.navigate(name, {
-              actionType: postInfo.postType === 'share' ? 'share' : 'borrow',
-              postId: postInfo.postId,
-            })
+            actionType: postInfo.postType === 'share' ? 'share' : 'borrow',
+            postId: postInfo.postId,
+          })
       }>
       <Text style={{ color: 'white', fontWeight: 700 }}>{title}</Text>
     </TouchableOpacity>
@@ -142,23 +131,49 @@ function SubmitButton({ onPress, title, disabled }) {
   );
 }
 
-function ReviewButton({ revieweeId }) {
+function ReviewButton({ postId }) {
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedReviews, setSelectedReviews] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleShowReviews = () => {
-    const filteredReviews = reviewData.filter(
-      review => review.reviewee_id === revieweeId,
-    );
-    setSelectedReviews(filteredReviews);
-    setModalVisible(true);
+  const handleShowReviews = async () => {
+    setLoading(true);
+    try {
+      const tokens = await getTokens();
+      if (!tokens || !tokens.accessToken) {
+        Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.');
+        return;
+      }
+
+      const accessToken = tokens.accessToken;
+      setAuthToken(accessToken);
+
+      const response = await axios.get(`${API_BASE_URL}/reviews/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      console.log('📌 후기 불러오기:', response.data);
+
+      if (response.status === 200) {
+        const fetchedReviews = response.data.length > 0 ? response.data : [{ content: "작성된 리뷰가 없습니다.", isDefault: true }];
+        setReviews(fetchedReviews);
+        setModalVisible(true);
+      }
+    } catch (error) {
+      console.error('후기 불러오기 실패:', error.message);
+      Alert.alert('오류', '후기를 불러오는 데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       <TouchableOpacity
         style={ReviewButtonstyles.reviewButton}
-        onPress={handleShowReviews}>
+        onPress={handleShowReviews}
+        disabled={loading}>
         <Text style={ReviewButtonstyles.reviewButtonText}>후기 보기</Text>
       </TouchableOpacity>
 
@@ -166,7 +181,7 @@ function ReviewButton({ revieweeId }) {
       <ReviewModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        reviews={selectedReviews}
+        reviews={reviews}
       />
     </>
   );

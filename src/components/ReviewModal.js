@@ -11,39 +11,6 @@ import fontStyles from '../styles/FontStyles';
 import colors from '../styles/Colors';
 
 const ReviewModal = ({ visible, onClose, reviews }) => {
-    const renderReview = (item) => (
-        <View style={styles.reviewContainer}>
-            {/* 별점 점수 */}
-            <View style={styles.ratingSection}>
-                <Text style={styles.rateLabel}>별점</Text>
-                <Text style={styles.rateValue}>{item.rate}점</Text>
-            </View>
-
-            {/* 별 UI 섹션 */}
-            <View style={styles.ratingCard}>
-                <View style={styles.starsContainer}>
-                    {Array.from({ length: 5 }, (_, index) => (
-                        <Text
-                            key={index}
-                            style={[
-                                styles.star,
-                                { color: index < item.rate ? colors.themeColor : colors.gray2 },
-                            ]}
-                        >
-                            ★
-                        </Text>
-                    ))}
-                </View>
-            </View>
-
-            {/* 후기 카드 */}
-            <Text style={styles.reviewTitle}>후기</Text>
-            <View style={styles.reviewCard}>
-                <Text style={styles.reviewContent}>{item.content}</Text>
-            </View>
-        </View>
-    );
-
     return (
         <Modal
             visible={visible}
@@ -55,7 +22,7 @@ const ReviewModal = ({ visible, onClose, reviews }) => {
                 <View style={styles.modalContent}>
                     {/* 닫기 버튼 */}
                     <TouchableOpacity
-                        style={styles.closeButton}
+                        style={styles.closeButtonContainer}
                         onPress={onClose}
                     >
                         <Image
@@ -64,10 +31,46 @@ const ReviewModal = ({ visible, onClose, reviews }) => {
                         />
                     </TouchableOpacity>
 
-                    {/* 리뷰 렌더링 */}
-                    {reviews.map((item, index) => (
-                        <View key={index}>{renderReview(item)}</View>
-                    ))}
+                    {/* 리뷰 데이터가 없을 때 */}
+                    {reviews.length === 1 && reviews[0].isDefault ? (
+                        <View style={styles.emptyReviewContainer}>
+                            <Text style={styles.emptyReviewText}>작성된 리뷰가 없습니다.</Text>
+                        </View>
+                    ) : (
+                        // 리뷰 렌더링
+                        reviews.map((item, index) => (
+                            <View key={index} style={styles.reviewContainer}>
+                                {/* 별점 점수 */}
+                                <View style={styles.ratingSection}>
+                                    <Text style={styles.rateLabel}>별점</Text>
+                                    <Text style={styles.rateValue}>{item.rate}점</Text>
+                                </View>
+
+                                {/* 별 UI 섹션 */}
+                                <View style={styles.ratingCard}>
+                                    <View style={styles.starsContainer}>
+                                        {Array.from({ length: 5 }, (_, i) => (
+                                            <Text
+                                                key={i}
+                                                style={[
+                                                    styles.star,
+                                                    { color: i < item.rate ? colors.themeColor : colors.gray2 },
+                                                ]}
+                                            >
+                                                ★
+                                            </Text>
+                                        ))}
+                                    </View>
+                                </View>
+
+                                {/* 후기 카드 */}
+                                <Text style={styles.reviewTitle}>후기</Text>
+                                <View style={styles.reviewCard}>
+                                    <Text style={styles.reviewContent}>{item.content}</Text>
+                                </View>
+                            </View>
+                        ))
+                    )}
                 </View>
             </View>
         </Modal>
@@ -88,15 +91,27 @@ const styles = StyleSheet.create({
         padding: 15,
         alignItems: 'center',
     },
-    closeButton: {
+    closeButtonContainer: {
         alignSelf: 'flex-end',
-        marginTop: 5,
-        marginRight: 5,
-        width: 12,
-        height: 12,
+        padding: 10,
+    },
+    closeButton: {
+        width: 20,
+        height: 20,
+    },
+    emptyReviewContainer: {
+        width: '100%',
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    emptyReviewText: {
+        ...fontStyles.lightBlackSemiBold16,
+        color: colors.gray4,
     },
     reviewContainer: {
         marginTop: 20,
+        width: '100%',
     },
     ratingSection: {
         flexDirection: 'row',
@@ -109,11 +124,11 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         height: 58,
         marginBottom: 15,
-        width: 288,
+        width: '100%',
         borderWidth: 1,
         borderColor: colors.gray2,
         justifyContent: 'center',
-        alignItems: 'center', // 별점 카드는 중앙 정렬
+        alignItems: 'center',
     },
     rateLabel: {
         ...fontStyles.lightBlackSemiBold14,
@@ -123,16 +138,12 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     starsContainer: {
-        marginTop: 7,
         flexDirection: 'row',
         justifyContent: 'center',
-        alignContent: 'center',
-        height: '100%',
     },
     star: {
         fontSize: 40,
         marginHorizontal: 3,
-        textAlign: 'center',
     },
     reviewCard: {
         backgroundColor: 'white',
@@ -142,11 +153,9 @@ const styles = StyleSheet.create({
         width: '100%',
         borderWidth: 1,
         borderColor: colors.gray2,
-        alignItems: 'flex-start', // 후기 카드는 왼쪽 정렬
     },
     reviewTitle: {
         ...fontStyles.lightBlackSemiBold14,
-        marginTop: 10,
         marginBottom: 5,
         marginLeft: 7,
     },
