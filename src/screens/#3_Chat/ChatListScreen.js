@@ -77,7 +77,7 @@ const ChatListScreen = ({ navigation }) => {
                 },
                 last_message_content: room.lastMessageContent,
                 last_message_time: room.lastMessageTimestamp,
-                unread_chat_count: room.unreadCount,
+                // unread_chat_count: room.unreadCount,
             }));
             // 최신순 정렬 (last_message_time 기준 내림차순 정렬)
             const sortedChatRooms = mappedChatRooms.sort((a, b) => {

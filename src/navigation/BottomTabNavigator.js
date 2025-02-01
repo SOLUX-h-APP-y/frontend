@@ -13,59 +13,6 @@ import { getTokens } from '../services/TokenManager';
 const Tab = createBottomTabNavigator();
 
 const BottomTabNavigator = () => {
-  const [unreadMessages, setUnreadMessages] = useState(0);
-  const [loggedInUserId, setLoggedInUserId] = useState(null);
-
-  const fetchLoggedInUserId = async () => {
-    try {
-      const tokens = await getTokens();
-      if (!tokens?.accessToken) return;
-
-      setAuthToken(tokens.accessToken);
-      const response = await api.get('/profiles/me');
-      const userId = response.data.userId;
-      console.log("👤 로그인한 사용자 ID:", userId);
-      setLoggedInUserId(userId);
-
-      // 로그인한 유저 ID가 설정된 후, 즉시 안 읽은 메시지 개수 가져오기
-      fetchUnreadMessages(userId);
-    } catch (error) {
-      Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
-      console.error('Failed to fetch logged-in user ID:', error);
-    }
-  };
-
-  const fetchUnreadMessages = async (userId) => {
-    if (!userId) return; // 잘못된 ID 방지
-
-    try {
-      const tokens = await getTokens();
-      setAuthToken(tokens.accessToken);
-
-      const response = await api.get(`/chat/unread?userId=${userId}`);
-
-      setUnreadMessages(response.data || 0);
-    } catch (error) {
-      console.error('안 읽은 메시지 가져오기 실패:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchLoggedInUserId();
-  }, []);
-
-  useEffect(() => {
-    if (loggedInUserId) {
-      fetchUnreadMessages(loggedInUserId);
-    }
-
-    // 실시간 업데이트 (1분마다 확인)
-    const interval = setInterval(() => {
-      if (loggedInUserId) fetchUnreadMessages(loggedInUserId);
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [loggedInUserId]);
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -75,7 +22,6 @@ const BottomTabNavigator = () => {
             <BottomTabIcons
               routeName={route.name}
               focused={focused}
-              unreadCount={route.name == '채팅' ? unreadMessages : 0}
             />
           ),
           tabBarActiveTintColor: colors.lightBlack,

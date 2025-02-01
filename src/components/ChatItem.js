@@ -26,13 +26,13 @@ function ChatItem({ item, formatDate, onPress }) {
                 </Text>
             </View>
 
-            {/* 메타 정보 */}
+            메타 정보
             <View style={ChatItemStyles.chatMeta}>
-                {item.unread_chat_count > 0 && (
+                {/* {item.unread_chat_count > 0 && (
                     <View style={ChatItemStyles.badge}>
                         <Text style={ChatItemStyles.badgeText}>{item.unread_chat_count}</Text>
                     </View>
-                )}
+                )} */}
                 <Text style={ChatItemStyles.time}>{formatDate(item.last_message_time)}</Text>
             </View>
         </TouchableOpacity>
@@ -70,18 +70,18 @@ const ChatItemStyles = StyleSheet.create({
         height: '100%',
         paddingRight: 10,
     },
-    badge: {
-        backgroundColor: colors.themeColor,
-        borderRadius: 12,
-        width: 20,
-        height: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    badgeText: {
-        ...fontStyles.whiteMedium14,
-    },
+    // badge: {
+    //     backgroundColor: colors.themeColor,
+    //     borderRadius: 12,
+    //     width: 20,
+    //     height: 20,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     marginBottom: 10,
+    // },
+    // badgeText: {
+    //     ...fontStyles.whiteMedium14,
+    // },
     time: {
         ...fontStyles.gray3Medium14,
     },
