@@ -42,12 +42,9 @@ const BottomTabNavigator = () => {
       const tokens = await getTokens();
       setAuthToken(tokens.accessToken);
 
-      const response = await api.get(`/chat/unread?userId=${userId}`, {
-        headers: { Authorization: `Bearer ${tokens.accessToken}` }
-      });
-      // console.log(`/chat/unread?userId=${userId}`)
-      // console.log("안 읽은 메시지 개수:", response.data.unreadCount);
-      setUnreadMessages(response.data.unreadCount || 0);
+      const response = await api.get(`/chat/unread?userId=${userId}`);
+
+      setUnreadMessages(response.data || 0);
     } catch (error) {
       console.error('안 읽은 메시지 가져오기 실패:', error);
     }

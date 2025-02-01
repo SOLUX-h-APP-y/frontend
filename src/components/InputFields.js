@@ -69,8 +69,8 @@ function PlainInputField({
           isTextarea
             ? styles.textarea
             : inactive
-            ? styles.inactiveInput
-            : styles.input
+              ? styles.inactiveInput
+              : styles.input
         }
         multiline={isTextarea ? true : false}
         editable={inactive ? false : true}
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
 
 const InputFieldWithClearStyles = StyleSheet.create({
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 8,
     marginHorizontal: 16,
   },
   label: {

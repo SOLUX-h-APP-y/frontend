@@ -42,8 +42,8 @@ const ReviewScreen = ({ route, navigation }) => {
             const accessToken = tokens.accessToken;
             setAuthToken(accessToken);
 
-            console.log('Authorization Header:', `Bearer ${accessToken}`);
-            console.log('Request Body:', { revieweeId, rate: rating, content: reviewText });
+            // console.log('Authorization Header:', `Bearer ${accessToken}`);
+            // console.log('Request Body:', { revieweeId, rate: rating, content: reviewText });
 
             // 리뷰 작성 API 호출
             const response = await axios.post(
@@ -69,7 +69,7 @@ const ReviewScreen = ({ route, navigation }) => {
                 navigation.goBack(); // 작성 완료 후 이전 화면으로 이동
             }
         } catch (error) {
-            console.error('🚨 후기 작성 실패:', error.response?.data || error.message);
+            console.error('후기 작성 실패:', error.response?.data || error.message);
         } finally {
             setLoading(false);
         }

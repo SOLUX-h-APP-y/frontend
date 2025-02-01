@@ -66,7 +66,11 @@ const ReviewModal = ({ visible, onClose, reviews }) => {
                                 {/* 후기 카드 */}
                                 <Text style={styles.reviewTitle}>후기</Text>
                                 <View style={styles.reviewCard}>
-                                    <Text style={styles.reviewContent}>{item.content}</Text>
+                                    {item.content ? (
+                                        <Text style={styles.reviewContent}>{item.content}</Text>
+                                    ) : (
+                                        <Text style={styles.reviewContent}>작성된 리뷰가 없습니다.</Text>
+                                    )}
                                 </View>
                             </View>
                         ))
@@ -106,7 +110,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     emptyReviewText: {
-        ...fontStyles.lightBlackSemiBold16,
+        ...fontStyles.lightBlackMedium14,
         color: colors.gray4,
     },
     reviewContainer: {

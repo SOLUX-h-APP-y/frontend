@@ -144,8 +144,8 @@ function SetProfileScreen({ navigation }) {
                 { color: checkName ? colors.error : '#00C147' },
               ]}>
               {checkName
-                ? '이미 사용중인 아이디 입니다'
-                : '사용가능한 아이디 입니다'}
+                ? '이미 사용중인 닉네임 입니다'
+                : '사용가능한 닉네임 입니다'}
             </Text>
           )}
         </>
@@ -170,8 +170,8 @@ function SetProfileScreen({ navigation }) {
               ? true
               : false
             : profile.location
-            ? true
-            : false
+              ? true
+              : false
         }
         onPress={nextStep}
       />

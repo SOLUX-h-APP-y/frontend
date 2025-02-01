@@ -140,10 +140,6 @@ function ReviewButton({ postId }) {
     setLoading(true);
     try {
       const tokens = await getTokens();
-      if (!tokens || !tokens.accessToken) {
-        Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.');
-        return;
-      }
 
       const accessToken = tokens.accessToken;
       setAuthToken(accessToken);
