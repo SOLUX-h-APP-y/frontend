@@ -208,6 +208,29 @@ const ChatScreen = ({ route, navigation }) => {
         }
     };
 
+    const markMessagesAsRead = async () => {
+        if (!chatRoomId || !loggedInId) {
+            return;
+        }
+        try {
+            const tokens = await getTokens();
+            setAuthToken(tokens.accessToken);
+            // console.log(`/messages/read/${chatRoomId}?userId=${loggedInId}`);
+            const response = await api.put(`/messages/read/${chatRoomId}?userId=${loggedInId}`);
+            if (response.status === 200) {
+                console.log("쪽지 읽음 처리 완료");
+            }
+        } catch (error) {
+            console.error("쪽지 읽음 처리 실패:", error.response?.data || error.message);
+        }
+    };
+
+    useEffect(() => {
+        if (chatRoomId && loggedInId) {
+            markMessagesAsRead();
+        }
+    }, [chatRoomId, loggedInId]);
+
     const renderItem = ({ item, index }) => {
         const currentDate = new Date(item.createAt).toLocaleDateString('ko-KR', {
             year: 'numeric',
