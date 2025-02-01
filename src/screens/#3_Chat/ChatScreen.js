@@ -9,7 +9,7 @@ import api, { setAuthToken } from '../../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ChatScreen = ({ route, navigation }) => {
-    const { toastMessage, postId, ownerId } = route.params || {};
+    const { chatRoomId: initialChatRoomId, toastMessage, postId, ownerId } = route.params || {};
 
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
@@ -18,7 +18,7 @@ const ChatScreen = ({ route, navigation }) => {
     const flatListRef = React.useRef();
     const [writerId, setWriterId] = useState(null);
     const [loggedInId, setLoggedInId] = useState(null); // 로그인한 사용자 ID
-    const [chatRoomId, setChatRoomId] = useState(null); // 채팅방 ID 상태 추가
+    const [chatRoomId, setChatRoomId] = useState(initialChatRoomId || null);
     const [otherUserProfileImage, setOtherUserProfileImage] = useState(null);
     const [postStatus, setPostStatus] = useState(null);
 
@@ -79,7 +79,7 @@ const ChatScreen = ({ route, navigation }) => {
                 setWriterId(writerId);
                 const formattedMessages = messages.map(msg => {
                     const utcDate = new Date(msg.createAt); // 서버에서 받은 UTC 시간
-                    const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // ✅ UTC → KST 변환
+                    const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // UTC → KST 변환
 
                     return {
                         ...msg,

@@ -23,9 +23,12 @@ const BottomTabNavigator = () => {
 
       setAuthToken(tokens.accessToken);
       const response = await api.get('/profiles/me');
-      setLoggedInUserId(response.data.userId);
+      const userId = response.data.userId;
+      console.log("👤 로그인한 사용자 ID:", userId);
+      setLoggedInUserId(userId);
 
-      // console.log("로그인한 사용자 ID (loggedInUserId):", response.data.userId);
+      // 로그인한 유저 ID가 설정된 후, 즉시 안 읽은 메시지 개수 가져오기
+      fetchUnreadMessages(userId);
     } catch (error) {
       Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
       console.error('Failed to fetch logged-in user ID:', error);
@@ -33,24 +36,20 @@ const BottomTabNavigator = () => {
   };
 
   const fetchUnreadMessages = async (userId) => {
-    if (!userId) return;
+    if (!userId) return; // 잘못된 ID 방지
 
     try {
       const tokens = await getTokens();
-      if (!tokens?.accessToken) {
-        Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-          { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-        ]);
-        return;
-      }
-
       setAuthToken(tokens.accessToken);
 
-      const response = await api.get(`/chat/unread?userId=${userId}`);
+      const response = await api.get(`/chat/unread?userId=${userId}`, {
+        headers: { Authorization: `Bearer ${tokens.accessToken}` }
+      });
+      // console.log(`/chat/unread?userId=${userId}`)
       // console.log("안 읽은 메시지 개수:", response.data.unreadCount);
       setUnreadMessages(response.data.unreadCount || 0);
     } catch (error) {
-      console.error('Failed to fetch unread messages:', error);
+      console.error('안 읽은 메시지 가져오기 실패:', error);
     }
   };
 
@@ -63,6 +62,7 @@ const BottomTabNavigator = () => {
       fetchUnreadMessages(loggedInUserId);
     }
 
+    // 실시간 업데이트 (1분마다 확인)
     const interval = setInterval(() => {
       if (loggedInUserId) fetchUnreadMessages(loggedInUserId);
     }, 60000);

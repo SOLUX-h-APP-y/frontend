@@ -38,12 +38,6 @@ const ReviewScreen = ({ route, navigation }) => {
         setLoading(true);
         try {
             const tokens = await getTokens();
-            if (!tokens || !tokens.accessToken) {
-                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
-                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
-                ]);
-                return;
-            }
 
             const accessToken = tokens.accessToken;
             setAuthToken(accessToken);
