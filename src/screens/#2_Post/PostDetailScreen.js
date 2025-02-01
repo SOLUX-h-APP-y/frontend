@@ -33,6 +33,14 @@ function PostDetailScreen({ navigation }) {
     setStateActive(!stateActive);
   };
 
+  const updatePostStatus = newStatus => {
+    setPost(prevPost => ({
+      ...prevPost,
+      postStatus: newStatus, // UI에 즉시 반영
+    }));
+    setStateActive(false);
+  };
+
   const fetchPostDetail = async () => {
     try {
       const response = await api.get(`/posts/${postId}`);
@@ -134,7 +142,7 @@ function PostDetailScreen({ navigation }) {
               {post.isMyPost ? (
                 <TouchableOpacity
                   style={{ justifyContent: 'center' }}
-                  onPress={handleStateActive}>
+                  onPress={() => setStateActive(!stateActive)}>
                   <Image source={settingIcon} />
                 </TouchableOpacity>
               ) : null}
@@ -182,7 +190,7 @@ function PostDetailScreen({ navigation }) {
 
       <StateSelector
         postId={postId}
-        handleStateActive={handleStateActive}
+        handleStateActive={updatePostStatus}
         visible={stateActive}
         navigation={navigation}
       />

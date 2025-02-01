@@ -14,12 +14,10 @@ import { getTokens } from '../services/TokenManager';
 function StateSelector({ postId, visible, handleStateActive, navigation }) {
   const changePostState = async status => {
     try {
-      //const tokens = await getTokens(); // 토큰 가져오기
       await api.patch(`/posts/${postId}?status=${status}`);
+      handleStateActive(status); // 변경된 상태를 전달하여 UI 반영
     } catch (e) {
-      console.error('Failed to fetch post:', e);
-    } finally {
-      handleStateActive();
+      console.error('Failed to update post status:', e);
     }
   };
 
