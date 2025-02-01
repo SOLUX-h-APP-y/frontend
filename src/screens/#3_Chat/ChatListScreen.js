@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, SafeAreaView, RefreshControl } from 'react-native';
 import ChatItem from '../../components/ChatItem';
 import colors from '../../styles/Colors';
 import fontStyles from '../../styles/FontStyles';
@@ -7,33 +7,36 @@ import { getTokens } from '../../services/TokenManager';
 import api, { setAuthToken } from '../../services/api';
 
 const ChatListScreen = ({ navigation }) => {
-    const [chatRooms, setChatRooms] = useState([]); // 채팅방 목록
+    const [chatRooms, setChatRooms] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false); // 새로고침 상태
     const [loggedInUserId, setLoggedInUserId] = useState(null);
 
     // 날짜 포맷 함수
     const formatDate = (dateString) => {
-        const messageDate = new Date(dateString);
+        const utcDate = new Date(dateString); // 서버에서 받은 UTC 시간
+        const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000);
         const now = new Date();
+        const nowKST = new Date(now.getTime() + 9 * 60 * 60 * 1000); // KST로 변환
 
         const isToday =
-            messageDate.getDate() === now.getDate() &&
-            messageDate.getMonth() === now.getMonth() &&
-            messageDate.getFullYear() === now.getFullYear();
+            kstDate.getDate() === nowKST.getDate() &&
+            kstDate.getMonth() === nowKST.getMonth() &&
+            kstDate.getFullYear() === nowKST.getFullYear();
 
         const isYesterday =
-            messageDate.getDate() === now.getDate() - 1 &&
-            messageDate.getMonth() === now.getMonth() &&
-            messageDate.getFullYear() === now.getFullYear();
+            kstDate.getDate() === nowKST.getDate() - 1 &&
+            kstDate.getMonth() === nowKST.getMonth() &&
+            kstDate.getFullYear() === nowKST.getFullYear();
 
         if (isToday) {
-            return messageDate
+            return kstDate
                 .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 .toLowerCase();
         } else if (isYesterday) {
             return '어제';
         } else {
-            return `${messageDate.getMonth() + 1}월 ${messageDate.getDate()}일`;
+            return `${kstDate.getMonth() + 1}월 ${kstDate.getDate()}일`;
         }
     };
 
@@ -46,8 +49,6 @@ const ChatListScreen = ({ navigation }) => {
             const response = await api.get('/profiles/me');
             const userId = response.data.userId;
             setLoggedInUserId(userId);
-
-            // 여기서 바로 fetchChatRooms 호출
             fetchChatRooms(userId);
         } catch (error) {
             Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
@@ -56,14 +57,15 @@ const ChatListScreen = ({ navigation }) => {
     };
 
     // 채팅 목록 API 호출
-    const fetchChatRooms = async (userId) => {
+    const fetchChatRooms = async (userId, isRefresh = false) => {
         try {
-            setLoading(true);
+            if (!isRefresh) setLoading(true);
+            else setRefreshing(true);
+
             const tokens = await getTokens();
             setAuthToken(tokens.accessToken);
 
             const response = await api.get(`/messages/rooms?userId=${userId}`);
-            // console.log("📌 API 응답:", response.data);  // ✅ 응답 데이터 확인
 
             const mappedChatRooms = response.data.map((room) => ({
                 id: room.chatRoomId,
@@ -76,9 +78,13 @@ const ChatListScreen = ({ navigation }) => {
                 last_message_content: room.lastMessageContent,
                 last_message_time: room.lastMessageTimestamp,
                 unread_chat_count: room.unreadCount,
-                // isCompleted: room.isCompleted ?? false, // ✅ 기본값 설정
-                // postStatus: room.postStatus,
             }));
+            // 최신순 정렬 (last_message_time 기준 내림차순 정렬)
+            const sortedChatRooms = mappedChatRooms.sort((a, b) => {
+                const dateA = a.last_message_time ? new Date(a.last_message_time).getTime() : 0;
+                const dateB = b.last_message_time ? new Date(b.last_message_time).getTime() : 0;
+                return dateB - dateA;
+            });
 
             setChatRooms(mappedChatRooms);
         } catch (error) {
@@ -86,26 +92,41 @@ const ChatListScreen = ({ navigation }) => {
             console.error('Failed to fetch chat rooms:', error);
         } finally {
             setLoading(false);
+            setRefreshing(false);
         }
+    };
+
+    // 새로고침 요청 시 호출
+    const onRefresh = async () => {
+        if (!loggedInUserId) return;
+        await fetchChatRooms(loggedInUserId, true);
     };
 
     // 로그인 사용자 ID 가져온 후 채팅 목록 호출
     useEffect(() => {
-        const initialize = async () => {
-            await fetchLoggedInUserId();
-        };
-        initialize();
+        fetchLoggedInUserId();
     }, []);
+
+    // 실시간 업데이트
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (loggedInUserId) {
+                fetchChatRooms(loggedInUserId);
+            }
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [loggedInUserId]);
+
 
     const renderItem = ({ item }) => (
         <ChatItem
             item={item}
             formatDate={formatDate}
             onPress={() => navigation.navigate('ChatScreen', {
-                chatRoomId: item.id,  // ✅ 기존 채팅방 ID 전달
+                chatRoomId: item.id,  //기존 채팅방 ID 전달
                 postId: item.post_id,
-                ownerId: item.writer_id,  // ✅ 추가 (채팅 상대방 ID)
-                // isCompleted: item.isCompleted ?? false,
+                ownerId: item.writer_id,
             })}
         />
     );
@@ -120,6 +141,9 @@ const ChatListScreen = ({ navigation }) => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={styles.listContainer}
+                refreshControl={ // 새로고침 기능 추가
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
             />
         </SafeAreaView>
     );

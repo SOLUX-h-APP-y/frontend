@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -17,31 +17,68 @@ import fontStyles from '../../styles/FontStyles';
 import { SubmitButton } from '../../components/Buttons';
 import Toast from 'react-native-toast-message';
 import { NavigateHeader, PostHeader } from '../../components/CustomHeaders';
+import { getTokens } from '../../services/TokenManager';
+import axios from 'axios';
+import { API_BASE_URL } from 'react-native-dotenv'
+import { setAuthToken } from '../../services/api';
 
 const ReviewScreen = ({ route, navigation }) => {
-    const { chatRoomId } = route.params;
-
-    const post = {
-        id: 101,
-        title: '카메라 빌려드려요',
-        image: 'https://via.placeholder.com/50',
-        location: '청파동2가',
-    };
+    const { postId, revieweeId, postData } = route.params; // API 요청에 필요한 데이터 전달
+    const [loadingPost, setLoadingPost] = useState(false);
 
     const [rating, setRating] = useState(0); // 초기 별점 값
     const [reviewText, setReviewText] = useState('');
+    const [loading, setLoading] = useState(false); // 로딩 상태 추가
 
     const handleStarPress = (value) => {
         setRating(value);
     };
 
-    const handleSubmitReview = () => {
-        console.log('후기 작성:', { rating, reviewText });
-        navigation.goBack(); // 작성 완료 후 이전 화면으로 이동
-        Toast.show({
-            type: 'success',
-            text1: '후기 작성 완료',
-        });
+    const handleSubmitReview = async () => {
+        setLoading(true);
+        try {
+            const tokens = await getTokens();
+            if (!tokens || !tokens.accessToken) {
+                Alert.alert('로그인이 필요합니다', '다시 로그인해주세요.', [
+                    { text: '확인', onPress: () => navigation.navigate('LoginScreen') },
+                ]);
+                return;
+            }
+
+            const accessToken = tokens.accessToken;
+            setAuthToken(accessToken);
+
+            console.log('Authorization Header:', `Bearer ${accessToken}`);
+            console.log('Request Body:', { revieweeId, rate: rating, content: reviewText });
+
+            // 리뷰 작성 API 호출
+            const response = await axios.post(
+                `${API_BASE_URL}/reviews/${postId}`,
+                {
+                    revieweeId,
+                    rate: rating,
+                    content: reviewText,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                Toast.show({
+                    type: 'success',
+                    text1: '후기 작성 완료',
+                });
+                navigation.goBack(); // 작성 완료 후 이전 화면으로 이동
+            }
+        } catch (error) {
+            console.error('🚨 후기 작성 실패:', error.response?.data || error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -49,7 +86,21 @@ const ReviewScreen = ({ route, navigation }) => {
             <View style={{ paddingHorizontal: 20 }}>
                 <NavigateHeader navigation={navigation} title="후기 작성" />
             </View>
-            <PostHeader post={post} />
+            {loadingPost ? (
+                <ActivityIndicator size="large" color={colors.themeColor} style={{ marginTop: 20 }} />
+            ) : (
+                postData && (
+                    <PostHeader
+                        post={{
+                            id: postData.postId,
+                            title: postData.title,
+                            image: postData.previewImage,
+                            location: postData.locationName,
+                            status: postData.postStatus,
+                        }}
+                    />
+                )
+            )}
             {/* 키보드가 올라왔을 때 키보드 영역 외의 다른 영역을 터치하면 키보드가 내려감 */}
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <KeyboardAvoidingView // 키보드가 올라와도 화면이 가려지지 않도록 키보드 뷰 사용

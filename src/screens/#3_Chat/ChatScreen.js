@@ -9,17 +9,18 @@ import api, { setAuthToken } from '../../services/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ChatScreen = ({ route, navigation }) => {
-    const { isCompleted, toastMessage, postId, ownerId } = route.params || {};
+    const { toastMessage, postId, ownerId } = route.params || {};
 
     const [messages, setMessages] = useState([]);
     const [inputText, setInputText] = useState('');
     const [postData, setPostData] = useState(null);
     const [loadingPost, setLoadingPost] = useState(true);
     const flatListRef = React.useRef();
-    const [renterId, setRenterId] = useState(null);
+    const [writerId, setWriterId] = useState(null);
     const [loggedInId, setLoggedInId] = useState(null); // 로그인한 사용자 ID
     const [chatRoomId, setChatRoomId] = useState(null); // 채팅방 ID 상태 추가
     const [otherUserProfileImage, setOtherUserProfileImage] = useState(null);
+    const [postStatus, setPostStatus] = useState(null);
 
     // 앱이 실행될 때 `AsyncStorage`에서 `chatRoomId` 불러오기
     useEffect(() => {
@@ -28,7 +29,7 @@ const ChatScreen = ({ route, navigation }) => {
                 const storedChatRoomId = await AsyncStorage.getItem(`chatRoomId-${postId}`);
                 if (storedChatRoomId) {
                     setChatRoomId(parseInt(storedChatRoomId, 10)); // 문자열을 숫자로 변환
-                    console.log("기존 chatRoomId 불러옴:", storedChatRoomId);
+                    // console.log("기존 chatRoomId 불러옴:", storedChatRoomId);
                 }
             } catch (error) {
                 console.error("chatRoomId 불러오기 실패:", error);
@@ -40,6 +41,8 @@ const ChatScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (chatRoomId) {
             fetchChatDetails(chatRoomId);
+        } else {
+            // fetchChatDetails(chatRoomId);
         }
     }, [chatRoomId]);
 
@@ -53,7 +56,7 @@ const ChatScreen = ({ route, navigation }) => {
                 const response = await api.get('/profiles/me');
                 setLoggedInId(response.data.userId);
 
-                console.log("로그인한 사용자 ID (loggedInId):", response.data.userId);
+                // console.log("로그인한 사용자 ID (loggedInId):", response.data.userId);
             } catch (error) {
                 Alert.alert('오류', '로그인 사용자 정보를 가져오는 데 실패했습니다.');
                 console.error('Failed to fetch logged-in user ID:', error);
@@ -70,8 +73,10 @@ const ChatScreen = ({ route, navigation }) => {
             const response = await api.get(`/chat/rooms/${roomId}/details`);
 
             if (response.status === 200) {
-                const { messages } = response.data; // 메시지 배열 가져오기
+                const { messages, postStatus, otherUserProfileImage, writerId } = response.data; // 메시지 배열 가져오기
                 setOtherUserProfileImage(otherUserProfileImage);
+                setPostStatus(postStatus);
+                setWriterId(writerId);
                 const formattedMessages = messages.map(msg => {
                     const utcDate = new Date(msg.createAt); // 서버에서 받은 UTC 시간
                     const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // ✅ UTC → KST 변환
@@ -145,36 +150,26 @@ const ChatScreen = ({ route, navigation }) => {
             const tokens = await getTokens();
             setAuthToken(tokens.accessToken);
 
+
+            const finalOwnerId = ownerId ?? writerId;
+
             let requestBody = {
                 postId,
                 ownerId,
-                renterId,
+                renterId: finalOwnerId,
                 content: inputText,
             };
 
-            // if (chatRoomId) {
-            //     // 기존 채팅방이 있을 경우 chatRoomId 포함
-            //     requestBody.chatRoomId = chatRoomId;
-
-            //     // 두 번째 대화부터는 ownerId와 renterId를 서로 변경
-            //     requestBody.ownerId = loggedInId;
-            //     requestBody.renterId = ownerId;
-            // } else {
-            //     // 새로운 채팅 시작 시 renterId를 현재 로그인한 사용자로 설정
-            //     requestBody.ownerId = ownerId;
-            //     requestBody.renterId = loggedInId;
-            // }
             if (chatRoomId) {
                 // 기존 채팅방이 있을 경우 chatRoomId 포함
                 requestBody.chatRoomId = chatRoomId;
 
-                // 두 번째 대화부터는 ownerId와 renterId를 서로 변경
                 requestBody.ownerId = loggedInId;
-                requestBody.renterId = ownerId;
+                requestBody.renterId = finalOwnerId;
             } else {
                 // 새로운 채팅 시작 시 renterId를 현재 로그인한 사용자로 설정
                 requestBody.ownerId = loggedInId;
-                requestBody.renterId = ownerId;
+                requestBody.renterId = finalOwnerId;
             }
 
             console.log("메시지 전송 요청:", requestBody);
@@ -263,10 +258,14 @@ const ChatScreen = ({ route, navigation }) => {
                     ]}
                 >
                     {!isMyMessage && (
-                        <Image
-                            source={otherUserProfileImage ? { uri: otherUserProfileImage } : require('../../assets/images/defaultProfile.png')}
-                            style={styles.profileImage}
-                        />
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('OtherMypageScreen', { userId: ownerId || writerId })}
+                        >
+                            <Image
+                                source={otherUserProfileImage ? { uri: otherUserProfileImage } : require('../../assets/images/defaultProfile.png')}
+                                style={styles.profileImage}
+                            />
+                        </TouchableOpacity>
                     )}
                     <View
                         style={[
@@ -334,10 +333,9 @@ const ChatScreen = ({ route, navigation }) => {
                     ref={flatListRef}
                     data={messages}
                     renderItem={renderItem}
-                    // keyExtractor={(item) => item.id.toString()}
                     style={styles.messageList}
                 />
-                {isCompleted && (
+                {postStatus === '거래완료' && (
                     <View style={styles.reviewContainer}>
                         <Text style={styles.reviewText}>
                             거래는 어떠셨나요?{'\n'}
@@ -345,7 +343,7 @@ const ChatScreen = ({ route, navigation }) => {
                         </Text>
                         <TouchableOpacity
                             style={styles.reviewButton}
-                            onPress={() => navigation.navigate('ReviewScreen', { chatRoomId })}
+                            onPress={() => navigation.navigate('ReviewScreen', { postId, postData, revieweeId: ownerId })}
                         >
                             <Text style={styles.reviewButtonText}>거래후기 작성하기</Text>
                         </TouchableOpacity>

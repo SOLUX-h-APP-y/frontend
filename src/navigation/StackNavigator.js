@@ -10,6 +10,7 @@ import MyPostList from '../screens/#2_Post/MyPostList';
 import ToastMessage from '../components/ToastMessage';
 import ReviewScreen from '../screens/#3_Chat/ReviewScreen';
 import EditMypageScreen from '../screens/#4_Mypage/EditMypageScreen';
+import OtherMypageScreen from '../screens/#4_Mypage/OtherMypageScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import SetLocationScreen from '../screens/#2_Post/SetLocationScreen';
 import { UserProvider } from '../states/UserContext';
@@ -96,6 +97,13 @@ function StackNavigator() {
           <Stack.Screen
             name="EditMypageScreen"
             component={EditMypageScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="OtherMypageScreen"
+            component={OtherMypageScreen}
             options={{
               headerShown: false,
             }}
