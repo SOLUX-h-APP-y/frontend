@@ -2,13 +2,14 @@ import { StyleSheet, View, FlatList } from 'react-native';
 import PostPreviewItem from '../../components/PostPreviewItem';
 import { CustomHeader } from '../../components/CustomHeaders';
 import sampleImage from '../../assets/images/sample.png';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CreatePostButton } from '../../components/Buttons';
 import OptionPanel from '../../components/OptionPanel';
 import OptionSelector from '../../components/OptionSelector';
 import { getTokens } from '../../services/TokenManager.js';
 import { API_BASE_URL } from 'react-native-dotenv';
 import api, { setAuthToken } from '../../services/api.js';
+import { useFocusEffect } from '@react-navigation/native';
 
 const options = {
   distance: ['거리무관', '3km', '5km', '10km'],
@@ -53,7 +54,7 @@ function PostListScreen({ route }) {
         const tokens = await getTokens(); // 토큰 가져오기
         if (tokens && tokens.accessToken) {
           setAuthToken(tokens.accessToken); // Axios 헤더에 토큰 설정
-          await fetchPosts(tokens.accessToken); // Post 목록 요청
+          await fetchPosts(); // Post 목록 요청
         }
       } catch (err) {
         console.error('Initialization error:', err); // 에러 처리
@@ -64,6 +65,16 @@ function PostListScreen({ route }) {
 
     initialize(); // 비동기 함수 실행
   }, [searchOptions]);
+
+  useEffect(() => {
+    console.log(posts);
+  }, [posts]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPosts(); // 화면에 포커스될 때마다 데이터 새로고침
+    }, []),
+  );
 
   return (
     <View style={styles.container}>
