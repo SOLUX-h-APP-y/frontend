@@ -42,8 +42,8 @@ const ReviewScreen = ({ route, navigation }) => {
             const accessToken = tokens.accessToken;
             setAuthToken(accessToken);
 
-            // console.log('Authorization Header:', `Bearer ${accessToken}`);
-            // console.log('Request Body:', { revieweeId, rate: rating, content: reviewText });
+            console.log('Authorization Header:', `Bearer ${accessToken}`);
+            console.log('Request Body:', { revieweeId, rate: rating, content: reviewText });
 
             // 리뷰 작성 API 호출
             const response = await axios.post(

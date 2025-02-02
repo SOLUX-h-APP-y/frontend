@@ -34,8 +34,7 @@ function PostListScreen({ route }) {
   const fetchPosts = async () => {
     try {
       const response = await api.get(
-        `/posts?type=${actionType === 'share' ? 'share' : 'borrow'}&category=${
-          searchOptions.category
+        `/posts?type=${actionType === 'share' ? 'share' : 'borrow'}&category=${searchOptions.category
         }&radius=${searchOptions.distance}&keyword=${searchOptions.keyword}`,
       );
 
@@ -44,7 +43,7 @@ function PostListScreen({ route }) {
       const address = await api.get('/users/address/dong');
       setAddress(address.data.address);
     } catch (e) {
-      console.error('Failed to fetch posts:', e);
+      // console.error('Failed to fetch posts:', e);
     }
   };
 
