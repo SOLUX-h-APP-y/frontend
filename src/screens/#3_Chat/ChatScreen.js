@@ -320,7 +320,7 @@ const ChatScreen = ({ route, navigation }) => {
                         </Text>
                         <TouchableOpacity
                             style={styles.reviewButton}
-                            onPress={() => navigation.navigate('ReviewScreen', { postId, postData, revieweeId: ownerId })}
+                            onPress={() => navigation.navigate('ReviewScreen', { postId, postData, revieweeId: ownerId || writerId })}
                         >
                             <Text style={styles.reviewButtonText}>거래후기 작성하기</Text>
                         </TouchableOpacity>
